@@ -33,7 +33,6 @@ public class Constant
 
     public static readonly List<string> PrePluginIDs =
     [
-        "c5914774d4854623ad11912676c7007b", // PaddleOCR
         "3410e7de989340938301abd6fcf8cc4b", //WeChatOCR
         "474b5fe844d9455ba0c59f75c1424f0d", //BigModelTranslator
         "4ed3beaab50842e6851a2e4bdbbeccae", //BingDict
