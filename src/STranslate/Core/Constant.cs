@@ -36,13 +36,13 @@ public class Constant
     public static readonly List<string> PrePluginIDs =
     [
         "3410e7de989340938301abd6fcf8cc4b", //WeChatOCR
-        "474b5fe844d9455ba0c59f75c1424f0d", //BigModelTranslator
+        "474b5fe844d9455ba0c59f75c1424f0d", //BigModel
         "4ed3beaab50842e6851a2e4bdbbeccae", //BingDict
-        "0b5d84917783415d865032f1d6e2877f", //GoogleTranslator
+        "0b5d84917783415d865032f1d6e2877f", //GoogleBuiltIn
         "0f6892a390a543709926092aba510273", //KingSoftDict
         "9e44abfa040e443c9ab48205683082f4", //MTranServer
-        "76b14a8d707041c891a2dcd2f74be9c1", //OpenAITranslator
-        "2cc83275790ba8ce96b31c4fe0655743", //TransMartTranslator
+        "76b14a8d707041c891a2dcd2f74be9c1", //OpenAI
+        "2cc83275790ba8ce96b31c4fe0655743", //TransmartBuiltIn
         "7a3ab25875294602b3afc4ae15fec627", //MicrosoftTts
         "d9537be74d23438ca581fd6d04e1d112", //EudictVocabulary
     ];
