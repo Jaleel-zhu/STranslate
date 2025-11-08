@@ -64,7 +64,7 @@ public class AudioPlayer : IAudioPlayer
         }
         catch (OperationCanceledException)
         {
-            _logger.LogDebug("音频播放被取消");
+            _logger.LogTrace("音频播放被取消");
         }
         catch (Exception ex)
         {
@@ -93,7 +93,7 @@ public class AudioPlayer : IAudioPlayer
         }
         catch (OperationCanceledException)
         {
-            _logger.LogDebug("音频下载被取消");
+            _logger.LogTrace("音频下载被取消");
         }
         catch (Exception ex)
         {
@@ -148,7 +148,7 @@ public class AudioPlayer : IAudioPlayer
         {
             _waveOut.Pause();
             OnPlaybackStateChanged(PlaybackState.Paused);
-            _logger.LogDebug("音频播放已暂停");
+            _logger.LogTrace("音频播放已暂停");
         }
     }
 
@@ -161,7 +161,7 @@ public class AudioPlayer : IAudioPlayer
         {
             _waveOut.Play();
             OnPlaybackStateChanged(PlaybackState.Playing);
-            _logger.LogDebug("音频播放已恢复");
+            _logger.LogTrace("音频播放已恢复");
         }
     }
 
@@ -184,7 +184,7 @@ public class AudioPlayer : IAudioPlayer
         }
         catch (OperationCanceledException)
         {
-            _logger.LogDebug("音频播放被取消(Monitor)");
+            _logger.LogTrace("音频播放被取消(Monitor)");
             await StopAsync();
         }
         catch (Exception ex)
@@ -206,7 +206,7 @@ public class AudioPlayer : IAudioPlayer
         }
         else
         {
-            _logger.LogDebug("音频播放正常结束");
+            _logger.LogTrace("音频播放正常结束");
         }
 
         // 清理资源

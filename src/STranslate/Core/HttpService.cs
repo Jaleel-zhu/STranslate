@@ -71,7 +71,7 @@ public class HttpService : IHttpService
 
             AddHeaders(request, options?.Headers);
 
-            _logger?.LogDebug("Sending GET request to {Url} using service {ServiceName}", finalUrl, serviceName);
+            _logger?.LogTrace("Sending GET request to {Url} using service {ServiceName}", finalUrl, serviceName);
 
             using var response = await client.SendAsync(request, cancellationToken);
             await EnsureSuccessStatusCodeAsync(response, cancellationToken);
@@ -97,7 +97,7 @@ public class HttpService : IHttpService
 
             AddHeaders(request, options?.Headers);
 
-            _logger?.LogDebug("Sending GET request for bytes to {Url} using service {ServiceName}", finalUrl, serviceName);
+            _logger?.LogTrace("Sending GET request for bytes to {Url} using service {ServiceName}", finalUrl, serviceName);
 
             using var response = await client.SendAsync(request, cancellationToken);
             await EnsureSuccessStatusCodeAsync(response, cancellationToken);
@@ -153,7 +153,7 @@ public class HttpService : IHttpService
 
             AddHeaders(request, options?.Headers);
 
-            _logger?.LogDebug("Sending POST request to {Url} using service {ServiceName}", url, serviceName);
+            _logger?.LogTrace("Sending POST request to {Url} using service {ServiceName}", url, serviceName);
 
             using var response = await client.SendAsync(request, cancellationToken);
             await EnsureSuccessStatusCodeAsync(response, cancellationToken);
@@ -190,7 +190,7 @@ public class HttpService : IHttpService
 
             AddHeaders(request, options?.Headers);
 
-            _logger?.LogDebug("Sending POST request for bytes to {Url} using service {ServiceName}", url, serviceName);
+            _logger?.LogTrace("Sending POST request for bytes to {Url} using service {ServiceName}", url, serviceName);
 
             using var response = await client.SendAsync(request, cancellationToken);
             await EnsureSuccessStatusCodeAsync(response, cancellationToken);
@@ -226,7 +226,7 @@ public class HttpService : IHttpService
 
             AddHeaders(request, options?.Headers);
 
-            _logger?.LogDebug("Sending POST form request to {Url} using service {ServiceName}", url, serviceName);
+            _logger?.LogTrace("Sending POST form request to {Url} using service {ServiceName}", url, serviceName);
 
             using var response = await client.SendAsync(request, cancellationToken);
             await EnsureSuccessStatusCodeAsync(response, cancellationToken);
@@ -262,7 +262,7 @@ public class HttpService : IHttpService
 
             AddHeaders(request, options?.Headers);
 
-            _logger?.LogDebug("Sending streaming POST request to {Url} using service {ServiceName}", url, serviceName);
+            _logger?.LogTrace("Sending streaming POST request to {Url} using service {ServiceName}", url, serviceName);
 
             using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             await EnsureSuccessStatusCodeAsync(response, cancellationToken);
@@ -320,7 +320,7 @@ public class HttpService : IHttpService
             using var request = new HttpRequestMessage(HttpMethod.Get, url);
             AddHeaders(request, options?.Headers);
 
-            _logger?.LogDebug("Starting file download from {Url} to {Path} using service {ServiceName}", url, fullPath, serviceName);
+            _logger?.LogTrace("Starting file download from {Url} to {Path} using service {ServiceName}", url, fullPath, serviceName);
 
             using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             await EnsureSuccessStatusCodeAsync(response, cancellationToken);
@@ -367,7 +367,7 @@ public class HttpService : IHttpService
 
             AddHeaders(request, options?.Headers);
 
-            _logger?.LogDebug("Starting POST file download from {Url} to {Path} using service {ServiceName}", url, fullPath, serviceName);
+            _logger?.LogTrace("Starting POST file download from {Url} to {Path} using service {ServiceName}", url, fullPath, serviceName);
 
             using var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             await EnsureSuccessStatusCodeAsync(response, cancellationToken);
