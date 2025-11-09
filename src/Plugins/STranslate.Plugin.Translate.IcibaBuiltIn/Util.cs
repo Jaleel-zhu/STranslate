@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace STranslate.Plugin.Translate.KingSoftDict;
+namespace STranslate.Plugin.Translate.ICibaBuiltIn;
 
 public partial class Util
 {

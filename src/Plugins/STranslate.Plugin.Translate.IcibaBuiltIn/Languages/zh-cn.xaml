@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
-    <sys:String x:Key="STranslate_Plugin_Translate_KingSoftDict_Paraphrase">釋義</sys:String>
-    <sys:String x:Key="STranslate_Plugin_Translate_KingSoftDict_Expand">展開</sys:String>
+    <sys:String x:Key="STranslate_Plugin_Translate_iCIBA">介绍</sys:String>
+    <sys:String x:Key="STranslate_Plugin_Translate_iCIBA_Content">本插件可免费使用 iCIBA 查词服务</sys:String>
 
 </ResourceDictionary>

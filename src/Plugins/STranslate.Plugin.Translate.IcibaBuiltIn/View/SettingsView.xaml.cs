@@ -1,4 +1,4 @@
-namespace STranslate.Plugin.Translate.KingSoftDict.View;
+namespace STranslate.Plugin.Translate.ICibaBuiltIn.View;
 
 public partial class SettingsView
 {

@@ -1,10 +1,10 @@
-using STranslate.Plugin.Translate.KingSoftDict.View;
-using STranslate.Plugin.Translate.KingSoftDict.ViewModel;
+using STranslate.Plugin.Translate.ICibaBuiltIn.View;
+using STranslate.Plugin.Translate.ICibaBuiltIn.ViewModel;
 using System.Collections.ObjectModel;
 using System.Text.Json;
 using System.Windows.Controls;
 
-namespace STranslate.Plugin.Translate.KingSoftDict;
+namespace STranslate.Plugin.Translate.ICibaBuiltIn;
 
 public class Main : DictionaryPluginBase
 {

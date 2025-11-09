@@ -28,7 +28,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STranslate.Plugin.Translate
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STranslate.Plugin.Translate.BigModel", "Plugins\STranslate.Plugin.Translate.BigModel\STranslate.Plugin.Translate.BigModel.csproj", "{176890D4-338A-41CB-BDE9-68707835C423}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STranslate.Plugin.Translate.KingSoftDict", "Plugins\STranslate.Plugin.Translate.KingSoftDict\STranslate.Plugin.Translate.KingSoftDict.csproj", "{EFBF819E-034E-4745-B2F1-0C869BDB77A5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STranslate.Plugin.Translate.ICibaBuiltIn", "Plugins\STranslate.Plugin.Translate.ICibaBuiltIn\STranslate.Plugin.Translate.ICibaBuiltIn.csproj", "{EFBF819E-034E-4745-B2F1-0C869BDB77A5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STranslate.Plugin.Translate.BingDict", "Plugins\STranslate.Plugin.Translate.BingDict\STranslate.Plugin.Translate.BingDict.csproj", "{9093DC41-7C96-4A2F-A9A9-A066B3C1C2C5}"
 EndProject
