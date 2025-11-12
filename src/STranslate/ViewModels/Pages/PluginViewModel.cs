@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using iNKORE.UI.WPF.Modern.Controls;
 using STranslate.Core;
+using STranslate.Helpers;
 using STranslate.Instances;
 using STranslate.Plugin;
 using System.ComponentModel;
@@ -20,6 +21,7 @@ public partial class PluginViewModel : ObservableObject
     public DataProvider DataProvider { get; }
 
     private readonly ISnackbar _snackbar;
+    private readonly Settings _settings;
     private readonly CollectionViewSource _pluginCollectionView;
     public ICollectionView PluginCollectionView => _pluginCollectionView.View;
 
@@ -29,13 +31,15 @@ public partial class PluginViewModel : ObservableObject
         PluginInstance pluginInstance,
         Internationalization i18n,
         DataProvider dataProvider,
-        ISnackbar snackbar
+        ISnackbar snackbar,
+        Settings settings
         )
     {
         _pluginInstance = pluginInstance;
         _i18n = i18n;
         DataProvider = dataProvider;
         _snackbar = snackbar;
+        _settings = settings;
 
         _pluginCollectionView = new()
         {
@@ -124,7 +128,7 @@ public partial class PluginViewModel : ObservableObject
 
                     if (restartResult == ContentDialogResult.Primary)
                     {
-                        //TODO: Restart the application
+                        UACHelper.Run(_settings.StartMode);
                         App.Current.Shutdown();
                     }
                 }
@@ -230,7 +234,7 @@ public partial class PluginViewModel : ObservableObject
             Content = _i18n.GetTranslation("PluginDeleteForRestart"),
         }.ShowAsync() == ContentDialogResult.Primary)
         {
-            //TODO: 重启程序
+            UACHelper.Run(_settings.StartMode);
             App.Current.Shutdown();
         }
     }

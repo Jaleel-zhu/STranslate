@@ -9,22 +9,30 @@ namespace STranslate.Helpers;
 
 internal class UACHelper
 {
-    public static void Run(StartMode mode)
+    public static void Run(StartMode mode, int delay = 0)   // seconds
     {
         var modeStr = mode switch
         {
+            StartMode.Normal => "direct",
             StartMode.Admin => "elevated",
             StartMode.SkipUACAdmin => "task",
             _ => throw new InvalidOperationException("Unsupported start mode for admin")
         };
         var target = mode switch
         {
+            StartMode.Normal => DataLocation.AppExePath,
             StartMode.Admin => DataLocation.AppExePath,
             StartMode.SkipUACAdmin => Constant.TaskName,
             _ => throw new InvalidOperationException("Unsupported start mode for admin")
         };
 
-        Utilities.ExecuteProgram(DataLocation.HostExePath, ["start", "-m", modeStr, "-t", target]);
+        string[] args = ["start", "-m", modeStr, "-t", target];
+        if (delay > 0)
+        {
+            args = [.. args, "-d", delay.ToString()];
+        }
+
+        Utilities.ExecuteProgram(DataLocation.HostExePath, args);
     }
 
     public static void Create()
