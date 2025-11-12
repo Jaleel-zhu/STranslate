@@ -201,7 +201,7 @@ public partial class OcrWindowViewModel : ObservableObject, IDisposable
             if (_sourceImage != null)
             {
                 Clipboard.SetImage(_sourceImage);
-                _snackbar.ShowSuccess(_i18n.GetTranslation("CopyImageSuccess"));
+                _snackbar.ShowSuccess(_i18n.GetTranslation("CopySuccess"));
                 return;
             }
 
