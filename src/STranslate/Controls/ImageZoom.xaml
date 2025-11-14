@@ -48,8 +48,6 @@
 
                             <Border
                                 x:Name="PART_ScaleTextBorder"
-                                Width="Auto"
-                                Height="30"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Background="#a0000000"
@@ -61,10 +59,10 @@
                                     </Style>
                                 </Border.Style>
                                 <TextBlock
-                                    Margin="15,0"
+                                    Padding="10,5"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    FontSize="15"
+                                    FontSize="{DynamicResource STControlFontSize15}"
                                     Foreground="White"
                                     Text="{Binding ElementName=PART_ScaleTransform, Path=ScaleX, Mode=OneWay, Converter={cnvt:PercentageFormatConverter}}" />
                             </Border>

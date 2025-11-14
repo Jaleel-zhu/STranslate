@@ -10,7 +10,7 @@
         <Setter Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}" />
         <Setter Property="ui:ControlHelper.CornerRadius" Value="6" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="IconSize" Value="{DynamicResource {x:Static ui:ThemeKeys.ControlContentThemeFontSizeKey}}" />
+        <Setter Property="IconSize" Value="{DynamicResource STControlFontSize14}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type control:IconButton}">

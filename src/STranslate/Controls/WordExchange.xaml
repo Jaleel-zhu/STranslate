@@ -15,7 +15,7 @@
                     <ikw:SimpleStackPanel Orientation="Horizontal" Spacing="6">
                         <TextBlock
                             VerticalAlignment="Center"
-                            FontSize="{DynamicResource {x:Static ui:ThemeKeys.CaptionTextBlockFontSizeKey}}"
+                            FontSize="{DynamicResource STControlFontSize12}"
                             FontWeight="Medium"
                             Foreground="{DynamicResource {x:Static ui:ThemeKeys.SystemControlForegroundBaseMediumBrushKey}}">
                             <Run Text="{TemplateBinding Title}" />

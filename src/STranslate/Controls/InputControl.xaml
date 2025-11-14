@@ -102,7 +102,7 @@
                                     CornerRadius="{DynamicResource {x:Static ui:ThemeKeys.ControlCornerRadiusKey}}"
                                     Visibility="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IdentifiedLanguage, Converter={cnvt:EqualToVisibilityInverseConverter}}">
                                     <ikw:SimpleStackPanel Orientation="Horizontal" Spacing="2">
-                                        <TextBlock VerticalAlignment="Center" FontSize="{DynamicResource {x:Static ui:ThemeKeys.CaptionTextBlockFontSizeKey}}">
+                                        <TextBlock VerticalAlignment="Center" FontSize="{DynamicResource STControlFontSize12}">
                                             <Run Text="{DynamicResource IdentifiedLanguageLabel}" />
                                             <Run Text=": " />
                                             <Run Text="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IdentifiedLanguage}" />

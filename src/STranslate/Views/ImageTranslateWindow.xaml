@@ -405,7 +405,7 @@
 
                 <TextBlock
                     HorizontalAlignment="Center"
-                    FontSize="15"
+                    FontSize="{DynamicResource STControlFontSize15}"
                     FontWeight="Medium"
                     Foreground="White"
                     Text="{Binding ProcessRingText}"

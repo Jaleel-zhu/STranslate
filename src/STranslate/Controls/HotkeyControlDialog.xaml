@@ -30,11 +30,7 @@
             <RowDefinition Height="80" />
         </Grid.RowDefinitions>
         <StackPanel Margin="26,12,26,0">
-            <TextBlock
-                FontSize="{DynamicResource {x:Static ui:ThemeKeys.SubtitleTextBlockFontSizeKey}}"
-                FontWeight="SemiBold"
-                Text="{Binding WindowTitle}"
-                TextWrapping="WrapWithOverflow" />
+            <TextBlock Style="{DynamicResource {x:Static ui:ThemeKeys.SubtitleTextBlockStyleKey}}" Text="{Binding WindowTitle}" />
             <TextBlock VerticalAlignment="Center" Text="{DynamicResource HotkeyFunctionPrompt}" />
         </StackPanel>
         <Border

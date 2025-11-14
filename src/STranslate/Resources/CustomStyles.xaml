@@ -189,7 +189,7 @@
         <Setter Property="ContextMenu" Value="{DynamicResource {x:Static ui:ThemeKeys.TextControlContextMenuKey}}" />
         <Setter Property="ui:TextContextMenu.UsingTextContextMenu" Value="True" />
         <Setter Property="CaretBrush" Value="{DynamicResource {x:Static ui:ThemeKeys.TextControlForegroundKey}}" />
-        <Setter Property="FontSize" Value="{DynamicResource {x:Static ui:ThemeKeys.ControlContentThemeFontSizeKey}}" />
+        <Setter Property="FontSize" Value="{DynamicResource STControlFontSize14}" />
         <Setter Property="Foreground" Value="{DynamicResource {x:Static ui:ThemeKeys.TextControlForegroundKey}}" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Margin" Value="0" />
