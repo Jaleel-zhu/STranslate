@@ -107,6 +107,7 @@
     <sys:String x:Key="Hotkey_SaveToVocabulary">保存到生词本</sys:String>
     <sys:String x:Key="Hotkey_OcrWindow">OCR窗口快捷键</sys:String>
     <sys:String x:Key="Hotkey_ReExecuteOcr">重新执行文本识别</sys:String>
+    <sys:String x:Key="Hotkey_QrCode">识别二维码</sys:String>
 
     <!--  // Translation Page //  -->
     <sys:String x:Key="ReplaceService">替换翻译</sys:String>

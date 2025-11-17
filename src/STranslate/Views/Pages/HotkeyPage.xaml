@@ -246,6 +246,15 @@
                                 ValidateKeyGesture="False"
                                 WindowTitle="{DynamicResource Hotkey_ReExecuteOcr}" />
                         </ui:SettingsCard>
+
+                        <ui:SettingsCard Header="{DynamicResource Hotkey_QrCode}">
+                            <control:HotkeyControl
+                                DefaultHotkey="{Binding HotkeySettings.QrCodeHotkey.Default}"
+                                Hotkey="{Binding HotkeySettings.QrCodeHotkey.Key}"
+                                Type="OcrWindow"
+                                ValidateKeyGesture="False"
+                                WindowTitle="{DynamicResource Hotkey_QrCode}" />
+                        </ui:SettingsCard>
                     </ui:SettingsExpander.Items>
                 </ui:SettingsExpander>
             </ikw:SimpleStackPanel>
