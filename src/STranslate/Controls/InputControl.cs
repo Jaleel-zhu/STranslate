@@ -269,9 +269,6 @@ public class InputControl : Control
     /// <summary>
     /// 显示字体大小调节提示
     /// </summary>
-    /// <summary>
-    /// 显示字体大小调节提示
-    /// </summary>
     private void ShowFontSizeHint()
     {
         if (_fontSizeHintBorder == null)
