@@ -536,34 +536,197 @@ public partial class OcrWindowViewModel : ObservableObject, IDisposable
     }
 
     /// <summary>
-    /// 从文本中提取被 $$ 包裹的 LaTeX 内容
+    /// 从文本中提取 LaTeX 内容（支持 $$ 和 $ 两种分隔符）
     /// </summary>
     /// <param name="text">输入文本</param>
-    /// <returns>提取的 LaTeX 内容,如果没有则返回空字符串</returns>
+    /// <returns>提取的 LaTeX 内容,如果没有则返回原文本</returns>
     private static string ExtractLatex(string text)
     {
         if (string.IsNullOrEmpty(text))
             return string.Empty;
 
         var latexList = new List<string>();
-        var startIndex = 0;
 
-        while (true)
+        // 优先提取 $$ 包裹的块级公式
+        var remaining = ExtractDelimitedLatex(text, "$$", latexList);
+
+        // 如果没有提取到 $$，尝试提取 $ 包裹的行内公式
+        if (latexList.Count == 0)
         {
-            startIndex = text.IndexOf("$$", startIndex, StringComparison.Ordinal);
-            if (startIndex == -1)
-                break;
-
-            var endIndex = text.IndexOf("$$", startIndex + 2, StringComparison.Ordinal);
-            if (endIndex == -1)
-                break;
-
-            var latex = text.Substring(startIndex + 2, endIndex - startIndex - 2).Trim();
-            latexList.Add(latex);
-            startIndex = endIndex + 2;
+            remaining = ExtractDelimitedLatex(text, "$", latexList);
         }
 
-        return string.Join(Environment.NewLine + Environment.NewLine, latexList);
+        // 如果提取到了内容，返回提取结果
+        if (latexList.Count > 0)
+            return string.Join(Environment.NewLine + Environment.NewLine, latexList);
+
+        // 如果都没有匹配，检查是否整个文本就是 LaTeX（AI 可能忘记加分隔符）
+        if (ContainsLatexSyntax(text))
+            return text.Trim();
+
+        // 返回原始文本
+        return text;
+    }
+
+    /// <summary>
+    /// 提取指定分隔符包裹的 LaTeX 内容
+    /// </summary>
+    /// <param name="text">输入文本</param>
+    /// <param name="delimiter">分隔符（$ 或 $$）</param>
+    /// <param name="results">提取结果列表</param>
+    /// <returns>移除了 LaTeX 部分后的剩余文本</returns>
+    private static string ExtractDelimitedLatex(string text, string delimiter, List<string> results)
+    {
+        if (string.IsNullOrEmpty(text))
+            return text;
+
+        var delimiterLength = delimiter.Length;
+        var currentIndex = 0;
+        var processedParts = new List<string>();
+
+        while (currentIndex < text.Length)
+        {
+            var startIndex = text.IndexOf(delimiter, currentIndex, StringComparison.Ordinal);
+
+            // 没有找到起始分隔符
+            if (startIndex == -1)
+            {
+                // 保留剩余的非 LaTeX 文本
+                if (currentIndex < text.Length)
+                    processedParts.Add(text.Substring(currentIndex));
+                break;
+            }
+
+            // 保留分隔符之前的文本
+            if (startIndex > currentIndex)
+                processedParts.Add(text.Substring(currentIndex, startIndex - currentIndex));
+
+            var contentStart = startIndex + delimiterLength;
+
+            // 对于单 $，需要避免误匹配 $$
+            var endIndex = FindClosingDelimiter(text, contentStart, delimiter);
+
+            if (endIndex == -1)
+            {
+                // 没有找到结束分隔符（AI 流式输出未完成）
+                var remainingText = text.Substring(contentStart).Trim();
+                if (!string.IsNullOrWhiteSpace(remainingText))
+                    results.Add(remainingText);
+                break;
+            }
+
+            var latexContent = text.Substring(contentStart, endIndex - contentStart).Trim();
+
+            // 过滤空白和过短的内容（避免误匹配）
+            if (!string.IsNullOrWhiteSpace(latexContent) && latexContent.Length > 0)
+            {
+                results.Add(latexContent);
+            }
+
+            currentIndex = endIndex + delimiterLength;
+        }
+
+        return string.Join("", processedParts).Trim();
+    }
+
+    /// <summary>
+    /// 查找闭合分隔符，避免 $ 和 $$ 的误匹配
+    /// </summary>
+    private static int FindClosingDelimiter(string text, int searchStart, string delimiter)
+    {
+        if (delimiter == "$")
+        {
+            // 对于单 $，需要确保不匹配到 $$
+            var index = searchStart;
+            while (index < text.Length)
+            {
+                index = text.IndexOf("$", index, StringComparison.Ordinal);
+                if (index == -1)
+                    return -1;
+
+                // 检查是否是 $$
+                var isDoubleDollar = (index + 1 < text.Length && text[index + 1] == '$') ||
+                                     (index > 0 && text[index - 1] == '$');
+
+                if (!isDoubleDollar)
+                    return index;
+
+                index++;
+            }
+            return -1;
+        }
+        else
+        {
+            // 对于 $$，直接查找
+            return text.IndexOf(delimiter, searchStart, StringComparison.Ordinal);
+        }
+    }
+
+    /// <summary>
+    /// 检查文本是否包含常见的 LaTeX 语法标记
+    /// </summary>
+    private static bool ContainsLatexSyntax(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return false;
+
+        // 常见 LaTeX 命令和符号（按出现频率排序，优化性能）
+        ReadOnlySpan<string> latexIndicators = new[]
+        {
+            "\\frac",      // 分数
+            "\\sum",       // 求和
+            "\\int",       // 积分
+            "\\sqrt",      // 根号
+            "\\lim",       // 极限
+            "\\left",      // 左括号
+            "\\right",     // 右括号
+            "\\begin{",    // 环境开始
+            "\\end{",      // 环境结束
+            "\\alpha",     // 希腊字母
+            "\\beta",
+            "\\gamma",
+            "\\theta",
+            "\\pi",
+            "\\lambda",
+            "\\mu",
+            "\\sigma",
+            "\\tag{",      // 标签
+            "\\label{",    // 引用标签
+            "\\text{",     // 文本
+            "\\mathrm{",   // 正体
+            "\\mathbf{",   // 粗体
+            "\\cdot",      // 点乘
+            "\\times",     // 叉乘
+            "\\pm",        // 加减
+            "\\leq",       // 小于等于
+            "\\geq",       // 大于等于
+            "\\neq",       // 不等于
+            "\\approx",    // 约等于
+            "_{",          // 下标
+            "^{",          // 上标
+            "&",           // 对齐符
+            "\\\\"         // 换行
+        };
+
+        foreach (var indicator in latexIndicators)
+        {
+            if (text.Contains(indicator, StringComparison.Ordinal))
+                return true;
+        }
+
+        // 额外检查：是否包含多个反斜杠（强 LaTeX 特征）
+        var backslashCount = 0;
+        foreach (var c in text)
+        {
+            if (c == '\\')
+            {
+                backslashCount++;
+                if (backslashCount >= 2) // 至少2个反斜杠命令
+                    return true;
+            }
+        }
+
+        return false;
     }
 
     #endregion
