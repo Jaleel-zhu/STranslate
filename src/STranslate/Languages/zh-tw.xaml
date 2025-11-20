@@ -198,6 +198,12 @@
     <sys:String x:Key="Standalone_WordSpacingThresholdHeader">詞間距偵測閾值比例</sys:String>
     <sys:String x:Key="Standalone_WordSpacingThresholdDescription" xml:space="preserve">控制合併文字時是否加入空格。&#10;0.1–0.2：標準空格間距。&#10;0.3–0.5：寬鬆空格間距。&#10;&gt;1.0：幾乎不加入空格。</sys:String>
 
+    <!--  History Page  -->
+    <sys:String x:Key="Total">共</sys:String>
+    <sys:String x:Key="Item">項</sys:String>
+    <sys:String x:Key="HistorySearch">請輸入搜尋紀錄...</sys:String>
+    <sys:String x:Key="HistorySearchToolTip">按 Ctrl+F 搜尋紀錄</sys:String>
+
     <!--  // About Page //  -->
     <sys:String x:Key="UserDataLocation">使用者資料位置</sys:String>
     <sys:String x:Key="UserDataLocationDescription">使用者設定和已安裝的外掛儲存在使用者資料資料夾中。此位置可能因是否處於便攜模式而異。</sys:String>

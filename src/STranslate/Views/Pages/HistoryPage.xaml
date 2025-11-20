@@ -47,7 +47,10 @@
                 <TextBox
                     x:Name="PART_SearchBox"
                     VerticalAlignment="Top"
-                    ui:ControlHelper.PlaceholderText="请输入搜索内容..."
+                    ui:ControlHelper.PlaceholderText="{DynamicResource HistorySearch}"
+                    ToolTip="{DynamicResource HistorySearchToolTip}"
+                    ToolTipService.InitialShowDelay="200"
+                    ToolTipService.Placement="Top"
                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
 
                 <ui:ScrollViewerEx Grid.Row="1">
@@ -70,7 +73,7 @@
                                 <MenuItem
                                     Command="{Binding Source={StaticResource VmProxy}, Path=Data.DeleteCommand}"
                                     CommandParameter="{Binding Source={StaticResource VmProxy}, Path=Data.SelectedItem}"
-                                    Header="删除">
+                                    Header="{DynamicResource Delete}">
                                     <MenuItem.Icon>
                                         <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.Delete_20_Regular}" />
                                     </MenuItem.Icon>
@@ -106,11 +109,11 @@
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         FontSize="{DynamicResource STControlFontSize12}">
-                        <Run Text="共" />
+                        <Run Text="{DynamicResource Total}" />
                         <Run Text=" " />
                         <Run Text="{Binding TotalCount}" />
                         <Run Text=" " />
-                        <Run Text="项" />
+                        <Run Text="{DynamicResource Item}" />
                     </TextBlock>
                 </Border>
             </Grid>

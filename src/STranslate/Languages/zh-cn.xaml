@@ -198,6 +198,12 @@
     <sys:String x:Key="Standalone_WordSpacingThresholdHeader">词间距检测阈值比例</sys:String>
     <sys:String x:Key="Standalone_WordSpacingThresholdDescription" xml:space="preserve">控制合并文本时是否添加空格&#10;0.1-0.2: 标准空格间距&#10;0.3-0.5: 宽松空格间距&#10;&gt;1.0: 几乎不添加空格</sys:String>
 
+    <!--  History Page  -->
+    <sys:String x:Key="Total">共</sys:String>
+    <sys:String x:Key="Item">项</sys:String>
+    <sys:String x:Key="HistorySearch">请输入搜索历史...</sys:String>
+    <sys:String x:Key="HistorySearchToolTip">按 Ctrl+F 搜索历史</sys:String>
+
     <!--  // About Page //  -->
     <sys:String x:Key="UserDataLocation">用户数据位置</sys:String>
     <sys:String x:Key="UserDataLocationDescription">用户设置和已安装的插件保存在用户数据文件夹中。此位置可能因是否处于便携模式而异。</sys:String>

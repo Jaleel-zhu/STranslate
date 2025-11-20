@@ -198,6 +198,12 @@
     <sys:String x:Key="Standalone_WordSpacingThresholdHeader">Word Spacing Detection Threshold Ratio</sys:String>
     <sys:String x:Key="Standalone_WordSpacingThresholdDescription" xml:space="preserve">Controls whether to insert spaces when merging text.&#10;0.1–0.2: Standard spacing.&#10;0.3–0.5: Loose spacing.&#10;&gt;1.0: Almost no spaces added.</sys:String>
 
+    <!--  History Page  -->
+    <sys:String x:Key="Total">Total</sys:String>
+    <sys:String x:Key="Item">item</sys:String>
+    <sys:String x:Key="HistorySearch">Input to search histories...</sys:String>
+    <sys:String x:Key="HistorySearchToolTip">Ctrl+F to search histories</sys:String>
+
     <!--  // About Page //  -->
     <sys:String x:Key="UserDataLocation">User Data Location</sys:String>
     <sys:String x:Key="UserDataLocationDescription">User settings and installed plugins are saved in the user data folder. This location may vary depending on whether it is in portable mode.</sys:String>
