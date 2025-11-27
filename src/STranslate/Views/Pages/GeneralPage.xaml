@@ -199,6 +199,17 @@
                         SelectedValuePath="Value" />
                 </ui:SettingsCard>
 
+                <ui:SettingsCard Description="{DynamicResource General_CopyAfterTranslationDescription}" Header="{DynamicResource General_CopyAfterTranslation}">
+                    <ui:SettingsCard.HeaderIcon>
+                        <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.CropSparkle_24_Regular}" />
+                    </ui:SettingsCard.HeaderIcon>
+                    <ComboBox
+                        DisplayMemberPath="Display"
+                        ItemsSource="{Binding DataProvider.CopyAfterTranslations}"
+                        SelectedValue="{Binding Settings.CopyAfterTranslation}"
+                        SelectedValuePath="Value" />
+                </ui:SettingsCard>
+
                 <ui:SettingsCard Description="{DynamicResource General_TranslateOnPasteDescription}" Header="{DynamicResource General_TranslateOnPaste}">
                     <ui:SettingsCard.HeaderIcon>
                         <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.ClipboardArrowRight_20_Regular}" />

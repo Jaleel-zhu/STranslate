@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.DependencyInjection;
 using CommunityToolkit.Mvvm.Input;
+using Gma.System.MouseKeyHook.HotKeys;
 using iNKORE.UI.WPF.Modern;
 using Microsoft.Extensions.Logging;
 using STranslate.Core;
@@ -160,6 +161,34 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
 
         var history = await ExecuteTranslateAsync(checkCacheFirst, cancellationToken);
 
+        // 翻译后自动复制
+        if (Settings.CopyAfterTranslation != CopyAfterTranslation.NoAction)
+        {
+            var serviceList = TranslateInstance.Services.Where(x => x.IsEnabled && x.Options?.ExecMode == ExecutionMode.Automatic);
+            var service = Settings.CopyAfterTranslation == CopyAfterTranslation.Last ?
+                serviceList.LastOrDefault() :
+                serviceList.ElementAtOrDefault((int)Settings.CopyAfterTranslation - 1);
+            if (service == null)
+            {
+                _snakebar.ShowWarning(string.Format(_i18n.GetTranslation("CopyServiceNotFound"), Settings.CopyAfterTranslation));
+            }
+            else
+            {
+                var data = history?.GetData(service);
+                if (data != null)
+                {
+                    var textToCopy = data.TransResult?.Text ?? data.DictResult?.Text;
+                    if (!string.IsNullOrWhiteSpace(textToCopy))
+                    {
+                        Utilities.SetText(textToCopy);
+                        _snakebar.ShowSuccess(string.Format(_i18n.GetTranslation("CopiedToClipboard"), service.DisplayName));
+                    }
+                }
+            }
+        }
+
+        #region 历史记录处理
+
         if (Settings.HistoryLimit > 0 && history != null)
         {
             // 按服务启用顺序排序
@@ -176,6 +205,8 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
             if (!_recentTexts.Contains(InputText))
                 _recentTexts.Insert(0, InputText);
         }
+
+        #endregion
     }
 
     [RelayCommand]

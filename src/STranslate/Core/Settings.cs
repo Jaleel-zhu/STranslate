@@ -57,6 +57,8 @@ public partial class Settings : ObservableObject
 
     [ObservableProperty] public partial bool IsHistoryNavigationVisible { get; set; } = true;
 
+    [ObservableProperty] public partial CopyAfterTranslation CopyAfterTranslation { get; set; }
+
     [ObservableProperty] public partial int HttpTimeout { get; set; } = 30;
 
     [ObservableProperty] public partial LangEnum SourceLang { get; set; } = LangEnum.Auto;
@@ -559,6 +561,20 @@ public enum HistoryLimit : long
     Limit2000 = 2000,
     Limit5000 = 5000,
     Unlimited = long.MaxValue,
+}
+
+public enum CopyAfterTranslation
+{
+    NoAction,
+    First,
+    Second,
+    Third,
+    Fourth,
+    Fifth,
+    Sixth,
+    Seventh,
+    Eighth,
+    Last,
 }
 
 #endregion

@@ -76,6 +76,8 @@
     <sys:String x:Key="General_ShowPromptDescription">主介面是否顯示 AI 翻譯服務的提示詞切換按鈕</sys:String>
     <sys:String x:Key="General_FontFamily">字體</sys:String>
     <sys:String x:Key="General_HistoryCount">歷史記錄數量</sys:String>
+    <sys:String x:Key="General_CopyAfterTranslation">翻譯後複製</sys:String>
+    <sys:String x:Key="General_CopyAfterTranslationDescription">僅針對「自動執行」的服務生效</sys:String>
 
     <!--  // Hotkey Page //  -->
     <sys:String x:Key="GlobalHotkeys">全域快速鍵</sys:String>
@@ -260,6 +262,8 @@
     <sys:String x:Key="RemoveSpace">移除空格</sys:String>
     <sys:String x:Key="UseSettingLang">識別失敗</sys:String>
     <sys:String x:Key="IdentifiedCache">緩存</sys:String>
+    <sys:String x:Key="CopyServiceNotFound">未找到第 {0} 項服務</sys:String>
+    <sys:String x:Key="CopiedToClipboard">已複製「{0}」結果</sys:String>
 
     <!--  // Language Part //  -->
     <sys:String x:Key="SwapLanguage">交換原始-目標語言</sys:String>
@@ -409,6 +413,17 @@
     <sys:String x:Key="HistoryLimitLimit2000">2000</sys:String>
     <sys:String x:Key="HistoryLimitLimit5000">5000</sys:String>
     <sys:String x:Key="HistoryLimitUnlimited">無限制</sys:String>
+
+    <sys:String x:Key="CopyAfterTranslationNoAction">無操作</sys:String>
+    <sys:String x:Key="CopyAfterTranslationFirst">第一項</sys:String>
+    <sys:String x:Key="CopyAfterTranslationSecond">第二項</sys:String>
+    <sys:String x:Key="CopyAfterTranslationThird">第三項</sys:String>
+    <sys:String x:Key="CopyAfterTranslationFourth">第四項</sys:String>
+    <sys:String x:Key="CopyAfterTranslationFifth">第五項</sys:String>
+    <sys:String x:Key="CopyAfterTranslationSixth">第六項</sys:String>
+    <sys:String x:Key="CopyAfterTranslationSeventh">第七項</sys:String>
+    <sys:String x:Key="CopyAfterTranslationEighth">第八項</sys:String>
+    <sys:String x:Key="CopyAfterTranslationLast">最後一項</sys:String>
 
     <!--  // Plugins //  -->
     <sys:String x:Key="UnsupportedSourceLang">不支援的來源語言</sys:String>

@@ -76,6 +76,8 @@
     <sys:String x:Key="General_ShowPromptDescription">Whether to display the prompt switch button for AI translation services on the main interface</sys:String>
     <sys:String x:Key="General_FontFamily">FontFamily</sys:String>
     <sys:String x:Key="General_HistoryCount">History Count</sys:String>
+    <sys:String x:Key="General_CopyAfterTranslation">Copy After Translation</sys:String>
+    <sys:String x:Key="General_CopyAfterTranslationDescription">Only applies to services with "Automatic"</sys:String>
 
     <!--  // Hotkey Page //  -->
     <sys:String x:Key="GlobalHotkeys">Global Hotkeys</sys:String>
@@ -260,6 +262,8 @@
     <sys:String x:Key="RemoveSpace">Remove Space</sys:String>
     <sys:String x:Key="UseSettingLang">DetectFailed</sys:String>
     <sys:String x:Key="IdentifiedCache">Cache</sys:String>
+    <sys:String x:Key="CopyServiceNotFound">Service {0} not found</sys:String>
+    <sys:String x:Key="CopiedToClipboard">Copied '{0}' result</sys:String>
 
     <!--  // Language Part //  -->
     <sys:String x:Key="SwapLanguage">Swap Source-Target Language</sys:String>
@@ -408,6 +412,17 @@
     <sys:String x:Key="HistoryLimitLimit2000">2000</sys:String>
     <sys:String x:Key="HistoryLimitLimit5000">5000</sys:String>
     <sys:String x:Key="HistoryLimitUnlimited">Unlimited</sys:String>
+
+    <sys:String x:Key="CopyAfterTranslationNoAction">NoAction</sys:String>
+    <sys:String x:Key="CopyAfterTranslationFirst">First</sys:String>
+    <sys:String x:Key="CopyAfterTranslationSecond">Second</sys:String>
+    <sys:String x:Key="CopyAfterTranslationThird">Third</sys:String>
+    <sys:String x:Key="CopyAfterTranslationFourth">Fourth</sys:String>
+    <sys:String x:Key="CopyAfterTranslationFifth">Fifth</sys:String>
+    <sys:String x:Key="CopyAfterTranslationSixth">Sixth</sys:String>
+    <sys:String x:Key="CopyAfterTranslationSeventh">Seventh</sys:String>
+    <sys:String x:Key="CopyAfterTranslationEighth">Eighth</sys:String>
+    <sys:String x:Key="CopyAfterTranslationLast">Last</sys:String>
 
     <!--  // Plugins //  -->
     <sys:String x:Key="UnsupportedSourceLang">Unsupported source language</sys:String>
