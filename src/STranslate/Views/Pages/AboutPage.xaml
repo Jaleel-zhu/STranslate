@@ -74,7 +74,7 @@
                 </ui:SettingsCard>
 
 
-                <ui:SettingsExpander Description="支持本地和WebDav的备份/恢复" Header="备份方式">
+                <ui:SettingsExpander Description="支持本地和WebDav的备份/恢复，过程中会自动重启软件" Header="备份方式">
                     <ui:SettingsExpander.HeaderIcon>
                         <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.FolderZip_20_Regular}" />
                     </ui:SettingsExpander.HeaderIcon>
