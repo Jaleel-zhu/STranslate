@@ -118,6 +118,7 @@
     <sys:String x:Key="Hotkey_OcrWindow">OCR視窗快速鍵</sys:String>
     <sys:String x:Key="Hotkey_ReExecuteOcr">重新執行文字辨識</sys:String>
     <sys:String x:Key="Hotkey_QrCode">辨識二維碼</sys:String>
+    <sys:String x:Key="Hotkey_SwitchImage">切換渲染圖/標註圖</sys:String>
 
     <!--  // Translation Page //  -->
     <sys:String x:Key="ReplaceService">替換翻譯</sys:String>

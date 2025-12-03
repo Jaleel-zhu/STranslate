@@ -118,6 +118,7 @@
     <sys:String x:Key="Hotkey_OcrWindow">OCR Window Hotkey</sys:String>
     <sys:String x:Key="Hotkey_ReExecuteOcr">Re-execute text recognition</sys:String>
     <sys:String x:Key="Hotkey_QrCode">Recognize QR code</sys:String>
+    <sys:String x:Key="Hotkey_SwitchImage">Switch Rendering/Annotation Image</sys:String>
 
     <!--  // Translation Page //  -->
     <sys:String x:Key="ReplaceService">Replace Trans</sys:String>

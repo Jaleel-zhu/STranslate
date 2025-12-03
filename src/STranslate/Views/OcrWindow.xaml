@@ -47,6 +47,10 @@
             Key="{Binding HotkeySettings.QrCodeHotkey.Key, Converter={cnvt:StringToKeyBindingConverter}, ConverterParameter={x:Static cnvt:HotkeyMode.Key}}"
             Command="{Binding QrCodeCommand}"
             Modifiers="{Binding HotkeySettings.QrCodeHotkey.Key, Converter={cnvt:StringToKeyBindingConverter}, ConverterParameter={x:Static cnvt:HotkeyMode.Modifiers}}" />
+        <KeyBinding
+            Key="{Binding HotkeySettings.SwitchImageHotkey.Key, Converter={cnvt:StringToKeyBindingConverter}, ConverterParameter={x:Static cnvt:HotkeyMode.Key}}"
+            Command="{Binding SwitchImageCommand}"
+            Modifiers="{Binding HotkeySettings.SwitchImageHotkey.Key, Converter={cnvt:StringToKeyBindingConverter}, ConverterParameter={x:Static cnvt:HotkeyMode.Modifiers}}" />
     </Window.InputBindings>
     <Grid>
         <Border

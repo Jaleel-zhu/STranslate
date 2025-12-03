@@ -53,6 +53,8 @@ public partial class HotkeySettings : ObservableObject
 
     public Hotkey QrCodeHotkey { get; set; } = new("Ctrl + Shift + R");
 
+    public Hotkey SwitchImageHotkey { get; set; } = new("Ctrl + OemQuestion");
+
     #endregion
 
     [JsonIgnore]
@@ -82,6 +84,7 @@ public partial class HotkeySettings : ObservableObject
         // OcrWindow
         new RegisteredHotkeyData(ReExecuteOcrHotkey.Key, "Hotkey_ReExecuteOcr", HotkeyType.OcrWindow, () => ReExecuteOcrHotkey.Key = Constant.EmptyHotkey),
         new RegisteredHotkeyData(QrCodeHotkey.Key, "Hotkey_QrCode", HotkeyType.OcrWindow, () => QrCodeHotkey.Key = Constant.EmptyHotkey),
+        new RegisteredHotkeyData(SwitchImageHotkey.Key, "Hotkey_SwitchImage", HotkeyType.OcrWindow, () => SwitchImageHotkey.Key = Constant.EmptyHotkey),
 
         //TODO: Other Window
     ];
@@ -174,6 +177,7 @@ public partial class HotkeySettings : ObservableObject
             // Software Hotkeys - OcrWindow
             [nameof(ReExecuteOcrHotkey)] = "Ctrl + R",
             [nameof(QrCodeHotkey)] = "Ctrl + Shift + R",
+            [nameof(SwitchImageHotkey)] = "Ctrl + OemQuestion",
         };
         foreach (var prop in GetType().GetProperties())
         {

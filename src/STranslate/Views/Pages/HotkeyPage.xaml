@@ -282,6 +282,15 @@
                                 ValidateKeyGesture="False"
                                 WindowTitle="{DynamicResource Hotkey_QrCode}" />
                         </ui:SettingsCard>
+
+                        <ui:SettingsCard Header="{DynamicResource Hotkey_SwitchImage}">
+                            <control:HotkeyControl
+                                DefaultHotkey="{Binding HotkeySettings.SwitchImageHotkey.Default}"
+                                Hotkey="{Binding HotkeySettings.SwitchImageHotkey.Key}"
+                                Type="OcrWindow"
+                                ValidateKeyGesture="False"
+                                WindowTitle="{DynamicResource Hotkey_SwitchImage}" />
+                        </ui:SettingsCard>
                     </ui:SettingsExpander.Items>
                 </ui:SettingsExpander>
             </ikw:SimpleStackPanel>
