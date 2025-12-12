@@ -26,6 +26,8 @@ public class PluginContext(PluginMetaData metaData, string serviceId) : IPluginC
 
     public INotification Notification => Ioc.Default.GetRequiredService<INotification>();
 
+    public ImageQuality ImageQuality => Ioc.Default.GetRequiredService<Settings>().ImageQuality;
+
     public Window GetPromptEditWindow(ObservableCollection<Prompt> prompts, List<string>? roles = default)
     {
         var window = new PromptEditWindow(prompts, roles)

@@ -653,11 +653,4 @@ public enum CopyAfterTranslation
     Last,
 }
 
-public enum ImageQuality
-{
-    Low,
-    Medium,
-    High
-}
-
 #endregion

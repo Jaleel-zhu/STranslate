@@ -45,6 +45,11 @@ public interface IPluginContext : IDisposable
     INotification Notification { get; }
 
     /// <summary>
+    /// 图片质量
+    /// </summary>
+    ImageQuality ImageQuality { get; }
+
+    /// <summary>
     /// 获取Prompt编辑窗口
     /// </summary>
     /// <param name="prompts"></param>
