@@ -529,23 +529,8 @@ public partial class OcrWindowViewModel : ObservableObject, IDisposable
         try
         {
             // 创建 ZXing 的 BarcodeReader 实例
-            var reader = new BarcodeReader
-            {
-                AutoRotate = true, // 自动旋转图像以提高识别率
-                Options = new ZXing.Common.DecodingOptions
-                {
-                    TryInverted = true, // 尝试反色处理
-                    TryHarder = true, // 更努力地尝试识别
-                    PureBarcode = false, // 不是纯条码图像
-                    PossibleFormats =
-                    [
-                        BarcodeFormat.QR_CODE, // 只识别二维码
-                        BarcodeFormat.DATA_MATRIX, // 也可以识别 Data Matrix
-                        BarcodeFormat.AZTEC // 也可以识别 Aztec 码
-                    ]
-                }
-            };
-
+            var reader = new BarcodeReader();
+            reader.Options.CharacterSet = "UTF-8";
             // 使用字节数组创建 System.DrawingCore.Bitmap
             using var stream = new MemoryStream(bytes);
             using var drawingCoreBitmap = new System.DrawingCore.Bitmap(stream);
