@@ -186,7 +186,7 @@
                 <ui:SettingsExpander Header="{DynamicResource General_ScreenshotTranslateInImage}">
                     <ui:SettingsExpander.Description>
                         <WrapPanel Orientation="Horizontal">
-                            <TextBlock Text="{DynamicResource General_ScreenshotTranslateInImageDescription}" />
+                            <TextBlock VerticalAlignment="Bottom" Text="{DynamicResource General_ScreenshotTranslateInImageDescription}" />
                             <ui:HyperlinkButton Content="{DynamicResource Document}" NavigateUri="https://stranslate.zggsong.com/docs/#%E5%9B%BE%E7%89%87%E7%BF%BB%E8%AF%91" />
                         </WrapPanel>
                     </ui:SettingsExpander.Description>

@@ -60,7 +60,7 @@
     <sys:String x:Key="General_ImageQualityDescription">处理图片时质量调整，在线OCR服务可能会限制图片大小</sys:String>
     <sys:String x:Key="General_Language">语言</sys:String>
     <sys:String x:Key="General_ScreenshotTranslateInImage">图片内翻译</sys:String>
-    <sys:String x:Key="General_ScreenshotTranslateInImageDescription">截图翻译时是否启用图片内翻译.</sys:String>
+    <sys:String x:Key="General_ScreenshotTranslateInImageDescription">截图翻译时是否启用图片内翻译</sys:String>
     <sys:String x:Key="General_ScreenshotTranslateInImageButtonVisible">在主界面上显示启用图片内翻译按钮</sys:String>
     <sys:String x:Key="General_HideNotifyIcon">隐藏托盘图标</sys:String>
     <sys:String x:Key="General_ShowScreenshotItemInNotifyIconMenu">托盘显示截图翻译选项</sys:String>
