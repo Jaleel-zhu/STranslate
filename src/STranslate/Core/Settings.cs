@@ -67,6 +67,8 @@ public partial class Settings : ObservableObject
 
     [ObservableProperty] public partial bool IsHistoryNavigationVisible { get; set; } = true;
 
+    [ObservableProperty] public partial DoubleClickTrayFunction DoubleClickTrayFunction { get; set; }
+
     [ObservableProperty] public partial CopyAfterTranslation CopyAfterTranslation { get; set; }
 
     [ObservableProperty] public partial bool CopyAfterTranslationNotAutomatic { get; set; }
@@ -668,6 +670,18 @@ public enum CopyAfterTranslation
     Seventh,
     Eighth,
     Last,
+}
+
+public enum DoubleClickTrayFunction
+{
+    None,
+    InputTranslate,
+    ScreenshotTranslate,
+    OCR,
+    OpenSettingsWindow,
+    ToggleMouseHook,
+    ToggleGlobalHotkeys,
+    Exit
 }
 
 #endregion

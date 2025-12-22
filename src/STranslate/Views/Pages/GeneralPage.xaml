@@ -281,6 +281,17 @@
                         SelectedValuePath="Value" />
                 </ui:SettingsCard>
 
+                <ui:SettingsCard Description="{DynamicResource General_DoubleClickTrayFunctionDescription}" Header="{DynamicResource General_DoubleClickTrayFunction}">
+                    <ui:SettingsCard.HeaderIcon>
+                        <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.CursorClick_20_Regular}" />
+                    </ui:SettingsCard.HeaderIcon>
+                    <ComboBox
+                        DisplayMemberPath="Display"
+                        ItemsSource="{Binding DataProvider.DoubleClickTrayFunctions}"
+                        SelectedValue="{Binding Settings.DoubleClickTrayFunction}"
+                        SelectedValuePath="Value" />
+                </ui:SettingsCard>
+
                 <!--#endregion-->
 
                 <!--#region Appearance-->

@@ -58,6 +58,8 @@
     <sys:String x:Key="General_LineBreakHandleTypeDescription" xml:space="preserve">Includes line break handling for word selection, screenshot translation, clipboard, and silent OCR scenarios.&#10;"Remove extra line breaks" is mainly for PDF text extraction, removing redundant line breaks and sentence breaks, but it may affect non-PDF extraction.</sys:String>
     <sys:String x:Key="General_ImageQuality">Image Quality</sys:String>
     <sys:String x:Key="General_ImageQualityDescription">Adjust the quality when processing images. Online OCR services may limit image size.</sys:String>
+    <sys:String x:Key="General_DoubleClickTrayFunction">Double-Click Tray Function</sys:String>
+    <sys:String x:Key="General_DoubleClickTrayFunctionDescription">Selecting any action other than "None" will disable the tray single-click toggle main window display function.</sys:String>
     <sys:String x:Key="General_Language">Language</sys:String>
     <sys:String x:Key="General_ScreenshotTranslateInImage">In-Image Translation</sys:String>
     <sys:String x:Key="General_ScreenshotTranslateInImageDescription">Whether to enable in-image translation during screenshot translation.</sys:String>
@@ -491,6 +493,15 @@
     <sys:String x:Key="ImageQualityLow">Low</sys:String>
     <sys:String x:Key="ImageQualityMedium">Medium</sys:String>
     <sys:String x:Key="ImageQualityHigh">High</sys:String>
+
+    <sys:String x:Key="DoubleClickTrayFunctionNone">None</sys:String>
+    <sys:String x:Key="DoubleClickTrayFunctionInputTranslate">InputTranslate</sys:String>
+    <sys:String x:Key="DoubleClickTrayFunctionScreenshotTranslate">ScreenshotTranslate</sys:String>
+    <sys:String x:Key="DoubleClickTrayFunctionOCR">OCR</sys:String>
+    <sys:String x:Key="DoubleClickTrayFunctionOpenSettingsWindow">OpenSettingsWindow</sys:String>
+    <sys:String x:Key="DoubleClickTrayFunctionToggleMouseHook">ToggleMouseHook</sys:String>
+    <sys:String x:Key="DoubleClickTrayFunctionToggleGlobalHotkeys">ToggleGlobalHotkeys</sys:String>
+    <sys:String x:Key="DoubleClickTrayFunctionExit">Exit</sys:String>
 
     <!--  // Plugins //  -->
     <sys:String x:Key="UnsupportedSourceLang">Unsupported source language</sys:String>

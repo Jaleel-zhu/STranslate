@@ -1096,6 +1096,47 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
     public void Hide() => MainWindow.Visibility = Visibility.Collapsed;
 
     [RelayCommand]
+    private void DoubleClick()
+    {
+        switch (Settings.DoubleClickTrayFunction)
+        {
+            case DoubleClickTrayFunction.InputTranslate:
+                InputClear();
+                break;
+            case DoubleClickTrayFunction.ScreenshotTranslate:
+                ScreenshotTranslateCommand.Execute(null);
+                break;
+            case DoubleClickTrayFunction.OCR:
+                OcrCommand.Execute(null);
+                break;
+            case DoubleClickTrayFunction.OpenSettingsWindow:
+                OpenSettingsCommand.Execute(null);
+                break;
+            case DoubleClickTrayFunction.ToggleMouseHook:
+                ToggleMouseHookTranslateCommand.Execute(null);
+                break;
+            case DoubleClickTrayFunction.ToggleGlobalHotkeys:
+                ToggleGlobalHotkey();
+                break;
+            case DoubleClickTrayFunction.Exit:
+                Exit();
+                break;
+            default:
+                break;
+        }
+    }
+
+    [RelayCommand]
+    private void LeftClick()
+    {
+        // 开启后单击托盘功能禁用
+        if (Settings.DoubleClickTrayFunction != DoubleClickTrayFunction.None)
+            return;
+
+        ToggleApp();
+    }
+
+    [RelayCommand]
     private void ToggleApp()
     {
         if (IsMainWindowVisible && !IsTopmost)

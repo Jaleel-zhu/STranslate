@@ -58,6 +58,8 @@
     <sys:String x:Key="General_LineBreakHandleTypeDescription" xml:space="preserve">包括劃詞、截圖翻譯、剪貼簿、靜默 OCR 取詞場景的換行處理。&#10;「移除多餘換行」主要針對 PDF 取詞場景，移除多餘的換行與斷句，但對非 PDF 取詞可能會有影響。</sys:String>
     <sys:String x:Key="General_ImageQuality">圖片品質</sys:String>
     <sys:String x:Key="General_ImageQualityDescription">處理圖片時調整品質，線上OCR服務可能會限制圖片大小。</sys:String>
+    <sys:String x:Key="General_DoubleClickTrayFunction">雙擊托盤功能</sys:String>
+    <sys:String x:Key="General_DoubleClickTrayFunctionDescription">選擇除「無操作」的其他操作會停用托盤單擊切換主視窗顯示功能。</sys:String>
     <sys:String x:Key="General_Language">語言</sys:String>
     <sys:String x:Key="General_ScreenshotTranslateInImage">圖片內翻譯</sys:String>
     <sys:String x:Key="General_ScreenshotTranslateInImageDescription">截圖翻譯時是否啟用圖片內翻譯。</sys:String>
@@ -492,6 +494,15 @@
     <sys:String x:Key="ImageQualityLow">低品質</sys:String>
     <sys:String x:Key="ImageQualityMedium">中等品質</sys:String>
     <sys:String x:Key="ImageQualityHigh">高品質</sys:String>
+
+    <sys:String x:Key="DoubleClickTrayFunctionNone">無操作</sys:String>
+    <sys:String x:Key="DoubleClickTrayFunctionInputTranslate">輸入翻譯</sys:String>
+    <sys:String x:Key="DoubleClickTrayFunctionScreenshotTranslate">螢幕擷取翻譯</sys:String>
+    <sys:String x:Key="DoubleClickTrayFunctionOCR">文本識別</sys:String>
+    <sys:String x:Key="DoubleClickTrayFunctionOpenSettingsWindow">開啟設定視窗</sys:String>
+    <sys:String x:Key="DoubleClickTrayFunctionToggleMouseHook">切換滑鼠取詞</sys:String>
+    <sys:String x:Key="DoubleClickTrayFunctionToggleGlobalHotkeys">切換全域快速鍵</sys:String>
+    <sys:String x:Key="DoubleClickTrayFunctionExit">退出程式</sys:String>
 
     <!--  // Plugins //  -->
     <sys:String x:Key="UnsupportedSourceLang">不支援的來源語言</sys:String>

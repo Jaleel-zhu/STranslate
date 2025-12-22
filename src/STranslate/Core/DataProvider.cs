@@ -37,6 +37,7 @@ public class DataProvider
         DropdownDataGeneric<CopyAfterTranslation>.UpdateLabels(CopyAfterTranslations);
         DropdownDataGeneric<BackupType>.UpdateLabels(BackupTypes);
         DropdownDataGeneric<ImageQuality>.UpdateLabels(ImageQualities);
+        DropdownDataGeneric<DoubleClickTrayFunction>.UpdateLabels(DoubleClickTrayFunctions);
     }
 
     #region LangEnums
@@ -165,6 +166,14 @@ public class DataProvider
     public class ImageQualityData : DropdownDataGeneric<ImageQuality> { }
     public List<ImageQualityData> ImageQualities { get; } =
         DropdownDataGeneric<ImageQuality>.GetValues<ImageQualityData>("ImageQuality");
+
+    #endregion
+
+    #region DoubleClickTrayFunctions
+
+    public class DoubleClickTrayFunctionData : DropdownDataGeneric<DoubleClickTrayFunction> { }
+    public List<DoubleClickTrayFunctionData> DoubleClickTrayFunctions { get; } =
+        DropdownDataGeneric<DoubleClickTrayFunction>.GetValues<DoubleClickTrayFunctionData>("DoubleClickTrayFunction");
 
     #endregion
 }

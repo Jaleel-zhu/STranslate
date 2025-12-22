@@ -265,8 +265,9 @@
 
         <tb:TaskbarIcon
             x:Name="PART_NotifyIcon"
+            DoubleClickCommand="{Binding DoubleClickCommand}"
             IconSource="{Binding TrayIcon}"
-            LeftClickCommand="{Binding ToggleAppCommand}"
+            LeftClickCommand="{Binding LeftClickCommand}"
             NoLeftClickDelay="True"
             ToolTipText="{Binding TrayToolTip}"
             Visibility="{Binding Settings.HideNotifyIcon, Converter={cnvt:BoolToVisibilityInverseConverter}}">
