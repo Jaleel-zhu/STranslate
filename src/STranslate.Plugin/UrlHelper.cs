@@ -16,6 +16,11 @@ public enum UrlPathMatchRule
     ChatGLM,
 
     /// <summary>
+    /// OpenRouter 规则: 匹配 "/" 或 "/api/v1"
+    /// </summary>
+    OpenRouter,
+
+    /// <summary>
     /// 严格规则: 仅匹配 "/"
     /// </summary>
     Strict,
@@ -100,6 +105,7 @@ public static class UrlHelper
         {
             UrlPathMatchRule.OpenAI => path == "/" || path == "/v1",
             UrlPathMatchRule.ChatGLM => path == "/" || path == "/api" || path == "/api/paas/v4",
+            UrlPathMatchRule.OpenRouter => path == "/" || path == "/api/v1",
             _ => path == "/"
         };
     }
