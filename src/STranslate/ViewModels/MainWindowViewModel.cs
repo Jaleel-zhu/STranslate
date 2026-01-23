@@ -1055,7 +1055,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         try
         {
             // 延迟 1 秒后才开启功能
-            await Task.Delay(1000, _altKeyDelayCts.Token);
+            await Task.Delay(500, _altKeyDelayCts.Token);
             IsIncreamentalTranslate = true;
         }
         catch (OperationCanceledException)
@@ -1086,7 +1086,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
             IsTopmost = true;
             UpdateCacheText();
 
-            _ = MouseKeyHelper.StartMouseTextSelectionAsync();
+            _ = MouseKeyHelper.StartMouseTextSelectionAsync(() => GlobalKeyboardHelper.IgnoreNextKeyUp(Settings.IncreamentalTranslateKey));
             MouseKeyHelper.MouseTextSelected += OnMouseTextSelectedIncreatemental;
         }
         else

@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Windows.Input;
 using Windows.Win32;
 using Windows.Win32.Foundation;
 using Windows.Win32.System.Memory;
@@ -19,9 +18,6 @@ public class ClipboardHelper
     /// <param name="isCopy">如果为 true，则模拟 Ctrl+C；否则模拟 Ctrl+V。</param>
     public static void SendCtrlCV(bool isCopy = true)
     {
-        var triggerKey = Key.LeftAlt;
-        GlobalKeyboardHelper.IgnoreNextKeyUp(triggerKey);
-
         // 先清理可能存在的按键状态 ！！！很重要否则模拟复制会失败
         _inputSimulator.Keyboard.KeyUp(VirtualKeyCode.CONTROL);
         _inputSimulator.Keyboard.KeyUp(VirtualKeyCode.LCONTROL);
