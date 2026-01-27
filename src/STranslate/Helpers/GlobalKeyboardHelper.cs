@@ -44,7 +44,6 @@ public static class GlobalKeyboardHelper
         _hook = null;
         _suppressedKeys.Clear();
         _pressedKeys.Clear();
-        _ignoreNextKeyUp.Clear();
     }
 
     /// <summary>
@@ -71,15 +70,6 @@ public static class GlobalKeyboardHelper
         _suppressedKeys.Clear();
     }
 
-    /// <summary>
-    /// 忽略下一次指定按键的 KeyUp 事件
-    /// </summary>
-    private static readonly HashSet<Key> _ignoreNextKeyUp = [];
-    public static void IgnoreNextKeyUp(Key key)
-    {
-        _ignoreNextKeyUp.Add(key);
-    }
-
     private static void OnKeyDown(object? sender, System.Windows.Forms.KeyEventArgs e)
     {
         var key = KeyInterop.KeyFromVirtualKey((int)e.KeyCode);
@@ -104,13 +94,6 @@ public static class GlobalKeyboardHelper
 
         // 从按下状态集合中移除
         _pressedKeys.Remove(key);
-
-        // 检查是否需要忽略此次 KeyUp
-        if (_ignoreNextKeyUp.Remove(key))
-        {
-            System.Diagnostics.Debug.WriteLine($"忽略按键{key}");
-            return;
-        }
 
         // 如果该键在拦截列表中，阻止其传递
         if (_suppressedKeys.Contains(key))

@@ -13,16 +13,12 @@ public class MouseKeyHelper
     /// </summary>
     public static event Action<string>? MouseTextSelected;
 
-    private static Action? BeforeInvokeGetText;
-
     /// <summary>
     /// 启动鼠标划词监听
     /// </summary>
-    public static async Task StartMouseTextSelectionAsync(Action? action = default)
+    public static async Task StartMouseTextSelectionAsync()
     {
         if (_isMouseListening) return;
-
-        BeforeInvokeGetText = action;
 
         _mouseHook = Hook.GlobalEvents();
         _mouseHook.MouseDragStarted += OnDragStarted;
@@ -82,7 +78,6 @@ public class MouseKeyHelper
             // 异步处理文本获取和事件触发
             _ = Task.Run(async () =>
             {
-                BeforeInvokeGetText?.Invoke();
                 // 异步获取选中文本
                 var selectedText = await ClipboardHelper.GetSelectedTextAsync();
                 if (!string.IsNullOrEmpty(selectedText) && selectedText != _oldText)

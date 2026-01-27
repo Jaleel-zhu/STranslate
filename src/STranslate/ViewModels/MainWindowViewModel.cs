@@ -1072,15 +1072,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
             IsTopmost = true;
             UpdateCacheText();
 
-            _ = MouseKeyHelper.StartMouseTextSelectionAsync(() =>
-            {
-                var keys = new List<Key>()
-                {
-                    Key.LeftCtrl, Key.RightCtrl, Key.LeftAlt, Key.RightAlt, Key.LeftShift, Key.RightShift, Key.LWin, Key.RWin
-                };
-                if (keys.Contains(Settings.IncreamentalTranslateKey))
-                    GlobalKeyboardHelper.IgnoreNextKeyUp(Settings.IncreamentalTranslateKey);
-            });
+            _ = MouseKeyHelper.StartMouseTextSelectionAsync();
             MouseKeyHelper.MouseTextSelected += OnMouseTextSelectedIncreatemental;
         }
         else

@@ -356,15 +356,7 @@
                             Description="{DynamicResource General_IncreamentalTranslateKeyDescription}"
                             Header="{DynamicResource General_IncreamentalTranslateKey}"
                             IsEnabled="{Binding Settings.IsEnableIncreamentalTranslate, Converter={cnvt:BoolInverseConverter}}">
-                            <!--<ComboBox ItemsSource="{Binding DataProvider.IncrementalTranslateKeys}" SelectedValue="{Binding Settings.IncreamentalTranslateKey}" />-->
-                            <!--<control:HotkeyControl
-                                DefaultHotkey="{Binding HotkeySettings.InputTranslateHotkey.Default}"
-                                Hotkey="{Binding HotkeySettings.InputTranslateHotkey.Key}"
-                                IsRegistered="{Binding HotkeySettings.InputTranslateHotkey.IsConflict}"
-                                WindowTitle="{DynamicResource Hotkey_InputTranslate}" />-->
-                            <Button Command="{Binding IncreamentableTranalateKeyCommand}">
-                                <TextBlock Text="{Binding Settings.IncreamentalTranslateKey, Converter={cnvt:StringConverter}}" />
-                            </Button>
+                            <ComboBox ItemsSource="{Binding DataProvider.IncrementalTranslateKeys}" SelectedValue="{Binding Settings.IncreamentalTranslateKey}" />
                         </ui:SettingsCard>
                     </ui:SettingsExpander.Items>
                 </ui:SettingsExpander>
