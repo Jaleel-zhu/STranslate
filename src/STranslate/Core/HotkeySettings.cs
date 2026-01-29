@@ -216,7 +216,6 @@ public partial class HotkeySettings : ObservableObject
 
     private void ApplyIncrementalTranslate()
     {
-        var vm = Ioc.Default.GetRequiredService<MainWindowViewModel>();
         if (IncrementalTranslateKey == Key.None)
         {
             HotkeyMapper.StopGlobalKeyboardMonitoring();
@@ -225,8 +224,8 @@ public partial class HotkeySettings : ObservableObject
         {
             HotkeyMapper.RegisterHoldKey(
                 IncrementalTranslateKey,
-                vm.OnIncKeyPressed,
-                vm.OnIncKeyReleased);
+                MainWindowViewModel.OnIncKeyPressed,
+                MainWindowViewModel.OnIncKeyReleased);
             HotkeyMapper.StartGlobalKeyboardMonitoring();
         }
     }
@@ -298,7 +297,6 @@ public partial class HotkeySettings : ObservableObject
         HandleGlobalLogic(nameof(SilentOcrHotkey));
         HandleGlobalLogic(nameof(SilentTtsHotkey));
         HandleGlobalLogic(nameof(OcrHotkey));
-
     }
 
     private void UnregisterHotkeys()

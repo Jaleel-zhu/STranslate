@@ -1,13 +1,16 @@
 using ChefKeys;
 using CommunityToolkit.Mvvm.DependencyInjection;
-using Gma.System.MouseKeyHook;
 using Microsoft.Extensions.Logging;
 using NHotkey.Wpf;
 using STranslate.Core;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using Windows.Win32;
+using Windows.Win32.Foundation;
 using Windows.Win32.UI.Input.KeyboardAndMouse;
+using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace STranslate.Helpers;
 
@@ -20,7 +23,8 @@ public class HotkeyMapper
 
     #region Global Keyboard Hook
 
-    private static IKeyboardMouseEvents? _globalHook;
+    private static UnhookWindowsHookExSafeHandle? _hookHandle;
+    private static HOOKPROC? _hookProc;
     private static readonly HashSet<Key> _suppressedKeys = [];
     private static readonly HashSet<Key> _pressedKeys = [];
     private static readonly Dictionary<Key, (Action OnPress, Action OnRelease)> _holdKeyActions = [];
@@ -100,25 +104,45 @@ public class HotkeyMapper
 
     #endregion
 
-    #region 全局钩子方式
+    #region 全局钩子方式（低级键盘钩子）
 
     /// <summary>
-    /// 启动全局键盘监听
+    /// 启动全局键盘监听（使用低级钩子）
     /// </summary>
     public static void StartGlobalKeyboardMonitoring()
     {
-        if (_globalHook != null) return;
+        if (_hookHandle != null && !_hookHandle.IsInvalid) return;
 
         try
         {
-            _globalHook = Hook.GlobalEvents();
-            _globalHook.KeyDown += OnGlobalKeyDown;
-            _globalHook.KeyUp += OnGlobalKeyUp;
-            _logger.LogInformation("Global keyboard monitoring started");
+            _hookProc = HookCallback;
+            
+            using var curProcess = Process.GetCurrentProcess();
+            using var curModule = curProcess.MainModule;
+            
+            var hModule = PInvoke.GetModuleHandle(curModule?.ModuleName);
+            
+            _hookHandle = PInvoke.SetWindowsHookEx(
+                WINDOWS_HOOK_ID.WH_KEYBOARD_LL,
+                _hookProc,
+                hModule,
+                0);
+
+            if (_hookHandle.IsInvalid)
+            {
+                var error = Marshal.GetLastWin32Error();
+                _logger.LogError("Failed to set keyboard hook. Error code: {Error}", error);
+                _hookHandle = null;
+                return;
+            }
+
+            _logger.LogInformation("Global keyboard monitoring started (Low-level hook)");
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Failed to start global keyboard monitoring");
+            _hookHandle?.Dispose();
+            _hookHandle = null;
         }
     }
 
@@ -127,14 +151,13 @@ public class HotkeyMapper
     /// </summary>
     public static void StopGlobalKeyboardMonitoring()
     {
-        if (_globalHook == null) return;
+        if (_hookHandle == null || _hookHandle.IsInvalid) return;
 
         try
         {
-            _globalHook.KeyDown -= OnGlobalKeyDown;
-            _globalHook.KeyUp -= OnGlobalKeyUp;
-            _globalHook.Dispose();
-            _globalHook = null;
+            _hookHandle.Dispose();
+            _hookHandle = null;
+            _hookProc = null;
 
             HoldKeyClear();
             _pressedKeys.Clear();
@@ -152,7 +175,6 @@ public class HotkeyMapper
     /// <param name="key">要监听的按键</param>
     /// <param name="onPress">按下时执行的操作</param>
     /// <param name="onRelease">抬起时执行的操作</param>
-    /// <param name="suppressKey">是否拦截该按键（默认 false，不拦截）</param>
     public static void RegisterHoldKey(Key key, Action onPress, Action onRelease)
     {
         HoldKeyClear();
@@ -169,61 +191,75 @@ public class HotkeyMapper
         _suppressedKeys.Clear();
     }
 
-    private static void OnGlobalKeyDown(object? sender, System.Windows.Forms.KeyEventArgs e)
+    private static LRESULT HookCallback(int nCode, WPARAM wParam, LPARAM lParam)
     {
-        var key = KeyInterop.KeyFromVirtualKey((int)e.KeyCode);
-
-        // 如果该键已经在按下状态，忽略重复的 KeyDown 事件
-        if (!_pressedKeys.Add(key))
-            return;
-
-        // 如果该键在拦截列表中，阻止其传递
-        if (_suppressedKeys.Contains(key))
+        if (nCode >= 0)
         {
-            e.Handled = true;
-            e.SuppressKeyPress = true;
+            var kbdStruct = Marshal.PtrToStructure<KBDLLHOOKSTRUCT>(lParam);
+            var key = KeyInterop.KeyFromVirtualKey((int)kbdStruct.vkCode);
+
+            uint message = (uint)wParam;
+            bool isKeyDown = message == PInvoke.WM_KEYDOWN || message == PInvoke.WM_SYSKEYDOWN;
+            bool isKeyUp = message == PInvoke.WM_KEYUP || message == PInvoke.WM_SYSKEYUP;
+
+            if (isKeyDown)
+            {
+                // 如果该键已经在按下状态，忽略重复的 KeyDown 事件
+                if (!_pressedKeys.Add(key))
+                {
+                    // 如果是被拦截的键，阻止传递
+                    if (_suppressedKeys.Contains(key))
+                        return new LRESULT(1); // 返回非零值阻止传递
+                    
+                    return PInvoke.CallNextHookEx(HHOOK.Null, nCode, wParam, lParam);
+                }
+
+                // 执行按住按键的 OnPress 操作
+                if (_holdKeyActions.TryGetValue(key, out var actions))
+                {
+                    try
+                    {
+                        actions.OnPress?.Invoke();
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error executing OnPress action for key {Key}", key);
+                    }
+                }
+
+                // 如果该键在拦截列表中，阻止其传递
+                if (_suppressedKeys.Contains(key))
+                {
+                    return new LRESULT(1); // 返回非零值阻止按键传递
+                }
+            }
+            else if (isKeyUp)
+            {
+                // 从按下状态集合中移除
+                _pressedKeys.Remove(key);
+
+                // 执行按住按键的 OnRelease 操作
+                if (_holdKeyActions.TryGetValue(key, out var actions))
+                {
+                    try
+                    {
+                        actions.OnRelease?.Invoke();
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Error executing OnRelease action for key {Key}", key);
+                    }
+                }
+
+                // 如果该键在拦截列表中，阻止其传递
+                if (_suppressedKeys.Contains(key))
+                {
+                    return new LRESULT(1); // 返回非零值阻止按键传递
+                }
+            }
         }
 
-        // 执行按住按键的 OnPress 操作
-        if (_holdKeyActions.TryGetValue(key, out var actions))
-        {
-            try
-            {
-                actions.OnPress?.Invoke();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error executing OnPress action for key {Key}", key);
-            }
-        }
-    }
-
-    private static void OnGlobalKeyUp(object? sender, System.Windows.Forms.KeyEventArgs e)
-    {
-        var key = KeyInterop.KeyFromVirtualKey((int)e.KeyCode);
-
-        // 从按下状态集合中移除
-        _pressedKeys.Remove(key);
-
-        // 如果该键在拦截列表中，阻止其传递
-        if (_suppressedKeys.Contains(key))
-        {
-            e.Handled = true;
-            e.SuppressKeyPress = true;
-        }
-
-        // 执行按住按键的 OnRelease 操作
-        if (_holdKeyActions.TryGetValue(key, out var actions))
-        {
-            try
-            {
-                actions.OnRelease?.Invoke();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error executing OnRelease action for key {Key}", key);
-            }
-        }
+        return PInvoke.CallNextHookEx(HHOOK.Null, nCode, wParam, lParam);
     }
 
     #endregion

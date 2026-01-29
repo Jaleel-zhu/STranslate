@@ -1,9 +1,12 @@
 SetWindowsHookEx
+UnhookWindowsHookEx
 GetKeyState
 CallNextHookEx
 GetModuleHandle
 VIRTUAL_KEY
 
+KBDLLHOOKSTRUCT
+WH_KEYBOARD_LL
 WM_KEYDOWN
 WM_KEYUP
 WM_SYSKEYDOWN
