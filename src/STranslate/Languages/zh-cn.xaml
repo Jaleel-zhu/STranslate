@@ -138,6 +138,10 @@
     <sys:String x:Key="Hotkey_SilentTtsDescription">用于通过鼠标朗读选中的中文文本的快捷键。</sys:String>
     <sys:String x:Key="Hotkey_Ocr">OCR</sys:String>
     <sys:String x:Key="Hotkey_OcrDescription">用于调用OCR窗口进行文本识别的快捷键。</sys:String>
+    <sys:String x:Key="Hotkey_ClipboardMonitor">剪贴板监听翻译</sys:String>
+    <sys:String x:Key="Hotkey_ClipboardMonitorDescription">开启/关闭剪贴板监听，监听开启时剪贴板变化会自动翻译。</sys:String>
+    <sys:String x:Key="ClipboardMonitorStarted">剪贴板监听已开启</sys:String>
+    <sys:String x:Key="ClipboardMonitorStopped">剪贴板监听已关闭</sys:String>
     <sys:String x:Key="Hotkey_CancelOrHide">取消 | 隐藏界面</sys:String>
     <sys:String x:Key="Hotkey_CancelOrHideDescription">取消进行中的请求 | 隐藏界面。适用于所有窗口。</sys:String>
     <sys:String x:Key="Hotkey_MainWindow">主窗口快捷键</sys:String>

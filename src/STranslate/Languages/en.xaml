@@ -138,6 +138,10 @@
     <sys:String x:Key="Hotkey_SilentTtsDescription">The shortcut key for speech synthesis of selected Chinese text with the mouse.</sys:String>
     <sys:String x:Key="Hotkey_Ocr">OCR</sys:String>
     <sys:String x:Key="Hotkey_OcrDescription">Hotkey for opening the OCR window to recognize text.</sys:String>
+    <sys:String x:Key="Hotkey_ClipboardMonitor">Clipboard Monitor Translate</sys:String>
+    <sys:String x:Key="Hotkey_ClipboardMonitorDescription">Toggle clipboard monitoring. When enabled, clipboard changes will trigger automatic translation.</sys:String>
+    <sys:String x:Key="ClipboardMonitorStarted">Clipboard monitoring started</sys:String>
+    <sys:String x:Key="ClipboardMonitorStopped">Clipboard monitoring stopped</sys:String>
     <sys:String x:Key="Hotkey_CancelOrHide">Cancel | Hide Interface</sys:String>
     <sys:String x:Key="Hotkey_CancelOrHideDescription">Cancel pending requests | Hide interface. Applies to all windows.</sys:String>
     <sys:String x:Key="Hotkey_MainWindow">Main Window Hotkey</sys:String>

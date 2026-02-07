@@ -135,7 +135,7 @@
 
                     <ui:SettingsCard Description="{DynamicResource Hotkey_CrosswordTranslateByCtrlSameCDescription}" Header="Ctrl+C+C">
                         <ui:SettingsCard.HeaderIcon>
-                            <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.Copy_24_Regular}" />
+                            <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.CopySelect_20_Regular}" />
                         </ui:SettingsCard.HeaderIcon>
                         <ui:ToggleSwitch
                             Margin="0,0,8,0"
@@ -219,6 +219,17 @@
                             Hotkey="{Binding HotkeySettings.OcrHotkey.Key}"
                             IsRegistered="{Binding HotkeySettings.OcrHotkey.IsConflict}"
                             WindowTitle="{DynamicResource Hotkey_Ocr}" />
+                    </ui:SettingsCard>
+
+                    <ui:SettingsCard Description="{DynamicResource Hotkey_ClipboardMonitorDescription}" Header="{DynamicResource Hotkey_ClipboardMonitor}">
+                        <ui:SettingsCard.HeaderIcon>
+                            <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.ClipboardMore_20_Regular}" />
+                        </ui:SettingsCard.HeaderIcon>
+                        <control:HotkeyControl
+                            DefaultHotkey="{Binding HotkeySettings.ClipboardMonitorHotkey.Default}"
+                            Hotkey="{Binding HotkeySettings.ClipboardMonitorHotkey.Key}"
+                            IsRegistered="{Binding HotkeySettings.ClipboardMonitorHotkey.IsConflict}"
+                            WindowTitle="{DynamicResource Hotkey_ClipboardMonitor}" />
                     </ui:SettingsCard>
                 </control:CardGroup>
 

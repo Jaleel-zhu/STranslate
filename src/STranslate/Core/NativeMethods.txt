@@ -11,6 +11,7 @@ WM_KEYDOWN
 WM_KEYUP
 WM_SYSKEYDOWN
 WM_SYSKEYUP
+WM_CLIPBOARDUPDATE
 
 SetLastError
 WINDOW_EX_STYLE
@@ -46,6 +47,8 @@ GlobalFree
 GetOEMCP
 
 GetClipboardSequenceNumber
+AddClipboardFormatListener
+RemoveClipboardFormatListener
 
 LoadImage
 LoadCursorFromFile

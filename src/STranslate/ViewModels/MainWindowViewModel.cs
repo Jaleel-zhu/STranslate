@@ -40,6 +40,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
 
     private readonly SqlService _sqlService;
     private readonly DebounceExecutor _debounceExecutor;
+    private ClipboardMonitor? _clipboardMonitor;
 
     public Settings Settings { get; }
     public HotkeySettings HotkeySettings { get; }
@@ -111,6 +112,9 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
 
     [ObservableProperty]
     public partial bool IsIdentifyProcessing { get; set; } = false;
+
+    [ObservableProperty]
+    public partial bool IsClipboardMonitoring { get; set; } = false;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SingleTranslateCommand))]
@@ -1129,6 +1133,51 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         ExecuteTranslate(Utilities.LinebreakHandler(text, Settings.LineBreakHandleType));
     }
 
+    [RelayCommand]
+    private void ToggleClipboardMonitor()
+    {
+        if (IsClipboardMonitoring)
+        {
+            StopClipboardMonitor();
+        }
+        else
+        {
+            StartClipboardMonitor();
+        }
+    }
+
+    private void StartClipboardMonitor()
+    {
+        _clipboardMonitor ??= new ClipboardMonitor(MainWindow);
+        _clipboardMonitor.OnClipboardTextChanged += OnClipboardTextChanged;
+        _clipboardMonitor.Start();
+        IsClipboardMonitoring = true;
+        _notification.Show(
+            _i18n.GetTranslation("Hotkey_ClipboardMonitor"),
+            _i18n.GetTranslation("ClipboardMonitorStarted"));
+    }
+
+    private void StopClipboardMonitor()
+    {
+        if (_clipboardMonitor != null)
+        {
+            _clipboardMonitor.OnClipboardTextChanged -= OnClipboardTextChanged;
+            _clipboardMonitor.Stop();
+        }
+        IsClipboardMonitoring = false;
+        _notification.Show(
+            _i18n.GetTranslation("Hotkey_ClipboardMonitor"),
+            _i18n.GetTranslation("ClipboardMonitorStopped"));
+    }
+
+    private void OnClipboardTextChanged(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return;
+
+        App.Current.Dispatcher.Invoke(() =>
+            ExecuteTranslate(Utilities.LinebreakHandler(text, Settings.LineBreakHandleType)));
+    }
+
     [RelayCommand(IncludeCancelCommand = true)]
     private async Task ReplaceTranslateAsync(CancellationToken cancellationToken)
     {
@@ -1728,6 +1777,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
     public void Dispose()
     {
         _debounceExecutor.Dispose();
+        _clipboardMonitor?.Dispose();
 
         MouseKeyHelper.MouseTextSelected -= OnMouseTextSelected;
         MouseKeyHelper.MouseTextSelected -= OnMouseTextSelectedIncretemental;

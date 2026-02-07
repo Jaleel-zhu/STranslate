@@ -134,6 +134,10 @@
     <sys:String x:Key="Hotkey_SilentTtsDescription">마우스로 선택한 중국어 텍스트를 읽어주는 단축키입니다.</sys:String>
     <sys:String x:Key="Hotkey_Ocr">OCR</sys:String>
     <sys:String x:Key="Hotkey_OcrDescription">OCR 창을 호출하여 텍스트 인식을 수행하는 단축키입니다.</sys:String>
+    <sys:String x:Key="Hotkey_ClipboardMonitor">클립보드 모니터링 번역</sys:String>
+    <sys:String x:Key="Hotkey_ClipboardMonitorDescription">클립보드 모니터링 켜기/끄기. 켜면 클립보드 변경 시 자동 번역됩니다.</sys:String>
+    <sys:String x:Key="ClipboardMonitorStarted">클립보드 모니터링이 시작되었습니다</sys:String>
+    <sys:String x:Key="ClipboardMonitorStopped">클립보드 모니터링이 중지되었습니다</sys:String>
     <sys:String x:Key="Hotkey_CancelOrHide">취소 | 인터페이스 숨기기</sys:String>
     <sys:String x:Key="Hotkey_CancelOrHideDescription">진행 중인 요청 취소 | 인터페이스 숨기기. 모든 창에 적용됩니다.</sys:String>
     <sys:String x:Key="Hotkey_MainWindow">메인 창 단축키</sys:String>

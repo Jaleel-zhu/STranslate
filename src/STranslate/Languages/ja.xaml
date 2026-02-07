@@ -134,6 +134,10 @@
     <sys:String x:Key="Hotkey_SilentTtsDescription">マウスで選択した中国語テキストを読み上げます。</sys:String>
     <sys:String x:Key="Hotkey_Ocr">OCR</sys:String>
     <sys:String x:Key="Hotkey_OcrDescription">OCRウィンドウを呼び出して文字認識を行います。</sys:String>
+    <sys:String x:Key="Hotkey_ClipboardMonitor">クリップボード監視翻訳</sys:String>
+    <sys:String x:Key="Hotkey_ClipboardMonitorDescription">クリップボード監視をオン/オフします。オンにすると、クリップボードの変更が自動的に翻訳されます。</sys:String>
+    <sys:String x:Key="ClipboardMonitorStarted">クリップボード監視を開始しました</sys:String>
+    <sys:String x:Key="ClipboardMonitorStopped">クリップボード監視を停止しました</sys:String>
     <sys:String x:Key="Hotkey_CancelOrHide">キャンセル | 隠す</sys:String>
     <sys:String x:Key="Hotkey_CancelOrHideDescription">進行中のリクエストをキャンセル | 画面を隠す。すべてのウィンドウに適用。</sys:String>
     <sys:String x:Key="Hotkey_MainWindow">メイン画面ホットキー</sys:String>
