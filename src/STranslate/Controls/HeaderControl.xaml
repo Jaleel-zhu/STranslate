@@ -50,15 +50,16 @@
                                     ToolTip="{DynamicResource Settings}"
                                     Visibility="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsSettingVisible, Converter={cnvt:BoolToVisibilityConverter}}" />
                                 <control:IconButton
-                                    ui:ControlHelper.CornerRadius="6,0,0,6"
-                                    BorderThickness="1,1,0,1"
+                                    ui:ControlHelper.CornerRadius="0,6,6,0"
+                                    BorderThickness="0.5,1,1,1"
                                     Command="{TemplateBinding HistoryNextCommand}"
                                     Icon="{x:Static ui:FluentSystemIcons.ChevronCircleRight_20_Regular}"
                                     ToolTip="{DynamicResource Next}"
                                     Visibility="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IsHistoryNavigationVisible, Converter={cnvt:BoolToVisibilityConverter}}" />
                                 <control:IconButton
-                                    Margin="-2.5,0,0,0"
-                                    ui:ControlHelper.CornerRadius="0,6,6,0"
+                                    Margin="-3.5,0,0,0"
+                                    ui:ControlHelper.CornerRadius="6,0,0,6"
+                                    BorderThickness="1,1,0.5,1"
                                     Command="{TemplateBinding HistoryPreviousCommand}"
                                     Icon="{x:Static ui:FluentSystemIcons.ChevronCircleLeft_20_Regular}"
                                     ToolTip="{DynamicResource Previous}"
