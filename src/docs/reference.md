@@ -18,6 +18,10 @@
 | `STranslate.Plugin/IPlugin.cs` | 核心插件接口 |
 | `STranslate.Plugin/PluginMetaData.cs` | 插件元数据模型 |
 | `STranslate.Plugin/Service.cs` | 运行时服务实例 |
+| `STranslate/Views/Pages/PluginMarketPage.xaml` | 插件市场页面 UI |
+| `STranslate/ViewModels/Pages/PluginMarketViewModel.cs` | 插件市场视图模型 |
+| `STranslate/Models/PluginMarketInfo.cs` | 市场插件数据模型 |
+| `STranslate/Converters/PluginMarketConverters.cs` | 插件市场转换器 |
 
 ### 热键相关
 

@@ -9,6 +9,7 @@
 | 按住触发键 | 按住特定键时临时激活功能 |
 | 剪贴板监听 | 监听剪贴板变化并自动翻译 |
 | 历史记录 | SQLite 存储翻译历史，支持搜索、导出、收藏 |
+| 插件市场 | 内置插件市场，支持搜索、下载、升级插件 |
 
 ## 热键系统
 
@@ -472,3 +473,149 @@ private bool CanLoadMore =>
 | `STranslate/Models/HistoryModel.cs` | 历史记录数据模型 |
 | `STranslate/Services/SqlService.cs` | SQLite 数据库服务 |
 | `STranslate/Controls/ListBoxSelectedItemsBehavior.cs` | ListBox 多选行为附加属性 |
+
+## 插件市场功能
+
+插件市场允许用户直接从应用内浏览、搜索、下载和升级社区插件。
+
+### 功能概述
+
+- **远程数据源**: 从 GitHub 获取插件列表
+- **分类浏览**: 按类型筛选（翻译/OCR/TTS/词汇表）
+- **搜索功能**: 支持按名称、作者、描述搜索
+- **单选下载**: 单个插件下载安装
+- **多选下载**: 批量选择多个插件同时下载
+- **进度显示**: 实时显示下载进度和速度
+- **自动安装**: 下载完成后自动解压安装
+- **版本检测**: 自动检测已安装版本，支持升级提示
+- **重启提示**: 升级后提示重启应用
+
+### 数据源与协议
+
+#### 插件列表 JSON
+
+```
+https://raw.githubusercontent.com/STranslate/STranslate-doc/refs/heads/main/vitepress/plugins.json
+```
+
+格式为字符串数组，每项为 `Author/STranslate.Plugin.Type.Name` 格式。
+
+#### 插件元数据
+
+根据插件标识符构建 GitHub 仓库 URL 获取 `plugin.json`:
+
+```
+https://raw.githubusercontent.com/{Author}/{packageName}/main/{packageName}/plugin.json
+```
+
+#### 插件下载 URL
+
+```
+https://github.com/{Author}/{packageName}/releases/download/v{version}/{packageName}.spkg
+```
+
+### 数据模型
+
+#### PluginMarketInfo
+
+市场插件信息模型，包装从远程获取的插件数据：
+
+```csharp
+public partial class PluginMarketInfo : ObservableObject
+{
+    public string PluginId { get; set; }           // 插件唯一ID
+    public string Name { get; set; }               // 插件名称
+    public string Author { get; set; }             // 作者
+    public string Type { get; set; }               // 类型: Translate/Ocr/Tts/Vocabulary
+    public string Version { get; set; }            // 版本号
+    public string Description { get; set; }        // 描述
+    public string Website { get; set; }            // 项目网址
+    public string IconUrl { get; set; }            // 图标URL
+    public string DownloadUrl { get; set; }        // 下载URL
+    public string PackageName { get; set; }        // 包名
+
+    [ObservableProperty] public partial bool IsInstalled { get; set; }   // 是否已安装
+    [ObservableProperty] public partial bool IsSelected { get; set; }    // 是否被选中
+    [ObservableProperty] public partial bool IsDownloading { get; set; } // 是否下载中
+    [ObservableProperty] public partial double DownloadProgress { get; set; } // 下载进度
+    [ObservableProperty] public partial bool CanUpgrade { get; set; }    // 是否可以升级
+    public string? InstalledVersion { get; set; }  // 当前安装的版本
+}
+```
+
+### 插件状态显示
+
+| 状态 | 条件 | 按钮文本 | 样式 |
+|-----|------|---------|------|
+| 下载 | 未安装 | 下载 | 默认按钮（可点击） |
+| 已安装 | 已安装且为最新版 | 已安装 | 禁用/灰色（不可点击） |
+| 升级 | 已安装但版本较低 | 升级 | 强调色按钮（可点击） |
+| 下载中 | 正在下载 | 进度条+百分比 | 禁用状态 |
+
+### 下载与安装流程
+
+```
+用户点击下载
+    ↓
+下载 .spkg 文件到临时目录（带进度回调）
+    ↓
+调用 PluginService.InstallPlugin()
+    ↓
+处理安装结果
+    ├── 新安装 → 显示成功提示
+    ├── 需要升级 → 显示确认对话框 → 执行升级
+    └── 失败 → 显示错误信息
+    ↓
+清理临时文件
+    ↓
+更新插件状态（无需刷新页面）
+```
+
+### 批量下载
+
+多选模式下使用 `SemaphoreSlim` 限制并发数为 3：
+
+```csharp
+var semaphore = new SemaphoreSlim(3);
+var tasks = selected.Select(async plugin =>
+{
+    await semaphore.WaitAsync();
+    try
+    {
+        await DownloadPluginAsync(plugin);
+    }
+    finally
+    {
+        semaphore.Release();
+    }
+});
+await Task.WhenAll(tasks);
+```
+
+### 版本比较
+
+支持语义化版本比较：
+
+```csharp
+private static int CompareVersions(string? localVersion, string? marketVersion)
+{
+    if (Version.TryParse(localVersion, out var v1) &&
+        Version.TryParse(marketVersion, out var v2))
+    {
+        return v1.CompareTo(v2);
+    }
+    // 回退到手动解析
+    var parts1 = ParseVersionParts(localVersion);
+    var parts2 = ParseVersionParts(marketVersion);
+    // ... 逐段比较
+}
+```
+
+### 相关文件
+
+| 文件 | 用途 |
+|------|------|
+| `STranslate/Views/Pages/PluginMarketPage.xaml` | 插件市场页面 UI |
+| `STranslate/ViewModels/Pages/PluginMarketViewModel.cs` | 插件市场视图模型 |
+| `STranslate/Models/PluginMarketInfo.cs` | 市场插件数据模型 |
+| `STranslate/Converters/PluginMarketConverters.cs` | 状态到文本/样式的转换器 |
