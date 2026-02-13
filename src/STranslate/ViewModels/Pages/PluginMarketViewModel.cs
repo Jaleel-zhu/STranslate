@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using iNKORE.UI.WPF.Modern.Controls;
 using STranslate.Core;
 using STranslate.Helpers;
-using STranslate.Models;
 using STranslate.Plugin;
 using STranslate.Services;
 using System.Collections.ObjectModel;
@@ -20,6 +19,7 @@ public partial class PluginMarketViewModel : ObservableObject
     private readonly Internationalization _i18n;
     private readonly ISnackbar _snackbar;
     private readonly Settings _settings;
+    public DataProvider DataProvider { get; }
 
     /// <summary>
     /// 插件列表数据源
@@ -51,13 +51,15 @@ public partial class PluginMarketViewModel : ObservableObject
         PluginService pluginService,
         Internationalization i18n,
         ISnackbar snackbar,
-        Settings settings)
+        Settings settings,
+        DataProvider dataProvider)
     {
         _httpService = httpService;
         _pluginService = pluginService;
         _i18n = i18n;
         _snackbar = snackbar;
         _settings = settings;
+        DataProvider = dataProvider;
 
         _pluginsCollectionView = new CollectionViewSource
         {
@@ -75,7 +77,7 @@ public partial class PluginMarketViewModel : ObservableObject
     public partial string FilterText { get; set; } = string.Empty;
 
     [ObservableProperty]
-    public partial string SelectedCategory { get; set; } = "All";
+    public partial PluginType SelectedPluginType { get; set; } = PluginType.All;
 
     [ObservableProperty]
     public partial bool IsMultiSelectMode { get; set; }
@@ -88,12 +90,7 @@ public partial class PluginMarketViewModel : ObservableObject
 
     partial void OnFilterTextChanged(string value) => _pluginsCollectionView.View?.Refresh();
 
-    partial void OnSelectedCategoryChanged(string value) => _pluginsCollectionView.View?.Refresh();
-
-    /// <summary>
-    /// 分类列表
-    /// </summary>
-    public static string[] Categories = ["All", "Translate", "Ocr", "Tts", "Vocabulary"];
+    partial void OnSelectedPluginTypeChanged(PluginType value) => _pluginsCollectionView.View?.Refresh();
 
     /// <summary>
     /// 已选中插件数量
@@ -242,12 +239,12 @@ public partial class PluginMarketViewModel : ObservableObject
         }
 
         // 分类筛选
-        var categoryMatch = SelectedCategory switch
+        var categoryMatch = SelectedPluginType switch
         {
-            "Translate" => plugin.Type == "Translate",
-            "Ocr" => plugin.Type == "Ocr",
-            "Tts" => plugin.Type == "Tts",
-            "Vocabulary" => plugin.Type == "Vocabulary",
+            PluginType.Translate => plugin.Type == "Translate",
+            PluginType.Ocr => plugin.Type == "Ocr",
+            PluginType.Tts => plugin.Type == "Tts",
+            PluginType.Vocabulary => plugin.Type == "Vocabulary",
             _ => true
         };
 
@@ -524,4 +521,144 @@ public partial class PluginMarketViewModel : ObservableObject
     }
 
     #endregion
+}
+
+/// <summary>
+/// 插件市场信息模型
+/// </summary>
+public partial class PluginMarketInfo : ObservableObject
+{
+    /// <summary>
+    /// 插件唯一ID
+    /// </summary>
+    public string PluginId { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 插件名称
+    /// </summary>
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 插件作者
+    /// </summary>
+    public string Author { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 插件类型 (Translate/Ocr/Tts/Vocabulary)
+    /// </summary>
+    public string Type { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 市场版本号
+    /// </summary>
+    public string Version { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 插件描述
+    /// </summary>
+    public string Description { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 项目网址
+    /// </summary>
+    public string Website { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 图标URL
+    /// </summary>
+    public string IconUrl { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 下载URL
+    /// </summary>
+    public string DownloadUrl { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 包名 (STranslate.Plugin.Type.Name)
+    /// </summary>
+    public string PackageName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// 是否已安装
+    /// </summary>
+    [ObservableProperty]
+    public partial bool IsInstalled { get; set; }
+
+    /// <summary>
+    /// 是否被选中（多选模式）
+    /// </summary>
+    [ObservableProperty]
+    public partial bool IsSelected { get; set; }
+
+    /// <summary>
+    /// 是否下载中
+    /// </summary>
+    [ObservableProperty]
+    public partial bool IsDownloading { get; set; }
+
+    /// <summary>
+    /// 下载进度 0-100
+    /// </summary>
+    [ObservableProperty]
+    public partial double DownloadProgress { get; set; }
+
+    /// <summary>
+    /// 下载状态文本
+    /// </summary>
+    [ObservableProperty]
+    public partial string? DownloadStatus { get; set; }
+
+    /// <summary>
+    /// 是否可以升级
+    /// </summary>
+    [ObservableProperty]
+    public partial bool CanUpgrade { get; set; }
+
+    /// <summary>
+    /// 当前安装的版本（用于比较）
+    /// </summary>
+    public string? InstalledVersion { get; set; }
+
+    /// <summary>
+    /// 获取操作状态
+    /// </summary>
+    public PluginActionStatus ActionStatus
+    {
+        get
+        {
+            if (IsDownloading)
+                return PluginActionStatus.Downloading;
+            if (!IsInstalled)
+                return PluginActionStatus.Download;
+            if (CanUpgrade)
+                return PluginActionStatus.Upgrade;
+            return PluginActionStatus.Installed;
+        }
+    }
+}
+
+/// <summary>
+/// 插件操作状态
+/// </summary>
+public enum PluginActionStatus
+{
+    /// <summary>
+    /// 可下载
+    /// </summary>
+    Download,
+
+    /// <summary>
+    /// 已安装最新版本
+    /// </summary>
+    Installed,
+
+    /// <summary>
+    /// 可升级
+    /// </summary>
+    Upgrade,
+
+    /// <summary>
+    /// 下载中
+    /// </summary>
+    Downloading
 }

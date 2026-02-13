@@ -6,7 +6,6 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:ikw="http://schemas.inkore.net/lib/ui/wpf"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="clr-namespace:STranslate.Models"
     xmlns:s="https://github.com/zggsong/2022/xaml"
     xmlns:ui="http://schemas.inkore.net/lib/ui/wpf/modern"
     xmlns:vm="clr-namespace:STranslate.ViewModels.Pages"
@@ -18,13 +17,6 @@
     mc:Ignorable="d">
     <ui:Page.Resources>
         <s:BindingProxy x:Key="ViewModelProxy" Data="{Binding .}" />
-
-        <!-- 操作状态到文本转换器 -->
-        <cnvt:PluginActionStatusToStringConverter x:Key="ActionStatusConverter" />
-        <cnvt:PluginActionStatusToBoolConverter x:Key="ActionStatusEnabledConverter" />
-
-        <!-- 插件类型到显示文本转换 -->
-        <ObjectDataProvider x:Key="CategoryDisplayConverter" MethodName="GetTranslation" ObjectInstance="{Binding Source={x:Static vm:PluginMarketViewModel.Categories}}" />
     </ui:Page.Resources>
 
     <Grid>
@@ -35,7 +27,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- 标题栏 -->
+        <!--  标题栏  -->
         <DockPanel Grid.Row="0" Margin="20,10,20,12">
             <TextBlock
                 DockPanel.Dock="Left"
@@ -47,7 +39,7 @@
                 DockPanel.Dock="Right"
                 Orientation="Horizontal"
                 Spacing="10">
-                <!-- 刷新按钮 -->
+                <!--  刷新按钮  -->
                 <Button
                     Command="{Binding LoadPluginsCommand}"
                     IsEnabled="{Binding IsLoading, Converter={cnvt:BoolInverseConverter}}"
@@ -55,7 +47,7 @@
                     <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.ArrowClockwise_20_Regular}" />
                 </Button>
 
-                <!-- 多选按钮 -->
+                <!--  多选按钮  -->
                 <Button
                     Command="{Binding ToggleMultiSelectModeCommand}"
                     IsEnabled="{Binding IsLoading, Converter={cnvt:BoolInverseConverter}}"
@@ -66,24 +58,20 @@
             </ikw:SimpleStackPanel>
         </DockPanel>
 
-        <!-- 搜索和筛选栏 -->
+        <!--  搜索和筛选栏  -->
         <DockPanel Grid.Row="1" Margin="20,0,20,12">
             <ikw:SimpleStackPanel
                 HorizontalAlignment="Left"
                 DockPanel.Dock="Left"
                 Orientation="Horizontal"
                 Spacing="10">
-                <!-- 分类筛选 -->
+                <!--  分类筛选  -->
                 <ComboBox
                     Width="120"
-                    ItemsSource="{Binding Categories}"
-                    SelectedItem="{Binding SelectedCategory}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Converter={cnvt:PluginCategoryToStringConverter}}" />
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
+                    DisplayMemberPath="Display"
+                    ItemsSource="{Binding DataProvider.PluginTypes}"
+                    SelectedValue="{Binding SelectedCategory}"
+                    SelectedValuePath="Value" />
             </ikw:SimpleStackPanel>
 
             <TextBox
@@ -95,15 +83,18 @@
                 Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" />
         </DockPanel>
 
-        <!-- 插件列表 -->
+        <!--  插件列表  -->
         <Border Grid.Row="2" Margin="20,0">
             <Grid>
-                <!-- 空状态/加载状态 -->
+                <!--  空状态/加载状态  -->
                 <StackPanel
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center"
                     Visibility="{Binding IsLoading, Converter={cnvt:BoolToVisibilityConverter}}">
-                    <ui:ProgressRing Width="40" Height="40" IsActive="{Binding IsLoading}" />
+                    <ui:ProgressRing
+                        Width="40"
+                        Height="40"
+                        IsActive="{Binding IsLoading}" />
                     <TextBlock
                         Margin="0,10,0,0"
                         Foreground="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorSecondaryBrushKey}}"
@@ -117,7 +108,7 @@
                     Text="{Binding LoadingStatus}"
                     Visibility="{Binding LoadingStatus, Converter={cnvt:StringNullOrEmptyToVisibilityConverter}}" />
 
-                <!-- 插件列表 -->
+                <!--  插件列表  -->
                 <ListBox
                     x:Name="PART_PluginListBox"
                     Background="Transparent"
@@ -147,14 +138,14 @@
                     </ListBox.ItemContainerStyle>
 
                     <ListBox.ItemTemplate>
-                        <DataTemplate DataType="models:PluginMarketInfo">
+                        <DataTemplate DataType="vm:PluginMarketInfo">
                             <Grid Width="320">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
-                                <!-- 多选复选框 -->
+                                <!--  多选复选框  -->
                                 <CheckBox
                                     Grid.Column="0"
                                     Width="0"
@@ -173,7 +164,7 @@
                                     </CheckBox.Style>
                                 </CheckBox>
 
-                                <!-- 插件卡片 -->
+                                <!--  插件卡片  -->
                                 <ui:SettingsCard
                                     Grid.Column="1"
                                     Margin="0,3"
@@ -182,10 +173,11 @@
                                     <ui:SettingsCard.HeaderIcon>
                                         <Image
                                             Width="32"
-                                            Height="32">
-                                            <Image.Source>
+                                            Height="32"
+                                            Source="{Binding IconUrl}">
+                                            <!--<Image.Source>
                                                 <BitmapImage UriSource="{Binding IconUrl}" />
-                                            </Image.Source>
+                                            </Image.Source>-->
                                         </Image>
                                     </ui:SettingsCard.HeaderIcon>
 
@@ -196,8 +188,11 @@
                                             </Style>
                                         </StackPanel.Resources>
 
-                                        <ikw:SimpleStackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="10">
-                                            <!-- 作者和版本信息 -->
+                                        <ikw:SimpleStackPanel
+                                            HorizontalAlignment="Right"
+                                            Orientation="Horizontal"
+                                            Spacing="10">
+                                            <!--  作者和版本信息  -->
                                             <TextBlock Foreground="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorSecondaryBrushKey}}">
                                                 <TextBlock.Text>
                                                     <MultiBinding StringFormat="{}{0} | {1}">
@@ -207,14 +202,14 @@
                                                 </TextBlock.Text>
                                             </TextBlock>
 
-                                            <!-- 操作按钮 -->
+                                            <!--  操作按钮  -->
                                             <Button
                                                 MinWidth="70"
                                                 Padding="10,5"
                                                 Command="{Binding Data.DownloadPluginCommand, Source={StaticResource ViewModelProxy}}"
                                                 CommandParameter="{Binding}"
-                                                Content="{Binding ActionStatus, Converter={StaticResource ActionStatusConverter}}"
-                                                IsEnabled="{Binding ActionStatus, Converter={StaticResource ActionStatusEnabledConverter}}">
+                                                Content="{Binding ActionStatus, Converter={cnvt:PluginActionStatusToStringConverter}}"
+                                                IsEnabled="{Binding ActionStatus, Converter={cnvt:PluginActionStatusToBoolConverter}}">
                                                 <Button.Style>
                                                     <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
                                                         <Setter Property="IsEnabled" Value="True" />
@@ -223,9 +218,17 @@
                                                                 <Setter Property="IsEnabled" Value="False" />
                                                                 <Setter Property="Foreground" Value="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorDisabledBrushKey}}" />
                                                             </DataTrigger>
+
+                                                            <!--  修改此处：通过设置特定的类样式或属性来实现 Accent 效果  -->
                                                             <DataTrigger Binding="{Binding ActionStatus}" Value="Upgrade">
-                                                                <Setter Property="Style" Value="{DynamicResource {x:Static ui:ThemeKeys.AccentButtonStyleKey}}" />
+                                                                <!--
+                                                                    注意：通常 ModernWPF/Fluent 样式库会提供附加属性来切换外观，
+                                                                    如果可以直接设置背景/前景则直接设置。
+                                                                -->
+                                                                <Setter Property="Background" Value="{DynamicResource {x:Static ui:ThemeKeys.SystemControlBackgroundAccentBrushKey}}" />
+                                                                <Setter Property="Foreground" Value="{DynamicResource {x:Static ui:ThemeKeys.TextOnAccentFillColorPrimaryBrushKey}}" />
                                                             </DataTrigger>
+
                                                             <DataTrigger Binding="{Binding IsDownloading}" Value="True">
                                                                 <Setter Property="IsEnabled" Value="False" />
                                                             </DataTrigger>
@@ -235,13 +238,13 @@
                                             </Button>
                                         </ikw:SimpleStackPanel>
 
-                                        <!-- 下载进度条 -->
+                                        <!--  下载进度条  -->
                                         <ProgressBar
                                             Height="3"
                                             Margin="0,5,0,0"
                                             Maximum="100"
-                                            Value="{Binding DownloadProgress}"
-                                            Visibility="{Binding IsDownloading, Converter={cnvt:BoolToVisibilityConverter}}" />
+                                            Visibility="{Binding IsDownloading, Converter={cnvt:BoolToVisibilityConverter}}"
+                                            Value="{Binding DownloadProgress}" />
                                         <TextBlock
                                             Margin="0,2,0,0"
                                             HorizontalAlignment="Right"
@@ -258,7 +261,7 @@
             </Grid>
         </Border>
 
-        <!-- 底部统计 -->
+        <!--  底部统计  -->
         <ikw:SimpleStackPanel
             Grid.Row="3"
             Margin="20,10"
@@ -275,7 +278,7 @@
             <TextBlock Text="{Binding Plugins.Count, StringFormat='{}{0} plugins'}" />
         </ikw:SimpleStackPanel>
 
-        <!-- 多选模式工具栏 -->
+        <!--  多选模式工具栏  -->
         <Border
             Grid.Row="2"
             Margin="20"
@@ -285,7 +288,10 @@
             CornerRadius="8"
             Opacity="0.95"
             Visibility="{Binding IsMultiSelectMode, Converter={cnvt:BoolToVisibilityConverter}}">
-            <ikw:SimpleStackPanel Margin="15,10" Orientation="Horizontal" Spacing="10">
+            <ikw:SimpleStackPanel
+                Margin="15,10"
+                Orientation="Horizontal"
+                Spacing="10">
                 <Button Command="{Binding SelectAllCommand}">
                     <ui:IconAndText Content="{DynamicResource PluginMarketSelectAll}" Icon="{x:Static ui:FluentSystemIcons.SelectAllOn_20_Regular}" />
                 </Button>

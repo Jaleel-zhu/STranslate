@@ -1,6 +1,6 @@
 using CommunityToolkit.Mvvm.DependencyInjection;
 using STranslate.Core;
-using STranslate.Models;
+using STranslate.ViewModels.Pages;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
@@ -48,35 +48,6 @@ public class PluginActionStatusToBoolConverter : MarkupExtension, IValueConverte
             return status is PluginActionStatus.Download or PluginActionStatus.Upgrade;
         }
         return false;
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        => Binding.DoNothing;
-
-    public override object ProvideValue(IServiceProvider serviceProvider) => this;
-}
-
-/// <summary>
-/// 插件分类到显示文本转换器
-/// </summary>
-public class PluginCategoryToStringConverter : MarkupExtension, IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        if (value is string category)
-        {
-            var i18n = Ioc.Default.GetRequiredService<Internationalization>();
-            return category switch
-            {
-                "All" => i18n.GetTranslation("PluginTypeAll"),
-                "Translate" => i18n.GetTranslation("PluginTypeTranslate"),
-                "Ocr" => i18n.GetTranslation("PluginTypeOcr"),
-                "Tts" => i18n.GetTranslation("PluginTypeTts"),
-                "Vocabulary" => i18n.GetTranslation("PluginTypeVocabulary"),
-                _ => category
-            };
-        }
-        return value?.ToString() ?? string.Empty;
     }
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
