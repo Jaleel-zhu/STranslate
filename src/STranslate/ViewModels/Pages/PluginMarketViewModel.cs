@@ -7,6 +7,7 @@ using STranslate.Services;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Net.Http;
 using System.Windows.Data;
 
 namespace STranslate.ViewModels.Pages;
@@ -157,26 +158,29 @@ public partial class PluginMarketViewModel : ObservableObject
 
             var type = nameParts[2]; // Translate, Ocr, Tts, Vocabulary
 
-            // 构建 plugin.json URL (使用 JsDelivr CDN 加速)
-            var pluginJsonUrl = $"https://fastly.jsdelivr.net/gh/{author}/{packageName}@main/{packageName}/plugin.json";
-
-            // 获取插件详细信息
-            var pluginInfo = await _httpService.GetAsync<PluginInfo>(pluginJsonUrl);
+            // 尝试获取 plugin.json（先 main 分支，失败则回退到 master）
+            var pluginInfo = await TryGetPluginInfoAsync(author, packageName);
             if (pluginInfo == null) return null;
+
+            // 尝试获取多语言资源（zh-cn.json）
+            var (name, description) = await TryGetLocalizedInfoAsync(author, packageName, pluginInfo.Name, pluginInfo.Description);
 
             // 构建下载 URL
             var downloadUrl = $"https://github.com/{author}/{packageName}/releases/download/v{pluginInfo.Version}/{packageName}.spkg";
 
+            // 确定实际使用的分支（用于图标等资源）
+            var branch = await GetWorkingBranchAsync(author, packageName);
+
             return new PluginMarketInfo
             {
                 PluginId = pluginInfo.PluginID ?? string.Empty,
-                Name = pluginInfo.Name ?? packageName,
+                Name = name ?? packageName,
                 Author = pluginInfo.Author ?? author,
                 Type = type,
                 Version = pluginInfo.Version ?? "1.0.0",
-                Description = pluginInfo.Description ?? string.Empty,
+                Description = description ?? string.Empty,
                 Website = pluginInfo.Website ?? $"https://github.com/{author}/{packageName}",
-                IconUrl = $"https://fastly.jsdelivr.net/gh/{author}/{packageName}@main/{packageName}/icon.png",
+                IconUrl = $"https://fastly.jsdelivr.net/gh/{author}/{packageName}@{branch}/{packageName}/icon.png",
                 DownloadUrl = downloadUrl,
                 PackageName = packageName
             };
@@ -186,6 +190,85 @@ public partial class PluginMarketViewModel : ObservableObject
             // 单个插件加载失败不影响其他插件
             return null;
         }
+    }
+
+    /// <summary>
+    /// 尝试获取 plugin.json，main 分支失败则回退到 master 分支
+    /// </summary>
+    private async Task<PluginInfo?> TryGetPluginInfoAsync(string author, string packageName)
+    {
+        // 先尝试 main 分支
+        var mainUrl = $"https://fastly.jsdelivr.net/gh/{author}/{packageName}@main/{packageName}/plugin.json";
+        try
+        {
+            return await _httpService.GetAsync<PluginInfo>(mainUrl);
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            // 404 则回退到 master 分支
+            var masterUrl = $"https://fastly.jsdelivr.net/gh/{author}/{packageName}@master/{packageName}/plugin.json";
+            try
+            {
+                return await _httpService.GetAsync<PluginInfo>(masterUrl);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// 获取可用的分支名称（main 或 master）
+    /// </summary>
+    private async Task<string> GetWorkingBranchAsync(string author, string packageName)
+    {
+        var mainUrl = $"https://fastly.jsdelivr.net/gh/{author}/{packageName}@main/{packageName}/plugin.json";
+        try
+        {
+            await _httpService.GetAsync(mainUrl, CancellationToken.None);
+            return "main";
+        }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return "master";
+        }
+        catch
+        {
+            return "main";
+        }
+    }
+
+    /// <summary>
+    /// 尝试获取多语言资源，失败则使用默认值
+    /// </summary>
+    private async Task<(string Name, string Description)> TryGetLocalizedInfoAsync(
+        string author, string packageName, string defaultName, string defaultDescription)
+    {
+        var branch = await GetWorkingBranchAsync(author, packageName);
+        var langUrl = $"https://fastly.jsdelivr.net/gh/{author}/{packageName}@{branch}/{packageName}/Languages/zh-cn.json";
+
+        try
+        {
+            var langInfo = await _httpService.GetAsync<PluginLanguageInfo>(langUrl);
+            if (langInfo != null)
+            {
+                return (
+                    !string.IsNullOrEmpty(langInfo.Name) ? langInfo.Name : defaultName,
+                    !string.IsNullOrEmpty(langInfo.Description) ? langInfo.Description : defaultDescription
+                );
+            }
+        }
+        catch
+        {
+            // 多语言资源获取失败，使用默认值
+        }
+
+        return (defaultName, defaultDescription);
     }
 
     /// <summary>
@@ -443,6 +526,15 @@ public partial class PluginMarketViewModel : ObservableObject
         public string Website { get; set; } = string.Empty;
         public string ExecuteFileName { get; set; } = string.Empty;
         public string IconPath { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// 插件多语言信息（对应 Languages/zh-cn.json）
+    /// </summary>
+    public class PluginLanguageInfo
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
     }
 
     #endregion
