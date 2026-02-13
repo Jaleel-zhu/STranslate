@@ -55,6 +55,14 @@ public class PluginContext(PluginMetaData metaData, string serviceId) : IPluginC
 
     public void SaveSettingStorage<T>() where T : new() => Savable?.Save();
 
+    public void ApplyTheme(Window window)
+    {
+        if (window == null)
+            return;
+
+        ThemeManager.SetRequestedTheme(window, Ioc.Default.GetRequiredService<Settings>().ColorScheme);
+    }
+
     public void Dispose()
     {
         Savable.Delete();

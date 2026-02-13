@@ -69,4 +69,10 @@ public interface IPluginContext : IDisposable
     /// </summary>
     /// <typeparam name="T">设置存储的类型。</typeparam>
     void SaveSettingStorage<T>() where T : new();
+
+    /// <summary>
+    /// 将当前应用主题应用到指定窗口，使插件窗口与主程序保持一致的视觉风格。
+    /// </summary>
+    /// <param name="window">需要应用主题的窗口实例</param>
+    void ApplyTheme(Window window);
 }
