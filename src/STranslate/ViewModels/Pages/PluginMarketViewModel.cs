@@ -85,6 +85,21 @@ public partial class PluginMarketViewModel : ObservableObject
     [ObservableProperty]
     public partial string? LoadingStatus { get; set; }
 
+    [ObservableProperty]
+    public partial int TotalPluginCount { get; set; }
+
+    [ObservableProperty]
+    public partial int TranslatePluginCount { get; set; }
+
+    [ObservableProperty]
+    public partial int OcrPluginCount { get; set; }
+
+    [ObservableProperty]
+    public partial int TtsPluginCount { get; set; }
+
+    [ObservableProperty]
+    public partial int VocabularyPluginCount { get; set; }
+
     partial void OnFilterTextChanged(string value) => _pluginsCollectionView.View?.Refresh();
 
     partial void OnSelectedPluginTypeChanged(PluginType value) => _pluginsCollectionView.View?.Refresh();
@@ -298,6 +313,21 @@ public partial class PluginMarketViewModel : ObservableObject
                 marketPlugin.InstalledVersion = null;
             }
         }
+
+        // 更新分类计数
+        UpdatePluginCounts();
+    }
+
+    /// <summary>
+    /// 更新插件分类计数
+    /// </summary>
+    private void UpdatePluginCounts()
+    {
+        TotalPluginCount = Plugins.Count;
+        TranslatePluginCount = Plugins.Count(p => p.Type == "Translate");
+        OcrPluginCount = Plugins.Count(p => p.Type == "Ocr");
+        TtsPluginCount = Plugins.Count(p => p.Type == "Tts");
+        VocabularyPluginCount = Plugins.Count(p => p.Type == "Vocabulary");
     }
 
     #endregion

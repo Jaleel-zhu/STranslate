@@ -22,7 +22,6 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -44,38 +43,26 @@
                     Command="{Binding LoadPluginsCommand}"
                     IsEnabled="{Binding IsLoading, Converter={cnvt:BoolInverseConverter}}"
                     ToolTip="{DynamicResource PluginMarketRefresh}">
-                    <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.ArrowClockwise_20_Regular}" />
+                    <ui:FontIcon FontSize="{DynamicResource STControlFontSize16}" Icon="{x:Static ui:FluentSystemIcons.ArrowClockwise_20_Regular}" />
                 </Button>
-            </ikw:SimpleStackPanel>
-        </DockPanel>
-
-        <!--  搜索和筛选栏  -->
-        <DockPanel Grid.Row="1" Margin="20,0,20,12">
-            <ikw:SimpleStackPanel
-                HorizontalAlignment="Left"
-                DockPanel.Dock="Left"
-                Orientation="Horizontal"
-                Spacing="10">
                 <!--  分类筛选  -->
                 <ComboBox
-                    Width="120"
+                    MinWidth="120"
                     DisplayMemberPath="Display"
                     ItemsSource="{Binding DataProvider.PluginTypes}"
                     SelectedValue="{Binding SelectedPluginType}"
                     SelectedValuePath="Value" />
+                <!--  搜索框  -->
+                <TextBox
+                    Width="180"
+                    VerticalAlignment="Center"
+                    ui:ControlHelper.PlaceholderText="{DynamicResource PluginMarketSearch}"
+                    Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" />
             </ikw:SimpleStackPanel>
-
-            <TextBox
-                Width="200"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                ui:ControlHelper.PlaceholderText="{DynamicResource PluginMarketSearch}"
-                DockPanel.Dock="Right"
-                Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" />
         </DockPanel>
 
         <!--  插件列表  -->
-        <Border Grid.Row="2" Margin="20,0">
+        <Border Grid.Row="1" Margin="20,0">
             <Grid>
                 <!--  空状态/加载状态  -->
                 <StackPanel
@@ -173,7 +160,7 @@
                                             <TextBlock
                                                 Grid.Column="0"
                                                 VerticalAlignment="Center"
-                                                FontSize="14"
+                                                FontSize="{DynamicResource STControlFontSize14}"
                                                 FontWeight="SemiBold"
                                                 Text="{Binding Name}"
                                                 TextTrimming="CharacterEllipsis" />
@@ -186,7 +173,7 @@
                                                     Command="{Binding Data.DownloadPluginCommand, Source={StaticResource ViewModelProxy}}"
                                                     CommandParameter="{Binding}"
                                                     Content="{Binding ActionStatus, Converter={cnvt:PluginActionStatusToStringConverter}}"
-                                                    FontSize="11"
+                                                    FontSize="{DynamicResource STControlFontSize11}"
                                                     IsEnabled="{Binding ActionStatus, Converter={cnvt:PluginActionStatusToBoolConverter}}"
                                                     Visibility="{Binding IsDownloading, Converter={cnvt:BoolToVisibilityInverseConverter}}">
                                                     <Button.Style>
@@ -301,7 +288,7 @@
                                                     Command="{Binding Data.CancelDownloadCommand, Source={StaticResource ViewModelProxy}}"
                                                     CommandParameter="{Binding}"
                                                     Content="{DynamicResource Cancel}"
-                                                    FontSize="11"
+                                                    FontSize="{DynamicResource STControlFontSize11}"
                                                     Visibility="{Binding IsDownloading, Converter={cnvt:BoolToVisibilityConverter}}" />
                                             </Grid>
                                         </Grid>
@@ -310,7 +297,7 @@
                                         <TextBlock
                                             Grid.Row="1"
                                             Margin="0,4,0,0"
-                                            FontSize="12"
+                                            FontSize="{DynamicResource STControlFontSize12}"
                                             Foreground="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorSecondaryBrushKey}}"
                                             Text="{Binding Description}"
                                             TextTrimming="CharacterEllipsis"
@@ -321,7 +308,7 @@
                                             <!--  作者和版本号  -->
                                             <TextBlock
                                                 VerticalAlignment="Center"
-                                                FontSize="11"
+                                                FontSize="{DynamicResource STControlFontSize11}"
                                                 Foreground="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorTertiaryBrushKey}}"
                                                 TextTrimming="CharacterEllipsis"
                                                 Visibility="{Binding IsDownloading, Converter={cnvt:BoolToVisibilityInverseConverter}}">
@@ -342,7 +329,7 @@
                                                 <TextBlock
                                                     Margin="0,2,0,0"
                                                     HorizontalAlignment="Right"
-                                                    FontSize="10"
+                                                    FontSize="{DynamicResource STControlFontSize10}"
                                                     Foreground="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorSecondaryBrushKey}}"
                                                     Text="{Binding DownloadStatus}" />
                                             </StackPanel>
@@ -358,19 +345,42 @@
 
         <!--  底部统计  -->
         <ikw:SimpleStackPanel
-            Grid.Row="3"
+            Grid.Row="2"
             Margin="20,10"
             HorizontalAlignment="Center"
             Orientation="Horizontal"
-            Spacing="15">
+            Spacing="12">
             <ikw:SimpleStackPanel.Resources>
                 <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
                     <Setter Property="Foreground" Value="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorSecondaryBrushKey}}" />
                     <Setter Property="FontSize" Value="{DynamicResource STControlFontSize12}" />
                 </Style>
             </ikw:SimpleStackPanel.Resources>
-
-            <TextBlock Text="{Binding Plugins.Count, StringFormat='{}{0} plugins'}" />
+            <TextBlock>
+                <Run Text="{DynamicResource PluginTypeAll}" />
+                <Run Text=": " />
+                <Run Text="{Binding TotalPluginCount, Mode=OneWay}" />
+            </TextBlock>
+            <TextBlock>
+                <Run Text="{DynamicResource PluginTypeTranslate}" />
+                <Run Text=": " />
+                <Run Text="{Binding TranslatePluginCount, Mode=OneWay}" />
+            </TextBlock>
+            <TextBlock>
+                <Run Text="{DynamicResource PluginTypeOcr}" />
+                <Run Text=": " />
+                <Run Text="{Binding OcrPluginCount, Mode=OneWay}" />
+            </TextBlock>
+            <TextBlock>
+                <Run Text="{DynamicResource PluginTypeTts}" />
+                <Run Text=": " />
+                <Run Text="{Binding TtsPluginCount, Mode=OneWay}" />
+            </TextBlock>
+            <TextBlock>
+                <Run Text="{DynamicResource PluginTypeVocabulary}" />
+                <Run Text=": " />
+                <Run Text="{Binding VocabularyPluginCount, Mode=OneWay}" />
+            </TextBlock>
         </ikw:SimpleStackPanel>
 
     </Grid>

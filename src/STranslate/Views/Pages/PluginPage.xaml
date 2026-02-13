@@ -260,6 +260,7 @@
 
         <ikw:SimpleStackPanel
             Grid.Row="2"
+            Margin="0,4"
             HorizontalAlignment="Center"
             Orientation="Horizontal"
             Spacing="12">
