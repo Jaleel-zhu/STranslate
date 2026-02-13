@@ -57,42 +57,6 @@ public class PluginActionStatusToBoolConverter : MarkupExtension, IValueConverte
 }
 
 /// <summary>
-/// 布尔值到强调按钮样式转换器
-/// </summary>
-public class BoolToAccentButtonStyleConverter : MarkupExtension, IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        if (value is bool boolValue && boolValue)
-        {
-            return Application.Current.FindResource(iNKORE.UI.WPF.Modern.ThemeKeys.AccentButtonStyleKey);
-        }
-        return Application.Current.FindResource(typeof(System.Windows.Controls.Button));
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        => Binding.DoNothing;
-
-    public override object ProvideValue(IServiceProvider serviceProvider) => this;
-}
-
-/// <summary>
-/// 字符串空值到可见性转换器
-/// </summary>
-public class StringNullOrEmptyToVisibilityConverter : MarkupExtension, IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        return string.IsNullOrEmpty(value as string) ? Visibility.Collapsed : Visibility.Visible;
-    }
-
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        => Binding.DoNothing;
-
-    public override object ProvideValue(IServiceProvider serviceProvider) => this;
-}
-
-/// <summary>
 /// 布尔值取反到可见性转换器
 /// </summary>
 public class BoolInverseToVisibilityConverter : MarkupExtension, IValueConverter

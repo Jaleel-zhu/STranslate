@@ -80,9 +80,6 @@ public partial class PluginMarketViewModel : ObservableObject
     public partial PluginType SelectedPluginType { get; set; } = PluginType.All;
 
     [ObservableProperty]
-    public partial bool IsMultiSelectMode { get; set; }
-
-    [ObservableProperty]
     public partial bool IsLoading { get; set; }
 
     [ObservableProperty]
@@ -91,27 +88,6 @@ public partial class PluginMarketViewModel : ObservableObject
     partial void OnFilterTextChanged(string value) => _pluginsCollectionView.View?.Refresh();
 
     partial void OnSelectedPluginTypeChanged(PluginType value) => _pluginsCollectionView.View?.Refresh();
-
-    /// <summary>
-    /// 插件属性变化处理
-    /// </summary>
-    private void OnPluginPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(PluginMarketInfo.IsSelected))
-        {
-            NotifySelectedCountChanged();
-        }
-    }
-
-    /// <summary>
-    /// 已选中插件数量
-    /// </summary>
-    public int SelectedCount => Plugins.Count(p => p.IsSelected);
-
-    /// <summary>
-    /// 通知选中数量变更
-    /// </summary>
-    private void NotifySelectedCountChanged() => OnPropertyChanged(nameof(SelectedCount));
 
     #endregion
 
@@ -145,8 +121,7 @@ public partial class PluginMarketViewModel : ObservableObject
             // 3. 添加到集合
             foreach (var plugin in plugins.Where(p => p != null))
             {
-                plugin!.PropertyChanged += OnPluginPropertyChanged;
-                Plugins.Add(plugin);
+                Plugins.Add(plugin!);
             }
 
             // 4. 更新安装状态
@@ -414,93 +389,6 @@ public partial class PluginMarketViewModel : ObservableObject
 
     #endregion
 
-    #region 批量下载
-
-    [RelayCommand]
-    private void ToggleMultiSelectMode()
-    {
-        IsMultiSelectMode = !IsMultiSelectMode;
-        if (!IsMultiSelectMode)
-        {
-            // 取消所有选择
-            foreach (var plugin in Plugins)
-            {
-                plugin.IsSelected = false;
-            }
-        }
-    }
-
-    [RelayCommand]
-    private void SelectAll()
-    {
-        foreach (var plugin in Plugins.Where(p => !p.IsInstalled || p.CanUpgrade))
-        {
-            plugin.IsSelected = true;
-        }
-    }
-
-    [RelayCommand]
-    private void DeselectAll()
-    {
-        foreach (var plugin in Plugins)
-        {
-            plugin.IsSelected = false;
-        }
-    }
-
-    [RelayCommand]
-    private async Task DownloadSelectedAsync()
-    {
-        var selected = Plugins.Where(p => p.IsSelected && (!p.IsInstalled || p.CanUpgrade)).ToList();
-
-        if (selected.Count == 0)
-        {
-            _snackbar.ShowWarning(_i18n.GetTranslation("NoPluginSelected"));
-            return;
-        }
-
-        // 使用 SemaphoreSlim 限制并发数（同时3个）
-        var semaphore = new SemaphoreSlim(3);
-        var tasks = selected.Select(async plugin =>
-        {
-            await semaphore.WaitAsync();
-            try
-            {
-                await DownloadPluginAsync(plugin);
-            }
-            finally
-            {
-                semaphore.Release();
-            }
-        });
-
-        await Task.WhenAll(tasks);
-
-        // 如果有升级，提示重启
-        if (_needsRestart)
-        {
-            var restartResult = await new ContentDialog
-            {
-                Title = _i18n.GetTranslation("Prompt"),
-                Content = _i18n.GetTranslation("PluginUpgradeSuccess"),
-                PrimaryButtonText = _i18n.GetTranslation("Confirm"),
-                CloseButtonText = _i18n.GetTranslation("Cancel"),
-                DefaultButton = ContentDialogButton.Primary,
-            }.ShowAsync();
-
-            if (restartResult == ContentDialogResult.Primary)
-            {
-                UACHelper.Run(_settings.StartMode);
-                App.Current.Shutdown();
-            }
-        }
-
-        // 退出多选模式
-        IsMultiSelectMode = false;
-    }
-
-    #endregion
-
     #region 辅助方法
 
     /// <summary>
@@ -622,12 +510,6 @@ public partial class PluginMarketInfo : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ActionStatus))]
     public partial bool IsInstalled { get; set; }
-
-    /// <summary>
-    /// 是否被选中（多选模式）
-    /// </summary>
-    [ObservableProperty]
-    public partial bool IsSelected { get; set; }
 
     /// <summary>
     /// 是否下载中
