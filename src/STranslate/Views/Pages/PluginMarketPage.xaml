@@ -107,7 +107,7 @@
                     VerticalAlignment="Center"
                     Foreground="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorSecondaryBrushKey}}"
                     Text="{Binding LoadingStatus}"
-                    Visibility="{Binding LoadingStatus, Converter={cnvt:StringNullOrEmptyToVisibilityConverter}}" />
+                    Visibility="{Binding IsLoading, Converter={cnvt:BoolInverseToVisibilityConverter}}" />
 
                 <!--  插件列表  -->
                 <ListBox
