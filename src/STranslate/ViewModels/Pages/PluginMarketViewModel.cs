@@ -2,7 +2,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using iNKORE.UI.WPF.Modern.Controls;
 using STranslate.Core;
-using STranslate.Helpers;
 using STranslate.Plugin;
 using STranslate.Services;
 using System.Collections.ObjectModel;
