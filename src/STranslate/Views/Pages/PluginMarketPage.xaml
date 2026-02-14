@@ -62,7 +62,7 @@
         </DockPanel>
 
         <!--  插件列表  -->
-        <Border Grid.Row="1" Margin="20,0">
+        <Border Grid.Row="1" Margin="20,0,20,0">
             <Grid>
                 <!--  空状态/加载状态  -->
                 <StackPanel
@@ -103,7 +103,7 @@
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem">
                             <Setter Property="Padding" Value="0" />
-                            <Setter Property="Margin" Value="5" />
+                            <Setter Property="Margin" Value="0,0,12,12" />
                             <Setter Property="Background" Value="Transparent" />
                             <Setter Property="Template">
                                 <Setter.Value>
@@ -118,27 +118,36 @@
                     <ListBox.ItemTemplate>
                         <DataTemplate DataType="vm:PluginMarketInfo">
                             <Border
-                                Width="300"
-                                Height="100"
-                                Margin="0,4"
-                                Padding="10"
+                                Width="280"
+                                MinHeight="90"
+                                Padding="12"
                                 Background="{DynamicResource {x:Static ui:ThemeKeys.CardBackgroundFillColorDefaultBrushKey}}"
                                 BorderBrush="{DynamicResource {x:Static ui:ThemeKeys.CardStrokeColorDefaultBrushKey}}"
                                 BorderThickness="1"
                                 CornerRadius="8">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Opacity" Value="1" />
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource {x:Static ui:ThemeKeys.SystemFillColorAttentionBackgroundBrushKey}}" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="10" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
 
                                     <!--  左侧图标  -->
                                     <Image
                                         Grid.Column="0"
-                                        Width="48"
-                                        Height="48"
-                                        VerticalAlignment="Top"
+                                        Width="32"
+                                        Height="32"
+                                        VerticalAlignment="Center"
                                         Source="{Binding IconUrl}"
                                         Stretch="Uniform" />
 
@@ -146,7 +155,7 @@
                                     <Grid Grid.Column="2">
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="Auto" />
-                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="*" MinHeight="20" />
                                             <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
@@ -160,13 +169,13 @@
                                             <TextBlock
                                                 Grid.Column="0"
                                                 VerticalAlignment="Center"
-                                                FontSize="{DynamicResource STControlFontSize14}"
+                                                FontSize="{DynamicResource STControlFontSize13}"
                                                 FontWeight="SemiBold"
                                                 Text="{Binding Name}"
                                                 TextTrimming="CharacterEllipsis" />
 
                                             <!--  操作按钮  -->
-                                            <Grid Grid.Column="1">
+                                            <Grid Grid.Column="1" Margin="8,0,0,0">
                                                 <Button
                                                     MinWidth="50"
                                                     Padding="8,3"
@@ -320,15 +329,17 @@
                                         <!--  描述  -->
                                         <TextBlock
                                             Grid.Row="1"
-                                            Margin="0,4,0,0"
+                                            Margin="0,3,0,0"
                                             FontSize="{DynamicResource STControlFontSize12}"
                                             Foreground="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorSecondaryBrushKey}}"
+                                            LineHeight="16"
+                                            MaxHeight="32"
                                             Text="{Binding Description}"
                                             TextTrimming="CharacterEllipsis"
                                             TextWrapping="Wrap" />
 
                                         <!--  底部：作者、版本 + 下载进度  -->
-                                        <Grid Grid.Row="2" Margin="0,4,0,0">
+                                        <Grid Grid.Row="2" Margin="0,6,0,0">
                                             <!--  作者和版本号  -->
                                             <TextBlock
                                                 VerticalAlignment="Center"
