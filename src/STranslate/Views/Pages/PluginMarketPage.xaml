@@ -96,7 +96,7 @@
                     Visibility="{Binding IsLoading, Converter={cnvt:BoolInverseToVisibilityConverter}}">
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <WrapPanel IsItemsHost="True" />
+                            <WrapPanel HorizontalAlignment="Center" IsItemsHost="True" />
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
 

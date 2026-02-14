@@ -114,115 +114,186 @@
             </ikw:SimpleStackPanel>
         </DockPanel>
 
-        <ListBox
-            x:Name="PART_PluginListBox"
-            Grid.Row="1"
-            control:ListBoxSelectionBehavior.AutoDeselectPrePlugins="True"
-            ItemsSource="{Binding PluginCollectionView}">
-            <ListBox.Resources>
-                <s:BindingProxy x:Key="VmProxy" Data="{Binding}" />
-                <Style TargetType="ListBoxItem">
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate TargetType="ListBoxItem">
-                                <ContentPresenter Margin="0,0,20,0" />
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </ListBox.Resources>
-            <ListBox.Style>
-                <Style BasedOn="{StaticResource {x:Type ListBox}}" TargetType="ListBox">
-                    <Setter Property="Background" Value="Transparent" />
-                    <Setter Property="SelectionMode" Value="Single" />
-                </Style>
-            </ListBox.Style>
-            <ListBox.ItemTemplate>
-                <DataTemplate DataType="plugin:PluginMetaData">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
+        <Border Grid.Row="1" Margin="20,0,20,0">
+            <ListBox
+                x:Name="PART_PluginListBox"
+                control:ListBoxSelectionBehavior.AutoDeselectPrePlugins="True"
+                Background="Transparent"
+                ItemsSource="{Binding PluginCollectionView}"
+                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <ListBox.Resources>
+                    <s:BindingProxy x:Key="VmProxy" Data="{Binding}" />
+                </ListBox.Resources>
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel HorizontalAlignment="Center" IsItemsHost="True" />
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="Margin" Value="0,0,12,12" />
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <ContentPresenter />
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="plugin:PluginMetaData">
+                        <Border
+                            Width="280"
+                            MinHeight="90"
+                            Padding="12"
+                            Background="{DynamicResource {x:Static ui:ThemeKeys.CardBackgroundFillColorDefaultBrushKey}}"
+                            BorderBrush="{DynamicResource {x:Static ui:ThemeKeys.CardStrokeColorDefaultBrushKey}}"
+                            BorderThickness="1"
+                            CornerRadius="8">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Opacity" Value="1" />
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="{DynamicResource {x:Static ui:ThemeKeys.SystemFillColorAttentionBackgroundBrushKey}}" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="10" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
 
-                        <ui:SettingsCard
-                            x:Name="PluginCard"
-                            Margin="0,3"
-                            Description="{Binding Description}"
-                            Header="{Binding Name}">
-                            <ui:SettingsCard.HeaderIcon>
+                                <!--  左侧图标  -->
                                 <Image
-                                    Width="24"
-                                    Height="24"
-                                    Source="{Binding IconPath}" />
-                            </ui:SettingsCard.HeaderIcon>
-                            <StackPanel>
-                                <StackPanel.Resources>
-                                    <Style BasedOn="{StaticResource {x:Static ui:ThemeKeys.CaptionTextBlockStyleKey}}" TargetType="TextBlock">
-                                        <Setter Property="VerticalAlignment" Value="Center" />
-                                    </Style>
-                                    <Style BasedOn="{StaticResource {x:Type control:IconButton}}" TargetType="control:IconButton">
-                                        <Setter Property="VerticalAlignment" Value="Center" />
-                                        <Setter Property="IconSize" Value="11" />
-                                    </Style>
-                                    <Style x:Key="LinkBtnStyle" TargetType="TextBlock">
-                                        <Setter Property="Foreground" Value="{DynamicResource ButtonForeground}" />
-                                        <Setter Property="VerticalAlignment" Value="Center" />
-                                        <Setter Property="Cursor" Value="Hand" />
-                                        <Setter Property="FontFamily" Value="{DynamicResource FluentSystemIcons}" />
-                                        <Style.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Foreground" Value="{DynamicResource {x:Static ui:ThemeKeys.ButtonForegroundPressedKey}}" />
-                                            </Trigger>
-                                            <Trigger Property="IsEnabled" Value="False">
-                                                <Setter Property="Foreground" Value="{DynamicResource {x:Static ui:ThemeKeys.ButtonForegroundDisabledKey}}" />
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </StackPanel.Resources>
-                                <ikw:SimpleStackPanel Orientation="Horizontal" Spacing="10">
-                                    <TextBlock Text="{Binding Author}" />
-                                    <TextBlock Text="|" />
-                                    <TextBlock Text="{Binding Version}" />
-                                    <TextBlock Text="|" />
-                                    <TextBlock Style="{StaticResource LinkBtnStyle}" Text="&#xF480;">
-                                        <TextBlock.InputBindings>
-                                            <MouseBinding
-                                                Command="{Binding Source={StaticResource VmProxy}, Path=Data.OpenOfficialLinkCommand}"
-                                                CommandParameter="{Binding Website}"
-                                                MouseAction="LeftClick" />
-                                        </TextBlock.InputBindings>
-                                    </TextBlock>
+                                    Grid.Column="0"
+                                    Width="32"
+                                    Height="32"
+                                    VerticalAlignment="Center"
+                                    Source="{Binding IconPath}"
+                                    Stretch="Uniform" />
+
+                                <!--  右侧内容  -->
+                                <Grid Grid.Column="2">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="*" MinHeight="20" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <!--  标题行  -->
+                                    <Grid Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock
+                                            Grid.Column="0"
+                                            VerticalAlignment="Center"
+                                            FontSize="{DynamicResource STControlFontSize13}"
+                                            FontWeight="SemiBold"
+                                            Text="{Binding Name}"
+                                            TextTrimming="CharacterEllipsis" />
+
+                                        <!--  操作按钮组  -->
+                                        <ikw:SimpleStackPanel
+                                            Grid.Column="1"
+                                            Margin="8,0,0,0"
+                                            VerticalAlignment="Center"
+                                            Orientation="Horizontal"
+                                            Spacing="6">
+                                            <ikw:SimpleStackPanel.Resources>
+                                                <Style x:Key="ActionIconStyle" TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorSecondaryBrushKey}}" />
+                                                    <Setter Property="VerticalAlignment" Value="Center" />
+                                                    <Setter Property="Cursor" Value="Hand" />
+                                                    <Setter Property="FontFamily" Value="{DynamicResource FluentSystemIcons}" />
+                                                    <Setter Property="FontSize" Value="{DynamicResource STControlFontSize12}" />
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Foreground" Value="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorPrimaryBrushKey}}" />
+                                                        </Trigger>
+                                                        <Trigger Property="IsEnabled" Value="False">
+                                                            <Setter Property="Foreground" Value="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorDisabledBrushKey}}" />
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </ikw:SimpleStackPanel.Resources>
+                                            <!--  官网链接  -->
+                                            <TextBlock Style="{StaticResource ActionIconStyle}" Text="&#xF480;">
+                                                <TextBlock.InputBindings>
+                                                    <MouseBinding
+                                                        Command="{Binding Source={StaticResource VmProxy}, Path=Data.OpenOfficialLinkCommand}"
+                                                        CommandParameter="{Binding Website}"
+                                                        MouseAction="LeftClick" />
+                                                </TextBlock.InputBindings>
+                                            </TextBlock>
+                                            <!--  删除  -->
+                                            <TextBlock
+                                                IsEnabled="{Binding IsPrePlugin, Converter={cnvt:BoolInverseConverter}}"
+                                                Style="{StaticResource ActionIconStyle}"
+                                                Text="&#xF34C;">
+                                                <TextBlock.InputBindings>
+                                                    <MouseBinding
+                                                        Command="{Binding Source={StaticResource VmProxy}, Path=Data.DeletePluginCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        MouseAction="LeftClick" />
+                                                </TextBlock.InputBindings>
+                                            </TextBlock>
+                                            <!--  打开目录  -->
+                                            <TextBlock Style="{StaticResource ActionIconStyle}" Text="&#xF418;">
+                                                <TextBlock.InputBindings>
+                                                    <MouseBinding
+                                                        Command="{Binding Source={StaticResource VmProxy}, Path=Data.OpenPluginDirectoryCommand}"
+                                                        CommandParameter="{Binding}"
+                                                        MouseAction="LeftClick" />
+                                                </TextBlock.InputBindings>
+                                            </TextBlock>
+                                        </ikw:SimpleStackPanel>
+                                    </Grid>
+
+                                    <!--  描述  -->
                                     <TextBlock
-                                        IsEnabled="{Binding IsPrePlugin, Converter={cnvt:BoolInverseConverter}}"
-                                        Style="{StaticResource LinkBtnStyle}"
-                                        Text="&#xF34C;">
-                                        <TextBlock.InputBindings>
-                                            <MouseBinding
-                                                Command="{Binding Source={StaticResource VmProxy}, Path=Data.DeletePluginCommand}"
-                                                CommandParameter="{Binding}"
-                                                MouseAction="LeftClick" />
-                                        </TextBlock.InputBindings>
+                                        Grid.Row="1"
+                                        MaxHeight="32"
+                                        Margin="0,3,0,0"
+                                        FontSize="{DynamicResource STControlFontSize12}"
+                                        Foreground="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorSecondaryBrushKey}}"
+                                        LineHeight="16"
+                                        Text="{Binding Description}"
+                                        TextTrimming="CharacterEllipsis"
+                                        TextWrapping="Wrap" />
+
+                                    <!--  底部：作者、版本  -->
+                                    <TextBlock
+                                        Grid.Row="2"
+                                        Margin="0,6,0,0"
+                                        VerticalAlignment="Center"
+                                        FontSize="{DynamicResource STControlFontSize11}"
+                                        Foreground="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorTertiaryBrushKey}}"
+                                        TextTrimming="CharacterEllipsis">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0} · {1}">
+                                                <Binding Path="Author" />
+                                                <Binding Path="Version" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
                                     </TextBlock>
-                                    <TextBlock Style="{StaticResource LinkBtnStyle}" Text="&#xF418;">
-                                        <TextBlock.InputBindings>
-                                            <MouseBinding
-                                                Command="{Binding Source={StaticResource VmProxy}, Path=Data.OpenPluginDirectoryCommand}"
-                                                CommandParameter="{Binding}"
-                                                MouseAction="LeftClick" />
-                                        </TextBlock.InputBindings>
-                                    </TextBlock>
-                                </ikw:SimpleStackPanel>
-                            </StackPanel>
-                        </ui:SettingsCard>
-                    </Grid>
-                    <DataTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="PluginCard" Property="Background" Value="{DynamicResource SystemFillColorAttentionBackgroundBrush}" />
-                        </Trigger>
-                    </DataTemplate.Triggers>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+                                </Grid>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
 
         <ikw:SimpleStackPanel
             Grid.Row="2"
