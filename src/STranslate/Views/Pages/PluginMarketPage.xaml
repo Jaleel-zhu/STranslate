@@ -188,6 +188,8 @@
                                                         <Setter Property="Cursor" Value="Hand" />
                                                         <Setter Property="FontFamily" Value="{DynamicResource FluentSystemIcons}" />
                                                         <Setter Property="FontSize" Value="{DynamicResource STControlFontSize16}" />
+                                                        <Setter Property="Padding" Value="4" />
+                                                        <Setter Property="Background" Value="Transparent" />
                                                         <Style.Triggers>
                                                             <Trigger Property="IsMouseOver" Value="True">
                                                                 <Setter Property="Foreground" Value="#106EBE" />
@@ -200,6 +202,8 @@
                                                         <Setter Property="Cursor" Value="Hand" />
                                                         <Setter Property="FontFamily" Value="{DynamicResource FluentSystemIcons}" />
                                                         <Setter Property="FontSize" Value="{DynamicResource STControlFontSize16}" />
+                                                        <Setter Property="Padding" Value="4" />
+                                                        <Setter Property="Background" Value="Transparent" />
                                                         <Style.Triggers>
                                                             <Trigger Property="IsMouseOver" Value="True">
                                                                 <Setter Property="Foreground" Value="#F1707A" />
@@ -225,6 +229,8 @@
                                                         <Setter Property="Cursor" Value="Hand" />
                                                         <Setter Property="FontFamily" Value="{DynamicResource FluentSystemIcons}" />
                                                         <Setter Property="FontSize" Value="{DynamicResource STControlFontSize16}" />
+                                                        <Setter Property="Padding" Value="4" />
+                                                        <Setter Property="Background" Value="Transparent" />
                                                         <Style.Triggers>
                                                             <Trigger Property="IsMouseOver" Value="True">
                                                                 <Setter Property="Foreground" Value="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorPrimaryBrushKey}}" />
