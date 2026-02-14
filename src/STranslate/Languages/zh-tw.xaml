@@ -580,6 +580,7 @@
     <sys:String x:Key="PluginUpgradeFailed">插件升級失敗</sys:String>
     <sys:String x:Key="RestartNow">立即重啟</sys:String>
     <sys:String x:Key="RestartLater">稍後手動重啟</sys:String>
+    <sys:String x:Key="PendingRestart">待重啟</sys:String>
     <sys:String x:Key="BatchOperation">批次操作</sys:String>
     <sys:String x:Key="DeleteSelected">刪除選中</sys:String>
     <sys:String x:Key="NoPluginSelected">未選擇插件</sys:String>

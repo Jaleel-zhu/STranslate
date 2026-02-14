@@ -276,6 +276,30 @@
                                                                     </Setter>
                                                                     <Setter Property="Foreground" Value="White" />
                                                                 </DataTrigger>
+
+                                                                <!--  待重启状态 - 橙色警示样式  -->
+                                                                <DataTrigger Binding="{Binding ActionStatus}" Value="PendingRestart">
+                                                                    <Setter Property="IsEnabled" Value="False" />
+                                                                    <Setter Property="Opacity" Value="0.8" />
+                                                                    <Setter Property="Template">
+                                                                        <Setter.Value>
+                                                                            <ControlTemplate TargetType="Button">
+                                                                                <Border
+                                                                                    x:Name="Border"
+                                                                                    Background="#FF8C00"
+                                                                                    BorderBrush="#FF8C00"
+                                                                                    BorderThickness="1"
+                                                                                    CornerRadius="4">
+                                                                                    <ContentPresenter
+                                                                                        Margin="{TemplateBinding Padding}"
+                                                                                        HorizontalAlignment="Center"
+                                                                                        VerticalAlignment="Center" />
+                                                                                </Border>
+                                                                            </ControlTemplate>
+                                                                        </Setter.Value>
+                                                                    </Setter>
+                                                                    <Setter Property="Foreground" Value="White" />
+                                                                </DataTrigger>
                                                             </Style.Triggers>
                                                         </Style>
                                                     </Button.Style>

@@ -24,6 +24,7 @@ public class PluginActionStatusToStringConverter : MarkupExtension, IValueConver
                 PluginActionStatus.Installed => i18n.GetTranslation("PluginMarketInstalled"),
                 PluginActionStatus.Upgrade => i18n.GetTranslation("PluginMarketUpgrade"),
                 PluginActionStatus.Downloading => $"{i18n.GetTranslation("PluginMarketDownloading")}...",
+                PluginActionStatus.PendingRestart => i18n.GetTranslation("PendingRestart"),
                 _ => string.Empty
             };
         }

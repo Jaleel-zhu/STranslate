@@ -562,6 +562,7 @@
     <sys:String x:Key="PluginUpgradeFailed">플러그인 업그레이드 실패</sys:String>
     <sys:String x:Key="RestartNow">지금 재시작</sys:String>
     <sys:String x:Key="RestartLater">나중에 수동 재시작</sys:String>
+    <sys:String x:Key="PendingRestart">재시작 대기 중</sys:String>
     <sys:String x:Key="BatchOperation">일괄 작업</sys:String>
     <sys:String x:Key="DeleteSelected">선택 항목 삭제</sys:String>
     <sys:String x:Key="NoPluginSelected">선택된 플러그인 없음</sys:String>

@@ -579,6 +579,7 @@
     <sys:String x:Key="PluginUpgradeFailed">Plugin upgrade failed</sys:String>
     <sys:String x:Key="RestartNow">Restart Now</sys:String>
     <sys:String x:Key="RestartLater">Restart Later</sys:String>
+    <sys:String x:Key="PendingRestart">Pending Restart</sys:String>
     <sys:String x:Key="BatchOperation">Batch Operation</sys:String>
     <sys:String x:Key="DeleteSelected">Delete Selected</sys:String>
     <sys:String x:Key="NoPluginSelected">No plugin selected</sys:String>

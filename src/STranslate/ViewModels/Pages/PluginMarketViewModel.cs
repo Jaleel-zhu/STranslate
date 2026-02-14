@@ -2,12 +2,14 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using iNKORE.UI.WPF.Modern.Controls;
 using STranslate.Core;
+using STranslate.Helpers;
 using STranslate.Plugin;
 using STranslate.Services;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Net.Http;
+using System.Windows;
 using System.Windows.Data;
 
 namespace STranslate.ViewModels.Pages;
@@ -40,11 +42,6 @@ public partial class PluginMarketViewModel : ObservableObject
     /// 插件市场 JSON 数据源 URL
     /// </summary>
     private const string PluginsJsonUrl = "https://fastly.jsdelivr.net/gh/STranslate/STranslate-doc@main/vitepress/plugins.json";
-
-    /// <summary>
-    /// 是否需要重启（有升级操作时）
-    /// </summary>
-    private bool _needsRestart;
 
     public PluginMarketViewModel(
         IHttpService httpService,
@@ -461,10 +458,11 @@ public partial class PluginMarketViewModel : ObservableObject
                 // 执行升级
                 if (_pluginService.UpgradePlugin(result.ExistingPlugin, spkgPath))
                 {
-                    _needsRestart = true;
                     _snackbar.ShowSuccess(_i18n.GetTranslation("PluginInstallSuccess"));
                     // 刷新所有插件的安装状态
                     UpdatePluginStatus();
+                    // 提示重启
+                    await PromptRestartAsync(plugin);
                 }
                 else
                 {
@@ -484,7 +482,7 @@ public partial class PluginMarketViewModel : ObservableObject
         }
         else
         {
-            // 安装成功
+            // 安装成功（新安装不需要重启）
             _snackbar.ShowSuccess(_i18n.GetTranslation("PluginInstallSuccess"));
             // 刷新所有插件的安装状态
             UpdatePluginStatus();
@@ -497,6 +495,32 @@ public partial class PluginMarketViewModel : ObservableObject
                 File.Delete(spkgPath);
         }
         catch { }
+    }
+
+    /// <summary>
+    /// 提示用户重启应用
+    /// </summary>
+    private async Task PromptRestartAsync(PluginMarketInfo plugin)
+    {
+        var restartResult = await new ContentDialog
+        {
+            Title = _i18n.GetTranslation("Prompt"),
+            Content = _i18n.GetTranslation("PluginUpgradeSuccess"),
+            PrimaryButtonText = _i18n.GetTranslation("RestartNow"),
+            CloseButtonText = _i18n.GetTranslation("RestartLater"),
+            DefaultButton = ContentDialogButton.Primary,
+        }.ShowAsync();
+
+        if (restartResult == ContentDialogResult.Primary)
+        {
+            UACHelper.Run(_settings.StartMode);
+            App.Current.Shutdown();
+        }
+        else
+        {
+            // 用户选择稍后重启，标记为待重启状态
+            plugin.IsPendingRestart = true;
+        }
     }
 
     #endregion
@@ -669,6 +693,13 @@ public partial class PluginMarketInfo : ObservableObject
     public string? InstalledVersion { get; set; }
 
     /// <summary>
+    /// 是否待重启（升级后选择延后重启）
+    /// </summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(ActionStatus))]
+    public partial bool IsPendingRestart { get; set; }
+
+    /// <summary>
     /// 获取操作状态
     /// </summary>
     public PluginActionStatus ActionStatus
@@ -677,6 +708,8 @@ public partial class PluginMarketInfo : ObservableObject
         {
             if (IsDownloading)
                 return PluginActionStatus.Downloading;
+            if (IsPendingRestart)
+                return PluginActionStatus.PendingRestart;
             if (!IsInstalled)
                 return PluginActionStatus.Download;
             if (CanUpgrade)
@@ -709,5 +742,10 @@ public enum PluginActionStatus
     /// <summary>
     /// 下载中
     /// </summary>
-    Downloading
+    Downloading,
+
+    /// <summary>
+    /// 待重启（升级后选择延后重启）
+    /// </summary>
+    PendingRestart
 }
