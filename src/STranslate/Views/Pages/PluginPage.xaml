@@ -203,7 +203,10 @@
                                                 </Style>
                                             </ikw:SimpleStackPanel.Resources>
                                             <!--  官网链接  -->
-                                            <TextBlock Style="{StaticResource ActionIconStyle}" Text="&#xF480;">
+                                            <TextBlock
+                                                Style="{StaticResource ActionIconStyle}"
+                                                Text="&#xF480;"
+                                                ToolTip="{DynamicResource PluginActionWebsite}">
                                                 <TextBlock.InputBindings>
                                                     <MouseBinding
                                                         Command="{Binding Source={StaticResource VmProxy}, Path=Data.OpenOfficialLinkCommand}"
@@ -215,7 +218,8 @@
                                             <TextBlock
                                                 IsEnabled="{Binding IsPrePlugin, Converter={cnvt:BoolInverseConverter}}"
                                                 Style="{StaticResource ActionIconStyle}"
-                                                Text="&#xF34C;">
+                                                Text="&#xF34C;"
+                                                ToolTip="{DynamicResource Delete}">
                                                 <TextBlock.InputBindings>
                                                     <MouseBinding
                                                         Command="{Binding Source={StaticResource VmProxy}, Path=Data.DeletePluginCommand}"
@@ -224,7 +228,10 @@
                                                 </TextBlock.InputBindings>
                                             </TextBlock>
                                             <!--  打开目录  -->
-                                            <TextBlock Style="{StaticResource ActionIconStyle}" Text="&#xF418;">
+                                            <TextBlock
+                                                Style="{StaticResource ActionIconStyle}"
+                                                Text="&#xF418;"
+                                                ToolTip="{DynamicResource OpenDirectory}">
                                                 <TextBlock.InputBindings>
                                                     <MouseBinding
                                                         Command="{Binding Source={StaticResource VmProxy}, Path=Data.OpenPluginDirectoryCommand}"
