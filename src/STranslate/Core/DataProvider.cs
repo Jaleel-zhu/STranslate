@@ -39,6 +39,7 @@ public class DataProvider
         DropdownDataGeneric<BackupType>.UpdateLabels(BackupTypes);
         DropdownDataGeneric<ImageQuality>.UpdateLabels(ImageQualities);
         DropdownDataGeneric<DoubleClickTrayFunction>.UpdateLabels(DoubleClickTrayFunctions);
+        DropdownDataGeneric<PluginMarketCdnSourceType>.UpdateLabels(PluginMarketCdnSources);
     }
 
     #region LangEnums
@@ -175,6 +176,14 @@ public class DataProvider
     public class DoubleClickTrayFunctionData : DropdownDataGeneric<DoubleClickTrayFunction> { }
     public List<DoubleClickTrayFunctionData> DoubleClickTrayFunctions { get; } =
         DropdownDataGeneric<DoubleClickTrayFunction>.GetValues<DoubleClickTrayFunctionData>("DoubleClickTrayFunction");
+
+    #endregion
+
+    #region PluginMarketCdnSources
+
+    public class PluginMarketCdnSourceTypeData : DropdownDataGeneric<PluginMarketCdnSourceType> { }
+    public List<PluginMarketCdnSourceTypeData> PluginMarketCdnSources { get; } =
+        DropdownDataGeneric<PluginMarketCdnSourceType>.GetValues<PluginMarketCdnSourceTypeData>("PluginMarketCdnSourceType");
 
     #endregion
 }

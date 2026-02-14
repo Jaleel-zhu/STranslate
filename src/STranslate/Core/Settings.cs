@@ -258,6 +258,21 @@ public partial class Settings : ObservableObject
 
     #endregion
 
+    #region Plugin Market Settings
+
+    /// <summary>
+    /// 插件市场CDN源
+    /// </summary>
+    [ObservableProperty] public partial PluginMarketCdnSourceType PluginMarketCdnSource { get; set; } = PluginMarketCdnSourceType.JsDelivr;
+
+    /// <summary>
+    /// 自定义插件市场CDN URL模板
+    /// 可用占位符: {author}, {repo}, {branch}, {path}
+    /// </summary>
+    [ObservableProperty] public partial string CustomPluginMarketCdnUrl { get; set; } = "https://fastly.jsdelivr.net/gh/{author}/{repo}@{branch}/{path}";
+
+    #endregion
+
     #region Image Translate Settings
 
     [ObservableProperty] public partial bool IsImTranShowingAnnotated { get; set; } = false;
@@ -674,6 +689,13 @@ public enum DoubleClickTrayFunction
     ToggleMouseHook,
     ToggleGlobalHotkeys,
     Exit
+}
+
+public enum PluginMarketCdnSourceType
+{
+    JsDelivr,
+    GitHubRaw,
+    Custom
 }
 
 #endregion

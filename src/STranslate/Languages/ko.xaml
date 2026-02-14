@@ -110,6 +110,15 @@
     <sys:String x:Key="General_CopyAfterTranslationNotAutomatic">「자동 실행」이 아닌 서비스 번역 후 복사</sys:String>
     <sys:String x:Key="General_CopyAfterOcr">OCR 후 복사</sys:String>
     <sys:String x:Key="General_CopyAfterOcrDescription">모든 텍스트 인식 상황에서 인식 후 결과를 자동으로 복사합니다.</sys:String>
+    <sys:String x:Key="General_PluginMarketCdnSource">플러그인 마켓 CDN 소스</sys:String>
+    <sys:String x:Key="General_PluginMarketCdnSourceDescription">플러그인 마켓 데이터의 CDN 가속 서비스 선택 (GitHub 직접 연결은 캐시 지연 없음)</sys:String>
+    <sys:String x:Key="General_CustomCdnUrl">사용자 지정 CDN URL</sys:String>
+    <sys:String x:Key="General_CustomCdnUrlDescription">사용자 지정 CDN URL 템플릿 입력, {author}, {repo}, {branch}, {path}를 자리 표시자로 사용</sys:String>
+
+    <!--  // PluginMarketCdnSourceType //  -->
+    <sys:String x:Key="PluginMarketCdnSourceTypeJsDelivr">jsDelivr CDN (권장)</sys:String>
+    <sys:String x:Key="PluginMarketCdnSourceTypeGitHubRaw">GitHub 직접 연결</sys:String>
+    <sys:String x:Key="PluginMarketCdnSourceTypeCustom">사용자 지정</sys:String>
 
     <sys:String x:Key="GlobalHotkeys">전역 단축키</sys:String>
     <sys:String x:Key="SoftwareHotkeys">소프트웨어 단축키</sys:String>

@@ -101,9 +101,61 @@ public partial class PluginViewModel : ObservableObject
 
     public ObservableCollection<PluginMarketInfo> Plugins { get; } = [];
 
-    private const string PluginsJsonUrl = "https://fastly.jsdelivr.net/gh/STranslate/STranslate-doc@main/vitepress/plugins.json";
     private const int PluginLoadMaxConcurrency = 6;
     private const int PluginUiBatchSize = 12;
+
+    #endregion
+
+    #region CDN URL 构建
+
+    /// <summary>
+    /// 构建插件市场CDN URL
+    /// </summary>
+    private string BuildCdnUrl(string author, string repo, string branch, string path)
+    {
+        var cdnSource = _settings.PluginMarketCdnSource;
+        string baseUrl = cdnSource switch
+        {
+            PluginMarketCdnSourceType.JsDelivr => "https://fastly.jsdelivr.net/gh/{author}/{repo}@{branch}/{path}",
+            PluginMarketCdnSourceType.GitHubRaw => "https://raw.githubusercontent.com/{author}/{repo}/{branch}/{path}",
+            PluginMarketCdnSourceType.Custom => _settings.CustomPluginMarketCdnUrl,
+            _ => "https://fastly.jsdelivr.net/gh/{author}/{repo}@{branch}/{path}"
+        };
+
+        return baseUrl
+            .Replace("{author}", author)
+            .Replace("{repo}", repo)
+            .Replace("{branch}", branch)
+            .Replace("{path}", path);
+    }
+
+    /// <summary>
+    /// 构建插件下载URL - 始终使用GitHub Releases默认地址
+    /// </summary>
+    private static string BuildDownloadUrl(string author, string packageName, string version)
+    {
+        // 下载统一使用GitHub默认地址，确保可靠性
+        return $"https://github.com/{author}/{packageName}/releases/download/v{version}/{packageName}.spkg";
+    }
+
+    /// <summary>
+    /// 获取插件列表JSON的URL
+    /// </summary>
+    private string GetPluginsJsonUrl()
+    {
+        var cdnSource = _settings.PluginMarketCdnSource;
+        return cdnSource switch
+        {
+            PluginMarketCdnSourceType.JsDelivr => "https://fastly.jsdelivr.net/gh/STranslate/STranslate-doc@main/vitepress/plugins.json",
+            PluginMarketCdnSourceType.GitHubRaw => "https://raw.githubusercontent.com/STranslate/STranslate-doc/main/vitepress/plugins.json",
+            PluginMarketCdnSourceType.Custom => _settings.CustomPluginMarketCdnUrl
+                .Replace("{author}", "STranslate")
+                .Replace("{repo}", "STranslate-doc")
+                .Replace("{branch}", "main")
+                .Replace("{path}", "vitepress/plugins.json"),
+            _ => "https://fastly.jsdelivr.net/gh/STranslate/STranslate-doc@main/vitepress/plugins.json"
+        };
+    }
 
     #endregion
 
@@ -248,7 +300,7 @@ public partial class PluginViewModel : ObservableObject
             Plugins.Clear();
 
             // 1. 获取插件标识符列表
-            var pluginIds = await _httpService.GetAsync<List<string>>(PluginsJsonUrl);
+            var pluginIds = await _httpService.GetAsync<List<string>>(GetPluginsJsonUrl());
 
             if (pluginIds == null || pluginIds.Count == 0)
             {
@@ -328,7 +380,7 @@ public partial class PluginViewModel : ObservableObject
                 branch, pluginInfo.Name, pluginInfo.Description);
 
             // 构建下载 URL
-            var downloadUrl = $"https://github.com/{author}/{packageName}/releases/download/v{pluginInfo.Version}/{packageName}.spkg";
+            var downloadUrl = BuildDownloadUrl(author, packageName, pluginInfo.Version ?? "1.0.0");
 
             return new PluginMarketInfo
             {
@@ -339,7 +391,7 @@ public partial class PluginViewModel : ObservableObject
                 Version = pluginInfo.Version ?? "1.0.0",
                 Description = description ?? string.Empty,
                 Website = pluginInfo.Website ?? $"https://github.com/{author}/{packageName}",
-                IconUrl = $"https://fastly.jsdelivr.net/gh/{author}/{packageName}@{branch}/{packageName}/icon.png",
+                IconUrl = BuildCdnUrl(author, packageName, branch, $"{packageName}/icon.png"),
                 DownloadUrl = downloadUrl,
                 PackageName = packageName
             };
@@ -361,7 +413,7 @@ public partial class PluginViewModel : ObservableObject
         // 优先尝试缓存分支
         if (branchCache.TryGetValue(cacheKey, out var cachedBranch))
         {
-            var cachedUrl = $"https://fastly.jsdelivr.net/gh/{author}/{packageName}@{cachedBranch}/{packageName}/plugin.json";
+            var cachedUrl = BuildCdnUrl(author, packageName, cachedBranch, $"{packageName}/plugin.json");
             try
             {
                 var cachedInfo = await _httpService.GetAsync<PluginInfo>(cachedUrl);
@@ -379,7 +431,7 @@ public partial class PluginViewModel : ObservableObject
         }
 
         // 先尝试 main 分支
-        var mainUrl = $"https://fastly.jsdelivr.net/gh/{author}/{packageName}@main/{packageName}/plugin.json";
+        var mainUrl = BuildCdnUrl(author, packageName, "main", $"{packageName}/plugin.json");
         try
         {
             var pluginInfo = await _httpService.GetAsync<PluginInfo>(mainUrl);
@@ -398,7 +450,7 @@ public partial class PluginViewModel : ObservableObject
             return (null, "main");
         }
 
-        var masterUrl = $"https://fastly.jsdelivr.net/gh/{author}/{packageName}@master/{packageName}/plugin.json";
+        var masterUrl = BuildCdnUrl(author, packageName, "master", $"{packageName}/plugin.json");
         try
         {
             var pluginInfo = await _httpService.GetAsync<PluginInfo>(masterUrl);
@@ -423,7 +475,7 @@ public partial class PluginViewModel : ObservableObject
         string defaultName,
         string defaultDescription)
     {
-        var langUrl = $"https://fastly.jsdelivr.net/gh/{author}/{packageName}@{branch}/{packageName}/Languages/zh-cn.json";
+        var langUrl = BuildCdnUrl(author, packageName, branch, $"{packageName}/Languages/zh-cn.json");
 
         try
         {

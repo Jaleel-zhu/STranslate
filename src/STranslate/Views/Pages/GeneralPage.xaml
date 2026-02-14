@@ -311,6 +311,28 @@
                         SelectedValuePath="Value" />
                 </ui:SettingsCard>
 
+                <ui:SettingsCard Description="{DynamicResource General_PluginMarketCdnSourceDescription}" Header="{DynamicResource General_PluginMarketCdnSource}">
+                    <ui:SettingsCard.HeaderIcon>
+                        <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.Globe_20_Regular}" />
+                    </ui:SettingsCard.HeaderIcon>
+                    <ComboBox
+                        MinWidth="200"
+                        DisplayMemberPath="Display"
+                        ItemsSource="{Binding DataProvider.PluginMarketCdnSources}"
+                        SelectedValue="{Binding Settings.PluginMarketCdnSource}"
+                        SelectedValuePath="Value" />
+                </ui:SettingsCard>
+
+                <ui:SettingsCard Description="{DynamicResource General_CustomCdnUrlDescription}" Header="{DynamicResource General_CustomCdnUrl}"
+                    Visibility="{Binding Settings.PluginMarketCdnSource, Converter={cnvt:EqualToVisibilityConverter}, ConverterParameter={x:Static core:PluginMarketCdnSourceType.Custom}}">
+                    <ui:SettingsCard.HeaderIcon>
+                        <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.Link_20_Regular}" />
+                    </ui:SettingsCard.HeaderIcon>
+                    <TextBox
+                        MinWidth="400"
+                        Text="{Binding Settings.CustomPluginMarketCdnUrl}" />
+                </ui:SettingsCard>
+
                 <!--#endregion-->
 
                 <!--#region Appearance-->

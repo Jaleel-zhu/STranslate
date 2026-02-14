@@ -113,6 +113,15 @@
     <sys:String x:Key="General_CopyAfterTranslationNotAutomatic">Copy after translation for non-"Automatic" services</sys:String>
     <sys:String x:Key="General_CopyAfterOcr">Copy after OCR</sys:String>
     <sys:String x:Key="General_CopyAfterOcrDescription">For all text recognition scenarios, automatically copy the recognition result after OCR.</sys:String>
+    <sys:String x:Key="General_PluginMarketCdnSource">Plugin Market CDN Source</sys:String>
+    <sys:String x:Key="General_PluginMarketCdnSourceDescription">Select CDN acceleration service for plugin market data (GitHub direct has no cache delay)</sys:String>
+    <sys:String x:Key="General_CustomCdnUrl">Custom CDN URL</sys:String>
+    <sys:String x:Key="General_CustomCdnUrlDescription">Enter custom CDN URL template, use {author}, {repo}, {branch}, {path} as placeholders</sys:String>
+
+    <!--  // PluginMarketCdnSourceType //  -->
+    <sys:String x:Key="PluginMarketCdnSourceTypeJsDelivr">jsDelivr CDN (Recommended)</sys:String>
+    <sys:String x:Key="PluginMarketCdnSourceTypeGitHubRaw">GitHub Direct</sys:String>
+    <sys:String x:Key="PluginMarketCdnSourceTypeCustom">Custom</sys:String>
 
     <!--  // Hotkey Page //  -->
     <sys:String x:Key="GlobalHotkeys">Global Hotkeys</sys:String>

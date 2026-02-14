@@ -113,6 +113,15 @@
     <sys:String x:Key="General_CopyAfterTranslationNotAutomatic">非「自动执行」服务翻译后复制</sys:String>
     <sys:String x:Key="General_CopyAfterOcr">OCR后复制</sys:String>
     <sys:String x:Key="General_CopyAfterOcrDescription">针对所有文本识别场景，识别后自动复制识别结果</sys:String>
+    <sys:String x:Key="General_PluginMarketCdnSource">插件市场CDN源</sys:String>
+    <sys:String x:Key="General_PluginMarketCdnSourceDescription">选择插件市场数据的CDN加速服务（GitHub直链无缓存延迟）</sys:String>
+    <sys:String x:Key="General_CustomCdnUrl">自定义CDN URL</sys:String>
+    <sys:String x:Key="General_CustomCdnUrlDescription">输入自定义CDN地址模板，使用 {author}, {repo}, {branch}, {path} 作为占位符</sys:String>
+
+    <!--  // PluginMarketCdnSourceType //  -->
+    <sys:String x:Key="PluginMarketCdnSourceTypeJsDelivr">jsDelivr CDN（推荐）</sys:String>
+    <sys:String x:Key="PluginMarketCdnSourceTypeGitHubRaw">GitHub 直链</sys:String>
+    <sys:String x:Key="PluginMarketCdnSourceTypeCustom">自定义</sys:String>
 
     <!--  // Hotkey Page //  -->
     <sys:String x:Key="GlobalHotkeys">全局热键</sys:String>

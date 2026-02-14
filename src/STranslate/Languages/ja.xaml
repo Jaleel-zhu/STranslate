@@ -110,6 +110,15 @@
     <sys:String x:Key="General_CopyAfterTranslationNotAutomatic">「自動実行」以外の翻訳後にコピー</sys:String>
     <sys:String x:Key="General_CopyAfterOcr">OCR後にコピー</sys:String>
     <sys:String x:Key="General_CopyAfterOcrDescription">すべての文字認識シーンにおいて、認識後に結果を自動コピーします。</sys:String>
+    <sys:String x:Key="General_PluginMarketCdnSource">プラグイン市場CDNソース</sys:String>
+    <sys:String x:Key="General_PluginMarketCdnSourceDescription">プラグイン市場データのCDN加速サービスを選択（GitHub直リンクはキャッシュ遅延なし）</sys:String>
+    <sys:String x:Key="General_CustomCdnUrl">カスタムCDN URL</sys:String>
+    <sys:String x:Key="General_CustomCdnUrlDescription">カスタムCDN URLテンプレートを入力、{author}、{repo}、{branch}、{path}をプレースホルダとして使用</sys:String>
+
+    <!--  // PluginMarketCdnSourceType //  -->
+    <sys:String x:Key="PluginMarketCdnSourceTypeJsDelivr">jsDelivr CDN（推奨）</sys:String>
+    <sys:String x:Key="PluginMarketCdnSourceTypeGitHubRaw">GitHub 直リンク</sys:String>
+    <sys:String x:Key="PluginMarketCdnSourceTypeCustom">カスタム</sys:String>
 
     <sys:String x:Key="GlobalHotkeys">グローバルホットキー</sys:String>
     <sys:String x:Key="SoftwareHotkeys">ソフトウェアホットキー</sys:String>
