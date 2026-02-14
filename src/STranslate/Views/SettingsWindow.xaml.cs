@@ -90,7 +90,7 @@ public partial class SettingsWindow
         ((INavigation)App.Current).IsNavigated = false;
     }
 
-    private void OnKeyDown(object sender, KeyEventArgs e)
+    private void OnKeyDown(object _, KeyEventArgs e)
     {
         if (e.Key is not Key.F || Keyboard.Modifiers is not ModifierKeys.Control) return;
 
@@ -103,20 +103,10 @@ public partial class SettingsWindow
                 FocusAndSelectAll(page.PART_AutoSuggestBox);
                 break;
             case HistoryPage page:
-                page.PART_SearchBox.Focus();
-                page.PART_SearchBox.SelectAll();
+                FocusAndSelectAll(page.PART_SearchBox);
                 break;
             case PluginPage page:
-                if (page.ViewModel.IsMarketView)
-                {
-                    page.MarketFilterTextbox.Focus();
-                    page.MarketFilterTextbox.SelectAll();
-                }
-                else
-                {
-                    page.PluginFilterTextbox.Focus();
-                    page.PluginFilterTextbox.SelectAll();
-                }
+                FocusAndSelectAll(page.ViewModel.IsMarketView ? page.MarketFilterTextbox : page.PluginFilterTextbox);
                 break;
             case HotkeyPage page:
                 FocusAndSelectAll(page.PART_AutoSuggestBox);
@@ -124,14 +114,16 @@ public partial class SettingsWindow
             case NetworkPage page:
                 FocusAndSelectAll(page.PART_AutoSuggestBox);
                 break;
-            default:
-                break;
         }
     }
 
-    private void FocusAndSelectAll(AutoSuggestBox box)
+    private static void FocusAndSelectAll(Control control)
     {
-        box.Focus();
-        Utilities.FindVisualChild<TextBox>(box, "TextBox")?.SelectAll();
+        control.Focus();
+
+        if (control is TextBox textBox)
+            textBox.SelectAll();
+        else if (control is AutoSuggestBox autoSuggestBox)
+            Utilities.FindVisualChild<TextBox>(autoSuggestBox, "TextBox")?.SelectAll();
     }
 }

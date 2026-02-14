@@ -191,17 +191,12 @@
     <sys:String x:Key="DropInstallPlugin">Release to install plugin</sys:String>
 
     <!--  // Plugin Market //  -->
-    <sys:String x:Key="PluginMarket">Plugin Store</sys:String>
     <sys:String x:Key="PluginMarketRefresh">Refresh</sys:String>
-    <sys:String x:Key="PluginMarketSearch">Search plugins...</sys:String>
     <sys:String x:Key="PluginMarketDownload">Download</sys:String>
     <sys:String x:Key="PluginMarketUpgrade">Upgrade</sys:String>
     <sys:String x:Key="PluginMarketInstalled">Installed</sys:String>
     <sys:String x:Key="PluginMarketDownloading">Downloading</sys:String>
-    <sys:String x:Key="PluginMarketMultiSelect">Multi-Select</sys:String>
-    <sys:String x:Key="PluginMarketDownloadSelected">Download Selected</sys:String>
-    <sys:String x:Key="PluginMarketSelectAll">Select All</sys:String>
-    <sys:String x:Key="PluginMarketDeselectAll">Deselect All</sys:String>
+    <sys:String x:Key="Back">Back</sys:String>
     <sys:String x:Key="PluginMarketLoading">Loading...</sys:String>
     <sys:String x:Key="PluginMarketLoadError">Failed to load</sys:String>
     <sys:String x:Key="PluginMarketNoPlugins">No plugins available</sys:String>

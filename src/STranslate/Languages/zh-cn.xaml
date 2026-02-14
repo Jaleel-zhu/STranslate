@@ -191,17 +191,12 @@
     <sys:String x:Key="DropInstallPlugin">松开安装插件</sys:String>
 
     <!--  // Plugin Market //  -->
-    <sys:String x:Key="PluginMarket">商店</sys:String>
     <sys:String x:Key="PluginMarketRefresh">刷新</sys:String>
-    <sys:String x:Key="PluginMarketSearch">搜索插件...</sys:String>
     <sys:String x:Key="PluginMarketDownload">下载</sys:String>
     <sys:String x:Key="PluginMarketUpgrade">升级</sys:String>
     <sys:String x:Key="PluginMarketInstalled">已安装</sys:String>
     <sys:String x:Key="PluginMarketDownloading">下载中</sys:String>
-    <sys:String x:Key="PluginMarketMultiSelect">多选</sys:String>
-    <sys:String x:Key="PluginMarketDownloadSelected">下载选中</sys:String>
-    <sys:String x:Key="PluginMarketSelectAll">全选</sys:String>
-    <sys:String x:Key="PluginMarketDeselectAll">取消全选</sys:String>
+    <sys:String x:Key="Back">返回</sys:String>
     <sys:String x:Key="PluginMarketLoading">加载中...</sys:String>
     <sys:String x:Key="PluginMarketLoadError">加载失败</sys:String>
     <sys:String x:Key="PluginMarketNoPlugins">暂无插件</sys:String>

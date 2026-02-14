@@ -179,7 +179,7 @@ public partial class PluginViewModel : ObservableObject
     [ObservableProperty]
     public partial PluginType PluginType { get; set; } = PluginType.All;
 
-    private void OnPluginFilter(object sender, FilterEventArgs e)
+    private void OnPluginFilter(object _, FilterEventArgs e)
     {
         if (e.Item is not PluginMetaData plugin)
         {
@@ -187,26 +187,10 @@ public partial class PluginViewModel : ObservableObject
             return;
         }
 
-        // 类型筛选
-        var typeMatch = PluginType switch
-        {
-            PluginType.Translate => typeof(ITranslatePlugin).IsAssignableFrom(plugin.PluginType) || typeof(IDictionaryPlugin).IsAssignableFrom(plugin.PluginType),
-            PluginType.Ocr => typeof(IOcrPlugin).IsAssignableFrom(plugin.PluginType),
-            PluginType.Tts => typeof(ITtsPlugin).IsAssignableFrom(plugin.PluginType),
-            PluginType.Vocabulary => typeof(IVocabularyPlugin).IsAssignableFrom(plugin.PluginType),
-            _ => true,
-        };
-
-        // 文本筛选
-        var textMatch = string.IsNullOrEmpty(FilterText)
-            || plugin.Name.Contains(FilterText, StringComparison.OrdinalIgnoreCase)
-            || plugin.Author.Contains(FilterText, StringComparison.OrdinalIgnoreCase)
-            || plugin.Description.Contains(FilterText, StringComparison.OrdinalIgnoreCase);
-
-        e.Accepted = typeMatch && textMatch;
+        e.Accepted = MatchesPluginType(plugin.PluginType) && MatchesText(FilterText, plugin.Name, plugin.Author, plugin.Description);
     }
 
-    private void OnPluginsFilter(object sender, FilterEventArgs e)
+    private void OnPluginsFilter(object _, FilterEventArgs e)
     {
         if (e.Item is not PluginMarketInfo plugin)
         {
@@ -214,8 +198,7 @@ public partial class PluginViewModel : ObservableObject
             return;
         }
 
-        // 分类筛选
-        var categoryMatch = SelectedPluginType switch
+        var typeMatch = SelectedPluginType switch
         {
             PluginType.Translate => plugin.Type == "Translate",
             PluginType.Ocr => plugin.Type == "Ocr",
@@ -224,13 +207,29 @@ public partial class PluginViewModel : ObservableObject
             _ => true
         };
 
-        // 文本筛选
-        var textMatch = string.IsNullOrEmpty(MarketFilterText)
-            || plugin.Name.Contains(MarketFilterText, StringComparison.OrdinalIgnoreCase)
-            || plugin.Author.Contains(MarketFilterText, StringComparison.OrdinalIgnoreCase)
-            || plugin.Description.Contains(MarketFilterText, StringComparison.OrdinalIgnoreCase);
+        e.Accepted = typeMatch && MatchesText(MarketFilterText, plugin.Name, plugin.Author, plugin.Description);
+    }
 
-        e.Accepted = categoryMatch && textMatch;
+    private bool MatchesPluginType(Type pluginType)
+    {
+        return PluginType switch
+        {
+            PluginType.Translate => typeof(ITranslatePlugin).IsAssignableFrom(pluginType) || typeof(IDictionaryPlugin).IsAssignableFrom(pluginType),
+            PluginType.Ocr => typeof(IOcrPlugin).IsAssignableFrom(pluginType),
+            PluginType.Tts => typeof(ITtsPlugin).IsAssignableFrom(pluginType),
+            PluginType.Vocabulary => typeof(IVocabularyPlugin).IsAssignableFrom(pluginType),
+            _ => true
+        };
+    }
+
+    private static bool MatchesText(string filter, string name, string author, string description)
+    {
+        if (string.IsNullOrEmpty(filter))
+            return true;
+
+        return name.Contains(filter, StringComparison.OrdinalIgnoreCase)
+            || author.Contains(filter, StringComparison.OrdinalIgnoreCase)
+            || description.Contains(filter, StringComparison.OrdinalIgnoreCase);
     }
 
     #region 插件市场 - 加载插件列表
@@ -607,33 +606,26 @@ public partial class PluginViewModel : ObservableObject
 
         // 尝试解析为 System.Version
         if (Version.TryParse(localVersion, out var v1) && Version.TryParse(marketVersion, out var v2))
-        {
             return v1.CompareTo(v2);
-        }
 
-        // 手动解析版本号
+        // 回退：手动比较版本号各部分
         var parts1 = ParseVersionParts(localVersion);
         var parts2 = ParseVersionParts(marketVersion);
 
-        int maxLength = Math.Max(parts1.Length, parts2.Length);
-        for (int i = 0; i < maxLength; i++)
+        for (int i = 0; i < Math.Max(parts1.Count(), parts2.Count()); i++)
         {
-            int part1 = i < parts1.Length ? parts1[i] : 0;
-            int part2 = i < parts2.Length ? parts2[i] : 0;
-
-            int result = part1.CompareTo(part2);
+            int result = parts1.ElementAtOrDefault(i).CompareTo(parts2.ElementAtOrDefault(i));
             if (result != 0) return result;
         }
 
         return 0;
     }
 
-    private static int[] ParseVersionParts(string version)
+    private static IEnumerable<int> ParseVersionParts(string version)
     {
         var cleanVersion = new string(version.Where(c => char.IsDigit(c) || c == '.').ToArray());
         return cleanVersion.Split('.', StringSplitOptions.RemoveEmptyEntries)
-            .Select(part => int.TryParse(part, out var num) ? num : 0)
-            .ToArray();
+            .Select(part => int.TryParse(part, out var num) ? num : 0);
     }
 
     #endregion
