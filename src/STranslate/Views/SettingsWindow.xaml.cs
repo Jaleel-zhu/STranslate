@@ -50,7 +50,6 @@ public partial class SettingsWindow
             nameof(StandalonePage) => Ioc.Default.GetRequiredService<StandalonePage>(),
             nameof(HistoryPage) => Ioc.Default.GetRequiredService<HistoryPage>(),
             nameof(PluginPage) => Ioc.Default.GetRequiredService<PluginPage>(),
-            nameof(PluginMarketPage) => Ioc.Default.GetRequiredService<PluginMarketPage>(),
             nameof(HotkeyPage) => Ioc.Default.GetRequiredService<HotkeyPage>(),
             nameof(NetworkPage) => Ioc.Default.GetRequiredService<NetworkPage>(),
             nameof(AboutPage) => Ioc.Default.GetRequiredService < AboutPage>(),
@@ -108,8 +107,16 @@ public partial class SettingsWindow
                 page.PART_SearchBox.SelectAll();
                 break;
             case PluginPage page:
-                page.PluginFilterTextbox.Focus();
-                page.PluginFilterTextbox.SelectAll();
+                if (page.ViewModel.IsMarketView)
+                {
+                    page.MarketFilterTextbox.Focus();
+                    page.MarketFilterTextbox.SelectAll();
+                }
+                else
+                {
+                    page.PluginFilterTextbox.Focus();
+                    page.PluginFilterTextbox.SelectAll();
+                }
                 break;
             case HotkeyPage page:
                 FocusAndSelectAll(page.PART_AutoSuggestBox);

@@ -99,8 +99,7 @@ dotnet build STranslate.slnx --configuration Debug
 翻译输出控件        -> STranslate/Controls/OutputControl.xaml
 头部控件            -> STranslate/Controls/HeaderControl.xaml
 
-插件页面            -> STranslate/Views/Pages/PluginPage.xaml
-插件市场页面        -> STranslate/Views/Pages/PluginMarketPage.xaml
+插件页面            -> STranslate/Views/Pages/PluginPage.xaml（已安装插件 + 插件市场）
 常规设置页面        -> STranslate/Views/Pages/GeneralPage.xaml
 热键设置页面        -> STranslate/Views/Pages/HotkeyPage.xaml
 
@@ -116,22 +115,31 @@ HTTP 服务           -> STranslate/Core/HttpService.cs
 | 添加新的设置项 | `STranslate/Models/ConfigModel.cs` + `STranslate/Views/Pages/GeneralPage.xaml` |
 | 添加页面到设置窗口 | `STranslate/Views/SettingsWindow.xaml` 的导航菜单 |
 | 添加新的图标按钮 | 参考 `PluginPage.xaml` 中的 `ActionIconStyle` |
-| 添加带状态的按钮 | 参考 `PluginMarketPage.xaml` 的多状态图标样式 |
-| 添加进度显示 | 参考 `PluginMarketPage.xaml` 的下载进度条 |
+| 添加带状态的按钮 | 参考 `PluginPage.xaml` 市场视图的多状态图标样式 |
+| 添加进度显示 | 参考 `PluginPage.xaml` 市场视图的下载进度条 |
 | 添加拖放功能 | 参考 `PluginPage.xaml` 的 `AllowDrop` 实现 |
+| 视图切换（Visibility） | 参考 `PluginPage.xaml` 的 `IsMarketView` 绑定 |
 
 ## 最近更新 (2026-02-14)
 
-### 插件市场 UI 优化
-- **卡片布局统一**：插件市场页面 (`PluginMarketPage.xaml`) 和已安装插件页面 (`PluginPage.xaml`) 统一采用卡片网格布局
-- **图标按钮**：将文本按钮替换为图标按钮，使用 Fluent System Icons 字体图标
-- **居中显示**：WrapPanel 设置 `HorizontalAlignment="Center"`，使不完整行居中显示
-- **新增项目主页按钮**：插件市场卡片添加项目主页跳转链接
+### 插件页面合并
+- **页面合并**：`PluginPage.xaml` 和 `PluginMarketPage.xaml` 合并为统一的插件管理页面
+- **视图切换**：通过"市场"/"返回"按钮在同一页面内切换"已安装插件"和"插件市场"视图
+- **延迟加载**：插件市场数据首次切换到该视图时才加载，避免页面初始化时的网络卡顿
+- **ViewModel 合并**：`PluginMarketViewModel.cs` 功能合并到 `PluginViewModel.cs`
 
 ### 关键文件变更
-- `STranslate/Views/Pages/PluginMarketPage.xaml` - 卡片布局、图标按钮、主页链接
-- `STranslate/Views/Pages/PluginPage.xaml` - 统一卡片样式、添加 ToolTip
-- `STranslate/Converters/PluginMarketConverters.cs` - 添加状态到可见性转换器
-- `STranslate/ViewModels/Pages/PluginMarketViewModel.cs` - 添加 `OpenOfficialLinkCommand`
-- `STranslate/Languages/*.xaml` - 新增国际化字符串
+- `STranslate/Views/Pages/PluginPage.xaml` - 整合市场视图内容，添加视图切换支持
+- `STranslate/ViewModels/Pages/PluginViewModel.cs` - 合并市场功能（加载、下载、升级等）
+- `STranslate/Views/SettingsWindow.xaml` - 移除独立的插件市场导航项
+- `STranslate/Views/SettingsWindow.xaml.cs` - 移除 PluginMarketPage 导航逻辑
+- ~~`STranslate/Views/Pages/PluginMarketPage.xaml`~~ - 已删除
+- ~~`STranslate/Views/Pages/PluginMarketPage.xaml.cs`~~ - 已删除
+- ~~`STranslate/ViewModels/Pages/PluginMarketViewModel.cs`~~ - 已删除
+
+### 实现细节
+- 使用 `IsMarketView` 属性控制视图切换（`BoolToVisibilityConverter`）
+- 使用 `IsMarketInitialized` 标志实现延迟加载
+- `ToggleMarketViewCommand` 命令处理视图切换
+- 保留原有的拖放安装功能（仅在已安装视图可用）
 

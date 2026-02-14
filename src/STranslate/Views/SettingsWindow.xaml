@@ -146,12 +146,6 @@
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
 
-                <ui:NavigationViewItem Content="{DynamicResource PluginMarket}" Tag="PluginMarketPage">
-                    <ui:NavigationViewItem.Icon>
-                        <ui:BitmapIcon ShowAsMonochrome="False" UriSource="/Resources/store.png" />
-                    </ui:NavigationViewItem.Icon>
-                </ui:NavigationViewItem>
-
                 <ui:NavigationViewItem Content="{DynamicResource Hotkeys}" Tag="HotkeyPage">
                     <ui:NavigationViewItem.Icon>
                         <ui:BitmapIcon ShowAsMonochrome="False" UriSource="/Resources/keyboard.png" />
