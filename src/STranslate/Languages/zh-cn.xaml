@@ -123,6 +123,12 @@
     <sys:String x:Key="PluginMarketCdnSourceTypeGitHubRaw">GitHub 直链</sys:String>
     <sys:String x:Key="PluginMarketCdnSourceTypeCustom">自定义</sys:String>
 
+    <!--  // PluginDownloadProxyType //  -->
+    <sys:String x:Key="PluginDownloadProxyTypeGitHub">GitHub 直连</sys:String>
+    <sys:String x:Key="PluginDownloadProxyTypeGhProxyMirror">mirror.ghproxy.com</sys:String>
+    <sys:String x:Key="PluginDownloadProxyTypeGhProxyNet">ghproxy.net</sys:String>
+    <sys:String x:Key="PluginDownloadProxyTypeCustom">自定义</sys:String>
+
     <!--  // Hotkey Page //  -->
     <sys:String x:Key="GlobalHotkeys">全局热键</sys:String>
     <sys:String x:Key="SoftwareHotkeys">软件热键</sys:String>
@@ -503,6 +509,11 @@
 
     <sys:String x:Key="PluginMarketSettings">高级配置</sys:String>
     <sys:String x:Key="PluginMarketSettingsChanged">CDN 源设置已更改，是否立即刷新插件列表？</sys:String>
+    <sys:String x:Key="PluginDownloadProxy">下载代理</sys:String>
+    <sys:String x:Key="PluginDownloadProxyDescription">用于加速 GitHub Releases 下载</sys:String>
+    <sys:String x:Key="PluginDownloadProxyUrl">自定义代理 URL</sys:String>
+    <sys:String x:Key="PluginDownloadProxyUrlDescription">输入自定义代理地址</sys:String>
+    <sys:String x:Key="PluginDownloadProxyUrlExample">例如：https://mirror.ghproxy.com/</sys:String>
 
     <sys:String x:Key="ProxyTypeSystem">系统代理</sys:String>
     <sys:String x:Key="ProxyTypeHttp">HTTP代理</sys:String>

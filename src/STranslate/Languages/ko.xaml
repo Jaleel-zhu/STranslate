@@ -120,6 +120,12 @@
     <sys:String x:Key="PluginMarketCdnSourceTypeGitHubRaw">GitHub 직접 연결</sys:String>
     <sys:String x:Key="PluginMarketCdnSourceTypeCustom">사용자 지정</sys:String>
 
+    <!--  // PluginDownloadProxyType //  -->
+    <sys:String x:Key="PluginDownloadProxyTypeGitHub">GitHub 직접 연결</sys:String>
+    <sys:String x:Key="PluginDownloadProxyTypeGhProxyMirror">mirror.ghproxy.com</sys:String>
+    <sys:String x:Key="PluginDownloadProxyTypeGhProxyNet">ghproxy.net</sys:String>
+    <sys:String x:Key="PluginDownloadProxyTypeCustom">사용자 지정</sys:String>
+
     <sys:String x:Key="GlobalHotkeys">전역 단축키</sys:String>
     <sys:String x:Key="SoftwareHotkeys">소프트웨어 단축키</sys:String>
     <sys:String x:Key="Hotkey_OpenSTranslate">STranslate 열기</sys:String>
@@ -486,6 +492,11 @@
 
     <sys:String x:Key="PluginMarketSettings">고급 설정</sys:String>
     <sys:String x:Key="PluginMarketSettingsChanged">CDN 소스 설정이 변경되었습니다. 지금 플러그인 목록을 새로고침하시겠습니까?</sys:String>
+    <sys:String x:Key="PluginDownloadProxy">다운로드 프록시</sys:String>
+    <sys:String x:Key="PluginDownloadProxyDescription">GitHub Releases 다운로드 가속에 사용</sys:String>
+    <sys:String x:Key="PluginDownloadProxyUrl">사용자 지정 프록시 URL</sys:String>
+    <sys:String x:Key="PluginDownloadProxyUrlDescription">사용자 지정 프록시 주소 입력</sys:String>
+    <sys:String x:Key="PluginDownloadProxyUrlExample">예시: https://mirror.ghproxy.com/</sys:String>
 
     <sys:String x:Key="ProxyTypeSystem">시스템 프록시</sys:String>
     <sys:String x:Key="ProxyTypeHttp">HTTP 프록시</sys:String>

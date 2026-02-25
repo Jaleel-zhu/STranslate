@@ -45,6 +45,25 @@
                 Visibility="{Binding IsCustomCdnSource, Converter={cnvt:BoolToVisibilityConverter}}">
                 <TextBox MinWidth="350" Text="{Binding CustomCdnUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </ui:SettingsCard>
+
+            <ui:SettingsCard Description="{DynamicResource PluginDownloadProxyDescription}" Header="{DynamicResource PluginDownloadProxy}">
+                <ComboBox
+                    MinWidth="200"
+                    DisplayMemberPath="Display"
+                    ItemsSource="{Binding DataProvider.PluginDownloadProxies}"
+                    SelectedValue="{Binding SelectedDownloadProxy, Mode=TwoWay}"
+                    SelectedValuePath="Value" />
+            </ui:SettingsCard>
+
+            <ui:SettingsCard
+                Description="{DynamicResource PluginDownloadProxyUrlDescription}"
+                Header="{DynamicResource PluginDownloadProxyUrl}"
+                Visibility="{Binding IsCustomDownloadProxy, Converter={cnvt:BoolToVisibilityConverter}}">
+                <TextBox
+                    MinWidth="350"
+                    Text="{Binding CustomDownloadProxyUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    ToolTipService.ToolTip="{DynamicResource PluginDownloadProxyUrlExample}" />
+            </ui:SettingsCard>
         </ikw:SimpleStackPanel>
     </ui:ScrollViewerEx>
 </ui:ContentDialog>

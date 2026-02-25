@@ -271,6 +271,16 @@ public partial class Settings : ObservableObject
     /// </summary>
     [ObservableProperty] public partial string CustomPluginMarketCdnUrl { get; set; } = "https://fastly.jsdelivr.net/gh/{author}/{repo}@{branch}/{path}";
 
+    /// <summary>
+    /// 插件下载代理类型
+    /// </summary>
+    [ObservableProperty] public partial PluginDownloadProxyType PluginDownloadProxy { get; set; } = PluginDownloadProxyType.GitHub;
+
+    /// <summary>
+    /// 自定义下载代理URL
+    /// </summary>
+    [ObservableProperty] public partial string CustomDownloadProxyUrl { get; set; } = string.Empty;
+
     #endregion
 
     #region Image Translate Settings
@@ -695,6 +705,14 @@ public enum PluginMarketCdnSourceType
 {
     JsDelivr,
     GitHubRaw,
+    Custom
+}
+
+public enum PluginDownloadProxyType
+{
+    GitHub,
+    GhProxyMirror,
+    GhProxyNet,
     Custom
 }
 

@@ -120,6 +120,12 @@
     <sys:String x:Key="PluginMarketCdnSourceTypeGitHubRaw">GitHub 直リンク</sys:String>
     <sys:String x:Key="PluginMarketCdnSourceTypeCustom">カスタム</sys:String>
 
+    <!--  // PluginDownloadProxyType //  -->
+    <sys:String x:Key="PluginDownloadProxyTypeGitHub">GitHub 直接接続</sys:String>
+    <sys:String x:Key="PluginDownloadProxyTypeGhProxyMirror">mirror.ghproxy.com</sys:String>
+    <sys:String x:Key="PluginDownloadProxyTypeGhProxyNet">ghproxy.net</sys:String>
+    <sys:String x:Key="PluginDownloadProxyTypeCustom">カスタム</sys:String>
+
     <sys:String x:Key="GlobalHotkeys">グローバルホットキー</sys:String>
     <sys:String x:Key="SoftwareHotkeys">ソフトウェアホットキー</sys:String>
     <sys:String x:Key="Hotkey_OpenSTranslate">STranslateを開く</sys:String>
@@ -486,6 +492,11 @@
 
     <sys:String x:Key="PluginMarketSettings">詳細設定</sys:String>
     <sys:String x:Key="PluginMarketSettingsChanged">CDNソース設定が変更されました。プラグインリストを今すぐ更新しますか？</sys:String>
+    <sys:String x:Key="PluginDownloadProxy">ダウンロードプロキシ</sys:String>
+    <sys:String x:Key="PluginDownloadProxyDescription">GitHub Releasesのダウンロードを高速化するために使用</sys:String>
+    <sys:String x:Key="PluginDownloadProxyUrl">カスタムプロキシURL</sys:String>
+    <sys:String x:Key="PluginDownloadProxyUrlDescription">カスタムプロキシアドレスを入力</sys:String>
+    <sys:String x:Key="PluginDownloadProxyUrlExample">例：https://mirror.ghproxy.com/</sys:String>
 
     <sys:String x:Key="ProxyTypeSystem">システムプロキシ</sys:String>
     <sys:String x:Key="ProxyTypeHttp">HTTPプロキシ</sys:String>

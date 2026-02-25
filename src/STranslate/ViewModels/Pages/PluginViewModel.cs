@@ -569,9 +569,18 @@ public partial class PluginViewModel : ObservableObject
                 plugin.DownloadStatus = $"{p.Percentage:F0}% ({p.Speed / 1024:F0} KB/s)";
             });
 
+            // 应用下载代理
+            var downloadUrl = _settings.PluginDownloadProxy switch
+            {
+                PluginDownloadProxyType.GhProxyMirror => $"https://mirror.ghproxy.com/{plugin.DownloadUrl}",
+                PluginDownloadProxyType.GhProxyNet => $"https://ghproxy.net/{plugin.DownloadUrl}",
+                PluginDownloadProxyType.Custom => $"{_settings.CustomDownloadProxyUrl.TrimEnd('/')}/{plugin.DownloadUrl}",
+                _ => plugin.DownloadUrl // GitHub 直连
+            };
+
             // 下载文件（支持取消）
             var downloadedPath = await _httpService.DownloadFileAsync(
-                plugin.DownloadUrl, tempPath, fileName, progress: progress, cancellationToken: cancellationToken);
+                downloadUrl, tempPath, fileName, progress: progress, cancellationToken: cancellationToken);
 
             // 检查是否已取消
             cancellationToken.ThrowIfCancellationRequested();
@@ -905,8 +914,8 @@ public partial class PluginViewModel : ObservableObject
         var dialog = new PluginMarketSettingsDialog(_settings, DataProvider);
         var result = await dialog.ShowAsync();
 
-        // 如果保存了设置且当前在市场视图，提示用户刷新以应用新设置
-        if (dialog.IsSaved && IsMarketView && IsMarketInitialized)
+        // 如果 CDN 设置发生变化且当前在市场视图，提示用户刷新以应用新设置
+        if (dialog.IsCdnSettingsChanged && IsMarketView && IsMarketInitialized)
         {
             var refreshResult = await new ContentDialog
             {

@@ -24,10 +24,15 @@ public partial class PluginMarketSettingsDialog : ContentDialog
     /// </summary>
     public bool IsSaved { get; private set; }
 
+    /// <summary>
+    /// 获取或设置一个值，该值指示 CDN 设置是否发生变化
+    /// </summary>
+    public bool IsCdnSettingsChanged { get; private set; }
+
     private void OnPrimaryButtonClick(ContentDialog sender, ContentDialogButtonClickEventArgs args)
     {
         // 保存设置
-        _viewModel.SaveSettings();
+        IsCdnSettingsChanged = _viewModel.SaveSettings();
         IsSaved = true;
     }
 }
@@ -46,17 +51,37 @@ public partial class PluginMarketSettingsViewModel(Settings settings, DataProvid
     [ObservableProperty]
     public partial string CustomCdnUrl { get; set; } = settings.CustomPluginMarketCdnUrl;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsCustomDownloadProxy))]
+    public partial PluginDownloadProxyType SelectedDownloadProxy { get; set; } = settings.PluginDownloadProxy;
+
+    [ObservableProperty]
+    public partial string CustomDownloadProxyUrl { get; set; } = settings.CustomDownloadProxyUrl;
+
     /// <summary>
     /// 是否为自定义 CDN 源
     /// </summary>
     public bool IsCustomCdnSource => SelectedCdnSource == PluginMarketCdnSourceType.Custom;
 
     /// <summary>
-    /// 保存设置到 Settings 对象
+    /// 是否为自定义下载代理
     /// </summary>
-    public void SaveSettings()
+    public bool IsCustomDownloadProxy => SelectedDownloadProxy == PluginDownloadProxyType.Custom;
+
+    /// <summary>
+    /// 保存设置到 Settings 对象，返回 CDN 设置是否发生变化
+    /// </summary>
+    public bool SaveSettings()
     {
+        // 检查 CDN 设置是否发生变化
+        var isCdnChanged = settings.PluginMarketCdnSource != SelectedCdnSource ||
+                           settings.CustomPluginMarketCdnUrl != CustomCdnUrl;
+
         settings.PluginMarketCdnSource = SelectedCdnSource;
         settings.CustomPluginMarketCdnUrl = CustomCdnUrl;
+        settings.PluginDownloadProxy = SelectedDownloadProxy;
+        settings.CustomDownloadProxyUrl = CustomDownloadProxyUrl;
+
+        return isCdnChanged;
     }
 }

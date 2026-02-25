@@ -123,6 +123,12 @@
     <sys:String x:Key="PluginMarketCdnSourceTypeGitHubRaw">GitHub Direct</sys:String>
     <sys:String x:Key="PluginMarketCdnSourceTypeCustom">Custom</sys:String>
 
+    <!--  // PluginDownloadProxyType //  -->
+    <sys:String x:Key="PluginDownloadProxyTypeGitHub">GitHub Direct</sys:String>
+    <sys:String x:Key="PluginDownloadProxyTypeGhProxyMirror">mirror.ghproxy.com</sys:String>
+    <sys:String x:Key="PluginDownloadProxyTypeGhProxyNet">ghproxy.net</sys:String>
+    <sys:String x:Key="PluginDownloadProxyTypeCustom">Custom</sys:String>
+
     <!--  // Hotkey Page //  -->
     <sys:String x:Key="GlobalHotkeys">Global Hotkeys</sys:String>
     <sys:String x:Key="SoftwareHotkeys">Software Hotkeys</sys:String>
@@ -502,6 +508,11 @@
 
     <sys:String x:Key="PluginMarketSettings">Advanced Settings</sys:String>
     <sys:String x:Key="PluginMarketSettingsChanged">CDN source settings changed. Refresh plugin list now?</sys:String>
+    <sys:String x:Key="PluginDownloadProxy">Download Proxy</sys:String>
+    <sys:String x:Key="PluginDownloadProxyDescription">Used to accelerate GitHub Releases downloads</sys:String>
+    <sys:String x:Key="PluginDownloadProxyUrl">Custom Proxy URL</sys:String>
+    <sys:String x:Key="PluginDownloadProxyUrlDescription">Enter custom proxy address</sys:String>
+    <sys:String x:Key="PluginDownloadProxyUrlExample">Example: https://mirror.ghproxy.com/</sys:String>
 
     <sys:String x:Key="ProxyTypeSystem">System</sys:String>
     <sys:String x:Key="ProxyTypeHttp">HTTP</sys:String>
