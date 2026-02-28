@@ -58,7 +58,11 @@
     <sys:String x:Key="General_TranslateOnPasteDescription">輸入框內貼上文字立即執行翻譯。</sys:String>
     <sys:String x:Key="General_AutoTranslate">自動翻譯</sys:String>
     <sys:String x:Key="General_AutoTranslateDescription">輸入內容等待一定時間後自動執行翻譯。</sys:String>
+    <sys:String x:Key="General_InstantTranslate">立即翻譯</sys:String>
+    <sys:String x:Key="General_InstantTranslateDescription">以下操作觸發後將立即執行翻譯。</sys:String>
     <sys:String x:Key="General_AutoTranslateButtonVisible">在主界面上顯示自動翻譯按鈕</sys:String>
+    <sys:String x:Key="General_AutoTranslateOnPromptChanged">切換提示詞後自動翻譯</sys:String>
+    <sys:String x:Key="General_AutoTranslateOnPromptChangedDescription">切換 AI 翻譯服務的提示詞後，立即重新執行翻譯。</sys:String>
     <sys:String x:Key="General_AutoTranslateDelay">自動翻譯延時</sys:String>
     <sys:String x:Key="General_AutoTranslateDelayDescription">輸入內容等待時間，單位：毫秒。</sys:String>
     <sys:String x:Key="General_LineBreakHandleType">取詞換行處理</sys:String>

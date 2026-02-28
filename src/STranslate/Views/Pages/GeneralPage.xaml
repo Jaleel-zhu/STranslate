@@ -268,15 +268,26 @@
                     </ui:SettingsExpander.Items>
                 </ui:SettingsExpander>
 
-                <ui:SettingsCard Description="{DynamicResource General_TranslateOnPasteDescription}" Header="{DynamicResource General_TranslateOnPaste}">
-                    <ui:SettingsCard.HeaderIcon>
-                        <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.ClipboardArrowRight_20_Regular}" />
-                    </ui:SettingsCard.HeaderIcon>
-                    <ui:ToggleSwitch
-                        IsOn="{Binding Settings.TranslateOnPaste}"
-                        OffContent="{DynamicResource Disable}"
-                        OnContent="{DynamicResource Enable}" />
-                </ui:SettingsCard>
+                <ui:SettingsExpander Description="{DynamicResource General_InstantTranslateDescription}" Header="{DynamicResource General_InstantTranslate}">
+                    <ui:SettingsExpander.HeaderIcon>
+                        <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.Flash_20_Regular}" />
+                    </ui:SettingsExpander.HeaderIcon>
+                    <ui:SettingsExpander.Items>
+                        <ui:SettingsCard Description="{DynamicResource General_TranslateOnPasteDescription}" Header="{DynamicResource General_TranslateOnPaste}">
+                            <ui:ToggleSwitch
+                                IsOn="{Binding Settings.TranslateOnPaste}"
+                                OffContent="{DynamicResource Disable}"
+                                OnContent="{DynamicResource Enable}" />
+                        </ui:SettingsCard>
+
+                        <ui:SettingsCard Description="{DynamicResource General_AutoTranslateOnPromptChangedDescription}" Header="{DynamicResource General_AutoTranslateOnPromptChanged}">
+                            <ui:ToggleSwitch
+                                IsOn="{Binding Settings.AutoTranslateOnPromptChanged}"
+                                OffContent="{DynamicResource Disable}"
+                                OnContent="{DynamicResource Enable}" />
+                        </ui:SettingsCard>
+                    </ui:SettingsExpander.Items>
+                </ui:SettingsExpander>
 
                 <ui:SettingsCard Description="{DynamicResource General_LineBreakHandleTypeDescription}" Header="{DynamicResource General_LineBreakHandleType}">
                     <ui:SettingsCard.HeaderIcon>

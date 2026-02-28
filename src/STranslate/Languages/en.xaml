@@ -58,7 +58,11 @@
     <sys:String x:Key="General_TranslateOnPasteDescription">Execute translation immediately when text is pasted into the input box.</sys:String>
     <sys:String x:Key="General_AutoTranslate">Auto-Translate</sys:String>
     <sys:String x:Key="General_AutoTranslateDescription">Automatically executes translation after a certain waiting time when inputting content.</sys:String>
+    <sys:String x:Key="General_InstantTranslate">Instant Translate</sys:String>
+    <sys:String x:Key="General_InstantTranslateDescription">Run translation immediately when the following actions occur.</sys:String>
     <sys:String x:Key="General_AutoTranslateButtonVisible">Show automatic translation button on main interface</sys:String>
+    <sys:String x:Key="General_AutoTranslateOnPromptChanged">Auto-translate on Prompt Switch</sys:String>
+    <sys:String x:Key="General_AutoTranslateOnPromptChangedDescription">Re-run translation immediately after switching prompt for AI translation services.</sys:String>
     <sys:String x:Key="General_AutoTranslateDelay">Auto-Translate Delay</sys:String>
     <sys:String x:Key="General_AutoTranslateDelayDescription">Waiting time after inputting content, unit: milliseconds.</sys:String>
     <sys:String x:Key="General_LineBreakHandleType">Line Break Handling</sys:String>

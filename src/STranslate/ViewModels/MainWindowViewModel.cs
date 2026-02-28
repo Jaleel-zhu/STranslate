@@ -655,7 +655,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         else
             _snackbar.ShowInfo(_i18n.GetTranslation("AutoTranslateDisabled"));
     }
-
+    
     #endregion
 
     #endregion

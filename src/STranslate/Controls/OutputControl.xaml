@@ -37,7 +37,25 @@
             DisplayMemberPath="Name"
             ItemsSource="{Binding Plugin.Prompts}"
             SelectedItem="{Binding Plugin.SelectedPrompt, Mode=TwoWay}"
-            Visibility="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=ShowPrompt, Converter={cnvt:BoolToVisibilityConverter}}" />
+            Visibility="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=ShowPrompt, Converter={cnvt:BoolToVisibilityConverter}}">
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="SelectionChanged">
+                    <i:Interaction.Behaviors>
+                        <i:ConditionBehavior>
+                            <i:ConditionalExpression>
+                                <i:ComparisonCondition
+                                    LeftOperand="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=DataContext.Settings.AutoTranslateOnPromptChanged}"
+                                    Operator="Equal"
+                                    RightOperand="True" />
+                            </i:ConditionalExpression>
+                        </i:ConditionBehavior>
+                    </i:Interaction.Behaviors>
+                    <i:InvokeCommandAction
+                        Command="{Binding RelativeSource={RelativeSource AncestorType=control:OutputControl}, Path=RetryCommand}"
+                        CommandParameter="{Binding}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+        </ComboBox>
     </DataTemplate>
 
     <DataTemplate x:Key="EmptyTemplate" />

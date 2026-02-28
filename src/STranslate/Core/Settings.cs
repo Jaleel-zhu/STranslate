@@ -108,6 +108,11 @@ public partial class Settings : ObservableObject
     /// 粘贴时自动翻译
     /// </summary>
     [ObservableProperty] public partial bool TranslateOnPaste { get; set; } = true;
+    
+    /// <summary>
+    /// 切换提示词后自动翻译
+    /// </summary>
+    [ObservableProperty] public partial bool AutoTranslateOnPromptChanged { get; set; } = false;
 
     [ObservableProperty] public partial bool IsAutoTranslateVisible { get; set; } = true;
 

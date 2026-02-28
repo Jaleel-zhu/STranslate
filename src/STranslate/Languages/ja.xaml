@@ -55,7 +55,11 @@
     <sys:String x:Key="General_TranslateOnPasteDescription">入力ボックスにテキストを貼り付けると、直ちに翻訳を実行します。</sys:String>
     <sys:String x:Key="General_AutoTranslate">自動翻訳</sys:String>
     <sys:String x:Key="General_AutoTranslateDescription">入力後、一定時間待機してから自動的に翻訳を実行します。</sys:String>
+    <sys:String x:Key="General_InstantTranslate">即時翻訳</sys:String>
+    <sys:String x:Key="General_InstantTranslateDescription">以下の操作が発生したら、すぐに翻訳を実行します。</sys:String>
     <sys:String x:Key="General_AutoTranslateButtonVisible">メイン画面に自動翻訳ボタンを表示</sys:String>
+    <sys:String x:Key="General_AutoTranslateOnPromptChanged">プロンプト切替後に自動翻訳</sys:String>
+    <sys:String x:Key="General_AutoTranslateOnPromptChangedDescription">AI翻訳サービスのプロンプトを切り替えた直後に、翻訳を再実行します。</sys:String>
     <sys:String x:Key="General_AutoTranslateDelay">自動翻訳の遅延</sys:String>
     <sys:String x:Key="General_AutoTranslateDelayDescription">入力後の待機時間。単位：ミリ秒。</sys:String>
     <sys:String x:Key="General_LineBreakHandleType">改行処理</sys:String>
