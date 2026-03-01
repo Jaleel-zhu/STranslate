@@ -43,23 +43,6 @@ public partial class GeneralViewModel : SearchViewModelBase
     private void ResetFontSize() => Settings.FontSize = 14;
 
     [RelayCommand]
-    private void ResetHeaderActions()
-    {
-        _isSyncingMainHeaderActions = true;
-        try
-        {
-            ReplaceItems(VisibleHeaderActions, MainHeaderActions.DefaultOrder);
-            ReplaceItems(AvailableHeaderActions, []);
-        }
-        finally
-        {
-            _isSyncingMainHeaderActions = false;
-        }
-
-        SyncMainHeaderActions();
-    }
-
-    [RelayCommand]
     private void ShowAllHeaderActions()
     {
         _isSyncingMainHeaderActions = true;

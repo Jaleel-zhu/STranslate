@@ -104,7 +104,6 @@
     <sys:String x:Key="General_MainHeaderConfigDescription">Drag items from the pool into preview to show, drag back to hide, and reorder directly in preview.</sys:String>
     <sys:String x:Key="General_MainHeaderPreview">Preview (Main Header)</sys:String>
     <sys:String x:Key="General_MainHeaderPool">Action Pool (Hidden)</sys:String>
-    <sys:String x:Key="General_MainHeaderConfigHint">Supports drag-and-drop sorting in preview. History navigation is a grouped item.</sys:String>
     <sys:String x:Key="General_MainHeaderShowAll">Show All</sys:String>
     <sys:String x:Key="General_MainHeaderHideAll">Hide All</sys:String>
     <sys:String x:Key="General_FontSize">Font Size</sys:String>

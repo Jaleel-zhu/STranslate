@@ -104,7 +104,6 @@
     <sys:String x:Key="General_MainHeaderConfigDescription">拖拽下方控件到預覽區即可顯示，拖回控件池即可隱藏，並支援在預覽區內排序。</sys:String>
     <sys:String x:Key="General_MainHeaderPreview">預覽區（主介面 Header）</sys:String>
     <sys:String x:Key="General_MainHeaderPool">控件池（未顯示）</sys:String>
-    <sys:String x:Key="General_MainHeaderConfigHint">支援在預覽區內拖拽排序；歷史導航為組合項。</sys:String>
     <sys:String x:Key="General_MainHeaderShowAll">全部顯示</sys:String>
     <sys:String x:Key="General_MainHeaderHideAll">全部隱藏</sys:String>
     <sys:String x:Key="General_FontSize">字體大小</sys:String>

@@ -101,7 +101,6 @@
     <sys:String x:Key="General_MainHeaderConfigDescription">下のプールからプレビューへドラッグすると表示、戻すと非表示になり、プレビュー内で並び替えできます。</sys:String>
     <sys:String x:Key="General_MainHeaderPreview">プレビュー（メイン Header）</sys:String>
     <sys:String x:Key="General_MainHeaderPool">コントロールプール（非表示）</sys:String>
-    <sys:String x:Key="General_MainHeaderConfigHint">プレビュー内でドラッグ並び替えに対応。履歴ナビはグループ項目です。</sys:String>
     <sys:String x:Key="General_MainHeaderShowAll">すべて表示</sys:String>
     <sys:String x:Key="General_MainHeaderHideAll">すべて非表示</sys:String>
     <sys:String x:Key="General_FontSize">フォントサイズ</sys:String>
