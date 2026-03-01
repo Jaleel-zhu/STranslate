@@ -618,25 +618,24 @@
                     </ui:SettingsExpander.Items>
                 </ui:SettingsExpander>
 
-                <ui:SettingsCard Description="{DynamicResource General_MainHeaderConfigDescription}" Header="{DynamicResource General_MainHeaderConfig}">
-                    <ui:SettingsCard.HeaderIcon>
-                        <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.PanelBottom_20_Regular}" />
-                    </ui:SettingsCard.HeaderIcon>
-                    <ikw:SimpleStackPanel Spacing="8">
-                        <DockPanel>
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                FontWeight="SemiBold"
-                                Text="{DynamicResource General_MainHeaderPreview}" />
-                            <Button
-                                Command="{Binding ResetHeaderActionsCommand}"
-                                Content="{DynamicResource Reset}"
-                                DockPanel.Dock="Right" />
-                        </DockPanel>
+                <control:CardGroup>
+                    <ui:SettingsCard Description="{DynamicResource General_MainHeaderConfigDescription}" Header="{DynamicResource General_MainHeaderConfig}">
+                        <ui:SettingsCard.HeaderIcon>
+                            <ui:FontIcon Icon="{x:Static ui:FluentSystemIcons.PanelBottom_20_Regular}" />
+                        </ui:SettingsCard.HeaderIcon>
+                        <Button
+                            HorizontalAlignment="Right"
+                            Command="{Binding ResetHeaderActionsCommand}"
+                            Content="{DynamicResource Reset}" />
+                    </ui:SettingsCard>
 
+                    <ui:SettingsCard HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
                         <ListBox
+                            Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ui:SettingsCard}}"
                             MinHeight="42"
                             Padding="8,6"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
                             dd:DragDrop.IsDragSource="True"
                             dd:DragDrop.IsDropTarget="True"
                             dd:DragDrop.UseDefaultDragAdorner="True"
@@ -645,22 +644,25 @@
                             BorderThickness="1"
                             ItemContainerStyle="{StaticResource HeaderActionListBoxItemStyle}"
                             ItemTemplate="{StaticResource HeaderActionPreviewTemplate}"
-                            ItemsSource="{Binding VisibleHeaderActions}">
+                            ItemsSource="{Binding VisibleHeaderActions}"
+                            ScrollViewer.CanContentScroll="False"
+                            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                            ScrollViewer.VerticalScrollBarVisibility="Disabled">
                             <ListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel Orientation="Horizontal" />
                                 </ItemsPanelTemplate>
                             </ListBox.ItemsPanel>
                         </ListBox>
+                    </ui:SettingsCard>
 
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontWeight="SemiBold"
-                            Text="{DynamicResource General_MainHeaderPool}" />
-
+                    <ui:SettingsCard HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
                         <ListBox
+                            Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ui:SettingsCard}}"
                             MinHeight="42"
                             Padding="8,8"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
                             dd:DragDrop.IsDragSource="True"
                             dd:DragDrop.IsDropTarget="True"
                             dd:DragDrop.UseDefaultDragAdorner="True"
@@ -669,20 +671,18 @@
                             BorderThickness="1"
                             ItemContainerStyle="{StaticResource HeaderActionListBoxItemStyle}"
                             ItemTemplate="{StaticResource HeaderActionPoolTemplate}"
-                            ItemsSource="{Binding AvailableHeaderActions}">
+                            ItemsSource="{Binding AvailableHeaderActions}"
+                            ScrollViewer.CanContentScroll="False"
+                            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                            ScrollViewer.VerticalScrollBarVisibility="Disabled">
                             <ListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <WrapPanel />
+                                    <WrapPanel Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ListBox}}" />
                                 </ItemsPanelTemplate>
                             </ListBox.ItemsPanel>
                         </ListBox>
-
-                        <TextBlock
-                            Foreground="{DynamicResource {x:Static ui:ThemeKeys.TextFillColorSecondaryBrushKey}}"
-                            Text="{DynamicResource General_MainHeaderConfigHint}"
-                            TextWrapping="Wrap" />
-                    </ikw:SimpleStackPanel>
-                </ui:SettingsCard>
+                    </ui:SettingsCard>
+                </control:CardGroup>
 
                 <ui:SettingsCard Description="{DynamicResource General_ShowScreenshotAuxiliaryLinesDescription}" Header="{DynamicResource General_ShowScreenshotAuxiliaryLines}">
                     <ui:SettingsCard.HeaderIcon>
