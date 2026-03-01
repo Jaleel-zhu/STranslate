@@ -2,6 +2,10 @@ using CommunityToolkit.Mvvm.Input;
 using STranslate.Core;
 using STranslate.Helpers;
 using STranslate.Plugin;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace STranslate.ViewModels.Pages;
 
@@ -15,7 +19,19 @@ public partial class GeneralViewModel : SearchViewModelBase
         Settings = settings;
         DataProvider = dataProvider;
         Languages = i18n.LoadAvailableLanguages();
+
+        InitializeMainHeaderActions();
+
+        VisibleHeaderActions.CollectionChanged += OnMainHeaderActionsChanged;
+        AvailableHeaderActions.CollectionChanged += OnMainHeaderActionsChanged;
     }
+
+    private bool _isSyncingMainHeaderActions;
+    private bool _isMainHeaderSyncPending;
+
+    public ObservableCollection<string> VisibleHeaderActions { get; } = [];
+
+    public ObservableCollection<string> AvailableHeaderActions { get; } = [];
 
     [RelayCommand]
     private void ResetFontFamily() => Settings.FontFamily = Win32Helper.GetSystemDefaultFont();
@@ -25,6 +41,23 @@ public partial class GeneralViewModel : SearchViewModelBase
 
     [RelayCommand]
     private void ResetFontSize() => Settings.FontSize = 14;
+
+    [RelayCommand]
+    private void ResetHeaderActions()
+    {
+        _isSyncingMainHeaderActions = true;
+        try
+        {
+            ReplaceItems(VisibleHeaderActions, MainHeaderActions.DefaultOrder);
+            ReplaceItems(AvailableHeaderActions, []);
+        }
+        finally
+        {
+            _isSyncingMainHeaderActions = false;
+        }
+
+        SyncMainHeaderActions();
+    }
 
     public List<int> ScreenNumbers
     {
@@ -44,4 +77,100 @@ public partial class GeneralViewModel : SearchViewModelBase
     public DataProvider DataProvider { get; }
 
     public List<I18nPair> Languages { get; }
+
+    private void InitializeMainHeaderActions()
+    {
+        Settings.EnsureMainHeaderVisibleActionsInitialized();
+
+        var normalizedVisible = MainHeaderActions.Normalize(Settings.MainHeaderVisibleActions);
+
+        _isSyncingMainHeaderActions = true;
+        try
+        {
+            ReplaceItems(VisibleHeaderActions, normalizedVisible);
+
+            var visibleSet = normalizedVisible.ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var availableActions = MainHeaderActions.DefaultOrder
+                .Where(action => !visibleSet.Contains(action))
+                .ToList();
+
+            ReplaceItems(AvailableHeaderActions, availableActions);
+        }
+        finally
+        {
+            _isSyncingMainHeaderActions = false;
+        }
+
+        Settings.ApplyMainHeaderVisibleActions(normalizedVisible);
+    }
+
+    private void OnMainHeaderActionsChanged(object? _, NotifyCollectionChangedEventArgs __)
+    {
+        if (_isSyncingMainHeaderActions || _isMainHeaderSyncPending)
+        {
+            return;
+        }
+
+        _isMainHeaderSyncPending = true;
+
+        var dispatcher = Application.Current?.Dispatcher;
+        if (dispatcher == null)
+        {
+            _isMainHeaderSyncPending = false;
+            SyncMainHeaderActions();
+            return;
+        }
+
+        dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+        {
+            _isMainHeaderSyncPending = false;
+            SyncMainHeaderActions();
+        }));
+    }
+
+    private void SyncMainHeaderActions()
+    {
+        if (_isSyncingMainHeaderActions)
+        {
+            return;
+        }
+
+        _isSyncingMainHeaderActions = true;
+        try
+        {
+            var normalizedVisible = MainHeaderActions.Normalize(VisibleHeaderActions);
+            ReplaceItemsIfDifferent(VisibleHeaderActions, normalizedVisible);
+
+            var visibleSet = normalizedVisible.ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var availableActions = MainHeaderActions.DefaultOrder
+                .Where(action => !visibleSet.Contains(action))
+                .ToList();
+            ReplaceItemsIfDifferent(AvailableHeaderActions, availableActions);
+
+            Settings.ApplyMainHeaderVisibleActions(normalizedVisible);
+        }
+        finally
+        {
+            _isSyncingMainHeaderActions = false;
+        }
+    }
+
+    private static void ReplaceItems(ObservableCollection<string> target, IEnumerable<string> source)
+    {
+        target.Clear();
+        foreach (var item in source)
+        {
+            target.Add(item);
+        }
+    }
+
+    private static void ReplaceItemsIfDifferent(ObservableCollection<string> target, IReadOnlyList<string> source)
+    {
+        if (target.Count == source.Count && target.SequenceEqual(source))
+        {
+            return;
+        }
+
+        ReplaceItems(target, source);
+    }
 }

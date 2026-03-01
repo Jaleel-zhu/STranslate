@@ -100,6 +100,11 @@
     <sys:String x:Key="General_ShowOcrButtonDescription">在主界面标题栏显示OCR按钮。</sys:String>
     <sys:String x:Key="General_ShowClipboardMonitor">显示剪贴板监听按钮</sys:String>
     <sys:String x:Key="General_ShowClipboardMonitorDescription">在主界面标题栏显示剪贴板监听切换按钮。</sys:String>
+    <sys:String x:Key="General_MainHeaderConfig">主界面标题栏按钮布局</sys:String>
+    <sys:String x:Key="General_MainHeaderConfigDescription">拖拽下方控件到预览区显示，拖回控件池隐藏，并可在预览区内排序。</sys:String>
+    <sys:String x:Key="General_MainHeaderPreview">预览区（主界面 Header）</sys:String>
+    <sys:String x:Key="General_MainHeaderPool">控件池（未显示）</sys:String>
+    <sys:String x:Key="General_MainHeaderConfigHint">支持在预览区内拖拽排序；历史导航为组合项。</sys:String>
     <sys:String x:Key="General_FontSize">字体大小</sys:String>
     <sys:String x:Key="General_FontSizeDescription">调整除「右键菜单」外的所有字体大小</sys:String>
     <sys:String x:Key="General_OutputShowingControl">输出控件显示控制</sys:String>

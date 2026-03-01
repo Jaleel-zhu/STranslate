@@ -69,6 +69,7 @@ public partial class Settings : ObservableObject
     [ObservableProperty] public partial bool IsOcrVisible { get; set; } = true;
 
     [ObservableProperty] public partial bool IsClipboardMonitorVisible { get; set; } = true;
+    [ObservableProperty] public partial List<string> MainHeaderVisibleActions { get; set; } = [];
 
     [ObservableProperty] public partial DoubleClickTrayFunction DoubleClickTrayFunction { get; set; }
 
@@ -365,12 +366,54 @@ public partial class Settings : ObservableObject
 
     internal void Save() => Storage?.Save();
 
+    public void EnsureMainHeaderVisibleActionsInitialized()
+    {
+        var normalizedActions = MainHeaderActions.Normalize(MainHeaderVisibleActions);
+        if (normalizedActions.Count > 0)
+        {
+            if (!MainHeaderVisibleActions.SequenceEqual(normalizedActions))
+            {
+                MainHeaderVisibleActions = [.. normalizedActions];
+            }
+
+            SyncLegacyMainHeaderVisibility(normalizedActions);
+            return;
+        }
+
+        var migratedActions = new List<string>();
+        if (IsClipboardMonitorVisible) migratedActions.Add(MainHeaderActions.ClipboardMonitor);
+        if (IsAutoTranslateVisible) migratedActions.Add(MainHeaderActions.AutoTranslate);
+        if (IsOcrVisible) migratedActions.Add(MainHeaderActions.Ocr);
+        if (IsImageTranslateVisible) migratedActions.Add(MainHeaderActions.ImageTranslate);
+        if (IsScreenshotTranslateVisible) migratedActions.Add(MainHeaderActions.ScreenshotTranslate);
+        if (IsMouseHookVisible) migratedActions.Add(MainHeaderActions.MouseHook);
+        if (IsColorSchemeVisible) migratedActions.Add(MainHeaderActions.ColorScheme);
+        if (IsHideInputVisible) migratedActions.Add(MainHeaderActions.HideInput);
+        if (IsHistoryNavigationVisible) migratedActions.Add(MainHeaderActions.HistoryNavigation);
+
+        ApplyMainHeaderVisibleActions(migratedActions);
+    }
+
+    public void ApplyMainHeaderVisibleActions(IReadOnlyList<string> actions)
+    {
+        var normalizedActions = MainHeaderActions.Normalize(actions);
+        if (!MainHeaderVisibleActions.SequenceEqual(normalizedActions))
+        {
+            MainHeaderVisibleActions = [.. normalizedActions];
+        }
+
+        SyncLegacyMainHeaderVisibility(normalizedActions);
+    }
+
     public void Initialize()
     {
         if (Storage is null)
         {
             throw new InvalidOperationException("Storage is not set. Please call SetStorage() before Initialize().");
         }
+
+        EnsureMainHeaderVisibleActionsInitialized();
+
         ApplyLogLevel();
         ApplyStartup();
         ApplyStartMode();
@@ -461,6 +504,21 @@ public partial class Settings : ObservableObject
             default:
                 break;
         }
+    }
+
+    private void SyncLegacyMainHeaderVisibility(IReadOnlyList<string> actions)
+    {
+        var actionSet = actions.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        IsClipboardMonitorVisible = actionSet.Contains(MainHeaderActions.ClipboardMonitor);
+        IsAutoTranslateVisible = actionSet.Contains(MainHeaderActions.AutoTranslate);
+        IsOcrVisible = actionSet.Contains(MainHeaderActions.Ocr);
+        IsImageTranslateVisible = actionSet.Contains(MainHeaderActions.ImageTranslate);
+        IsScreenshotTranslateVisible = actionSet.Contains(MainHeaderActions.ScreenshotTranslate);
+        IsMouseHookVisible = actionSet.Contains(MainHeaderActions.MouseHook);
+        IsColorSchemeVisible = actionSet.Contains(MainHeaderActions.ColorScheme);
+        IsHideInputVisible = actionSet.Contains(MainHeaderActions.HideInput);
+        IsHistoryNavigationVisible = actionSet.Contains(MainHeaderActions.HistoryNavigation);
     }
 
     #endregion

@@ -97,6 +97,11 @@
     <sys:String x:Key="General_ShowOcrButtonDescription">メイン画面のタイトルバーにOCRボタンを表示します。</sys:String>
     <sys:String x:Key="General_ShowClipboardMonitor">クリップボード監視ボタンを表示</sys:String>
     <sys:String x:Key="General_ShowClipboardMonitorDescription">メイン画面のタイトルバーにクリップボード監視切替ボタンを表示します。</sys:String>
+    <sys:String x:Key="General_MainHeaderConfig">メインヘッダーボタン配置</sys:String>
+    <sys:String x:Key="General_MainHeaderConfigDescription">下のプールからプレビューへドラッグすると表示、戻すと非表示になり、プレビュー内で並び替えできます。</sys:String>
+    <sys:String x:Key="General_MainHeaderPreview">プレビュー（メイン Header）</sys:String>
+    <sys:String x:Key="General_MainHeaderPool">コントロールプール（非表示）</sys:String>
+    <sys:String x:Key="General_MainHeaderConfigHint">プレビュー内でドラッグ並び替えに対応。履歴ナビはグループ項目です。</sys:String>
     <sys:String x:Key="General_FontSize">フォントサイズ</sys:String>
     <sys:String x:Key="General_FontSizeDescription">「右クリックメニュー」以外のすべてのフォントサイズを調整します。</sys:String>
     <sys:String x:Key="General_OutputShowingControl">出力表示コントロール</sys:String>

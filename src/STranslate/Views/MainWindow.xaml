@@ -112,7 +112,8 @@
             IsTopmost="{Binding IsTopmost}"
             OcrCommand="{Binding OcrCommand}"
             ScreenshotTranslateCommand="{Binding ScreenshotTranslateCommand}"
-            SettingCommand="{Binding OpenSettingsCommand}" />
+            SettingCommand="{Binding OpenSettingsCommand}"
+            VisibleActions="{Binding Settings.MainHeaderVisibleActions}" />
 
         <ui:ScrollViewerEx Margin="10,37,0,5">
             <StackPanel>

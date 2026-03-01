@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Collections.Generic;
 
 namespace STranslate.Controls;
 
@@ -362,6 +363,21 @@ public class HeaderControl : Control
                 FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
     #endregion
+
+    public IEnumerable<string>? VisibleActions
+    {
+        get => (IEnumerable<string>?)GetValue(VisibleActionsProperty);
+        set => SetValue(VisibleActionsProperty, value);
+    }
+
+    public static readonly DependencyProperty VisibleActionsProperty =
+        DependencyProperty.Register(
+            nameof(VisibleActions),
+            typeof(IEnumerable<string>),
+            typeof(HeaderControl),
+            new FrameworkPropertyMetadata(
+                null,
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
     public override void OnApplyTemplate()
     {

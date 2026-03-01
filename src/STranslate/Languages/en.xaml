@@ -100,6 +100,11 @@
     <sys:String x:Key="General_ShowOcrButtonDescription">Display the OCR button in the title bar of the main interface.</sys:String>
     <sys:String x:Key="General_ShowClipboardMonitor">Show Clipboard Monitor Button</sys:String>
     <sys:String x:Key="General_ShowClipboardMonitorDescription">Display the clipboard monitor toggle button in the title bar of the main interface.</sys:String>
+    <sys:String x:Key="General_MainHeaderConfig">Main Header Button Layout</sys:String>
+    <sys:String x:Key="General_MainHeaderConfigDescription">Drag items from the pool into preview to show, drag back to hide, and reorder directly in preview.</sys:String>
+    <sys:String x:Key="General_MainHeaderPreview">Preview (Main Header)</sys:String>
+    <sys:String x:Key="General_MainHeaderPool">Action Pool (Hidden)</sys:String>
+    <sys:String x:Key="General_MainHeaderConfigHint">Supports drag-and-drop sorting in preview. History navigation is a grouped item.</sys:String>
     <sys:String x:Key="General_FontSize">Font Size</sys:String>
     <sys:String x:Key="General_FontSizeDescription">Adjust font size for all elements except the right-click context menu</sys:String>
     <sys:String x:Key="General_OutputShowingControl">Output Display Control</sys:String>
