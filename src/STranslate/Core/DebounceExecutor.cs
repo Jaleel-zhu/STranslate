@@ -4,7 +4,7 @@ public sealed class DebounceExecutor : IDisposable
 {
     private readonly Lock _lock = new();
     private long _generation;
-    private bool _disposed = false;
+    private bool _disposed;
 
     /// <summary>
     /// 取消当前待执行的防抖任务
@@ -13,6 +13,7 @@ public sealed class DebounceExecutor : IDisposable
     {
         lock (_lock)
         {
+            ObjectDisposedException.ThrowIf(_disposed, this);
             _generation++;
         }
     }
@@ -22,10 +23,8 @@ public sealed class DebounceExecutor : IDisposable
     /// </summary>
     public void Execute(Action action, TimeSpan delay)
     {
-        ObjectDisposedException.ThrowIf(_disposed, this);
-
-        var generation = NextGeneration();
-        _ = DelayAndRunAsync(generation, delay, action);
+        var generation = NextGeneration(); // 内部已检查 _disposed
+        _ = RunAfterDelayAsync(generation, delay, action);
     }
 
     /// <summary>
@@ -33,16 +32,15 @@ public sealed class DebounceExecutor : IDisposable
     /// </summary>
     public void ExecuteAsync(Func<Task> asyncAction, TimeSpan delay)
     {
-        ObjectDisposedException.ThrowIf(_disposed, this);
-
         var generation = NextGeneration();
-        _ = DelayAndRunAsync(generation, delay, asyncAction);
+        _ = RunAfterDelayAsync(generation, delay, asyncAction);
     }
 
     private long NextGeneration()
     {
         lock (_lock)
         {
+            ObjectDisposedException.ThrowIf(_disposed, this);
             _generation++;
             return _generation;
         }
@@ -56,24 +54,38 @@ public sealed class DebounceExecutor : IDisposable
         }
     }
 
-    private async Task DelayAndRunAsync(long generation, TimeSpan delay, Action action)
+    private async Task RunAfterDelayAsync(long generation, TimeSpan delay, Action action)
     {
-        await Task.Delay(delay).ConfigureAwait(false);
+        try
+        {
+            await Task.Delay(delay).ConfigureAwait(false);
 
-        if (!IsLatestGeneration(generation))
-            return;
+            if (!IsLatestGeneration(generation))
+                return;
 
-        action.Invoke();
+            action.Invoke();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[DebounceExecutor] Action threw: {ex}");
+        }
     }
 
-    private async Task DelayAndRunAsync(long generation, TimeSpan delay, Func<Task> asyncAction)
+    private async Task RunAfterDelayAsync(long generation, TimeSpan delay, Func<Task> asyncAction)
     {
-        await Task.Delay(delay).ConfigureAwait(false);
+        try
+        {
+            await Task.Delay(delay).ConfigureAwait(false);
 
-        if (!IsLatestGeneration(generation))
-            return;
+            if (!IsLatestGeneration(generation))
+                return;
 
-        await asyncAction().ConfigureAwait(false);
+            await asyncAction().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[DebounceExecutor] AsyncAction threw: {ex}");
+        }
     }
 
     public void Dispose()
