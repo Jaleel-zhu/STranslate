@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 
 namespace STranslate.Core;
 
@@ -15,6 +16,7 @@ public class ExternalCallService(
     INotification notification)
 {
     private HttpListener? _listener;
+    private readonly SemaphoreSlim _externalCallLock = new(1, 1);
 
     public bool IsStarted { get; private set; }
 
@@ -121,7 +123,27 @@ public class ExternalCallService(
 
     private void ExecuteExternalCall(ExternalCallAction action, string content)
     {
-        App.Current.Dispatcher.Invoke(async () =>
+        var dispatcher = App.Current?.Dispatcher;
+        if (dispatcher == null)
+        {
+            logger.LogWarning("Dispatcher is unavailable, skip external action: {Action}", action);
+            return;
+        }
+
+        // 外部接口会被并发请求，串行执行可避免静默任务重叠导致全局光标状态错乱。
+        _ = dispatcher.InvokeAsync(() => ExecuteExternalCallAsync(action, content));
+    }
+
+    /// <summary>
+    /// 在 UI 线程串行执行外部调用，确保后台静默任务不会并发改写全局状态。
+    /// </summary>
+    /// <param name="action">外部调用动作类型</param>
+    /// <param name="content">外部调用内容</param>
+    /// <returns>异步任务</returns>
+    private async Task ExecuteExternalCallAsync(ExternalCallAction action, string content)
+    {
+        await _externalCallLock.WaitAsync();
+        try
         {
             switch (action)
             {
@@ -236,7 +258,15 @@ public class ExternalCallService(
                 default:
                     break;
             }
-        });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "External action execution failed: {Action}", action);
+        }
+        finally
+        {
+            _externalCallLock.Release();
+        }
     }
 
     /// <summary>

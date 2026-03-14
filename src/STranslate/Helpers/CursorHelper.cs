@@ -28,7 +28,8 @@ public static class CursorHelper
 
     #region Fields
     private static readonly object _lock = new();
-    private static volatile bool _isExecuting;
+    // 引用计数用于处理并发静默任务，只有最后一次 Restore 才会真正恢复系统光标。
+    private static int _executionRefCount;
     private static int? _cachedCursorSize; // 缓存光标尺寸
 
     private static HCURSOR _originalNormalCursor;
@@ -53,17 +54,21 @@ public static class CursorHelper
     {
         lock (_lock)
         {
-            if (_isExecuting) return;
+            if (_executionRefCount > 0)
+            {
+                _executionRefCount++;
+                return;
+            }
 
             try
             {
-                _isExecuting = true;
                 SaveOriginalCursors();
                 LoadAndSetCustomCursors();
+                _executionRefCount = 1;
             }
             catch (Exception ex)
             {
-                Restore();
+                RestoreCore();
                 throw new InvalidOperationException("Failed to execute cursor replacement", ex);
             }
         }
@@ -75,15 +80,21 @@ public static class CursorHelper
     /// <exception cref="InvalidOperationException">设置错误光标失败时抛出</exception>
     public static void Error()
     {
-        try
+        lock (_lock)
         {
-            var cursorPath = GetErrorCursorPath();
-            SetErrorCursors(cursorPath);
-        }
-        catch (Exception ex)
-        {
-            Restore();
-            throw new InvalidOperationException("Failed to set error cursors", ex);
+            if (_executionRefCount <= 0)
+                return;
+
+            try
+            {
+                var cursorPath = GetErrorCursorPath();
+                SetErrorCursors(cursorPath);
+            }
+            catch (Exception ex)
+            {
+                RestoreCore();
+                throw new InvalidOperationException("Failed to set error cursors", ex);
+            }
         }
     }
 
@@ -92,17 +103,23 @@ public static class CursorHelper
     /// </summary>
     public static void Restore()
     {
-        if (!_isExecuting) return;
+        lock (_lock)
+        {
+            if (_executionRefCount <= 0)
+                return;
 
-        try
-        {
-            RestoreOriginalCursors();
-            CleanupCustomCursors();
-            UpdateSystemCursors();
-        }
-        finally
-        {
-            _isExecuting = false;
+            _executionRefCount--;
+            if (_executionRefCount > 0)
+                return;
+
+            try
+            {
+                RestoreCore();
+            }
+            finally
+            {
+                _executionRefCount = 0;
+            }
         }
     }
 
@@ -115,19 +132,27 @@ public static class CursorHelper
         {
             try
             {
-                RestoreOriginalCursors();
-                CleanupCustomCursors();
-                UpdateSystemCursors();
+                RestoreCore();
             }
             finally
             {
-                _isExecuting = false;
+                _executionRefCount = 0;
             }
         }
     }
     #endregion
 
     #region Private Methods
+    /// <summary>
+    /// 恢复系统光标并清理句柄。
+    /// </summary>
+    private static void RestoreCore()
+    {
+        RestoreOriginalCursors();
+        CleanupCustomCursors();
+        UpdateSystemCursors();
+    }
+
     /// <summary>
     /// 初始化 DPI 感知，兼容不同 Windows 版本
     /// </summary>
