@@ -294,6 +294,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
             TargetLang = Settings.TargetLang.ToString(),
             Data = []
         };
+        ApplyEffectiveLanguages(history, source, target);
         // 添加新的历史数据记录
         var historyData = history.GetData(service);
         if (historyData == null)
@@ -328,6 +329,9 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         var (_, source, target) = await LanguageDetector
             .GetLanguageAsync(InputText, cancellationToken, StartProcess, CompleteProcess, FinishProcess)
             .ConfigureAwait(false);
+
+        if (history != null)
+            ApplyEffectiveLanguages(history, source, target);
 
         var backResult = await ExecuteBackAsync(plugin, target, source, cancellationToken).ConfigureAwait(false);
         if (!plugin.TransResult.IsSuccess)
@@ -395,10 +399,17 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
             TargetLang = Settings.TargetLang.ToString(),
             Data = []
         };
+        ApplyEffectiveLanguages(history, source, target);
 
         await ExecuteTranslationForServicesAsync(uncachedSvcs, source, target, history, cancellationToken);
 
         return history;
+    }
+
+    private static void ApplyEffectiveLanguages(HistoryModel history, LangEnum source, LangEnum target)
+    {
+        history.EffectiveSourceLang = source.ToString();
+        history.EffectiveTargetLang = target.ToString();
     }
 
     /// <summary>

@@ -29,6 +29,8 @@ public class SqlService
                     Time TEXT NOT NULL,
                     SourceLang TEXT,
                     TargetLang TEXT,
+                    EffectiveSourceLang TEXT,
+                    EffectiveTargetLang TEXT,
                     SourceText TEXT,
                     RawData TEXT,
                     Favorite INTEGER,
@@ -36,6 +38,7 @@ public class SqlService
                 );
             ";
         await connection.ExecuteAsync(createTableSql);
+        await EnsureHistoryEffectiveLanguageColumnsAsync(connection);
     }
 
     /// <summary>
@@ -98,6 +101,8 @@ public class SqlService
             // 使用 Dapper.Contrib 的 Update 方法更新数据
             existingHistory.Time = history.Time;
             existingHistory.Data = history.Data;
+            existingHistory.EffectiveSourceLang = history.EffectiveSourceLang;
+            existingHistory.EffectiveTargetLang = history.EffectiveTargetLang;
             await connection.UpdateAsync(existingHistory);
             return;
         }
@@ -131,6 +136,8 @@ public class SqlService
             // 使用 Dapper.Contrib 的 Update 方法更新数据
             existingHistory.Time = history.Time;
             existingHistory.Data = history.Data;
+            existingHistory.EffectiveSourceLang = history.EffectiveSourceLang;
+            existingHistory.EffectiveTargetLang = history.EffectiveTargetLang;
             await connection.UpdateAsync(existingHistory);
         }
     }
@@ -287,6 +294,8 @@ public class SqlService
                     Time TEXT NOT NULL,
                     SourceLang TEXT,
                     TargetLang TEXT,
+                    EffectiveSourceLang TEXT,
+                    EffectiveTargetLang TEXT,
                     SourceText TEXT,
                     RawData TEXT,
                     Favorite INTEGER,
@@ -294,6 +303,7 @@ public class SqlService
                 );
             ";
         connection.Execute(createTableSql);
+        EnsureHistoryEffectiveLanguageColumns(connection);
     }
 
     /// <summary>
@@ -358,6 +368,8 @@ public class SqlService
                 // 使用 Dapper.Contrib 的 Update 方法更新数据
                 existingHistory.Time = history.Time;
                 existingHistory.Data = history.Data;
+                existingHistory.EffectiveSourceLang = history.EffectiveSourceLang;
+                existingHistory.EffectiveTargetLang = history.EffectiveTargetLang;
                 connection.Update(existingHistory);
                 return;
             }
@@ -404,6 +416,37 @@ public class SqlService
         );
     }
 
+    private static async Task EnsureHistoryEffectiveLanguageColumnsAsync(SqliteConnection connection)
+    {
+        var columns = (await connection.QueryAsync<HistoryTableColumnInfo>("PRAGMA table_info(History);"))
+            .Select(column => column.Name)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        if (!columns.Contains(nameof(HistoryModel.EffectiveSourceLang)))
+            await connection.ExecuteAsync("ALTER TABLE History ADD COLUMN EffectiveSourceLang TEXT;");
+
+        if (!columns.Contains(nameof(HistoryModel.EffectiveTargetLang)))
+            await connection.ExecuteAsync("ALTER TABLE History ADD COLUMN EffectiveTargetLang TEXT;");
+    }
+
+    private static void EnsureHistoryEffectiveLanguageColumns(SqliteConnection connection)
+    {
+        var columns = connection.Query<HistoryTableColumnInfo>("PRAGMA table_info(History);")
+            .Select(column => column.Name)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        if (!columns.Contains(nameof(HistoryModel.EffectiveSourceLang)))
+            connection.Execute("ALTER TABLE History ADD COLUMN EffectiveSourceLang TEXT;");
+
+        if (!columns.Contains(nameof(HistoryModel.EffectiveTargetLang)))
+            connection.Execute("ALTER TABLE History ADD COLUMN EffectiveTargetLang TEXT;");
+    }
+
+    private sealed class HistoryTableColumnInfo
+    {
+        public string Name { get; set; } = string.Empty;
+    }
+
     #endregion Synchronous method
 }
 
@@ -428,6 +471,16 @@ public class HistoryModel
     ///     目标语言
     /// </summary>
     public string TargetLang { get; set; } = string.Empty;
+
+    /// <summary>
+    ///     实际参与翻译的源语言（识别后）
+    /// </summary>
+    public string? EffectiveSourceLang { get; set; }
+
+    /// <summary>
+    ///     实际参与翻译的目标语言（识别后）
+    /// </summary>
+    public string? EffectiveTargetLang { get; set; }
 
     /// <summary>
     ///     需翻译内容

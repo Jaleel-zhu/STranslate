@@ -63,8 +63,8 @@ public static class HistoryCsvHelper
                 (index + 1).ToString(),
                 item.Id.ToString(),
                 item.Time.ToString("yyyy-MM-dd HH:mm:ss.fffffff"),
-                languageDisplayNameResolver(item.SourceLang),
-                languageDisplayNameResolver(item.TargetLang),
+                languageDisplayNameResolver(ResolveLanguageForExport(item.EffectiveSourceLang, item.SourceLang)),
+                languageDisplayNameResolver(ResolveLanguageForExport(item.EffectiveTargetLang, item.TargetLang)),
                 item.SourceText ?? string.Empty
             };
 
@@ -192,6 +192,9 @@ public static class HistoryCsvHelper
 
     private static string BuildServiceKey(string pluginId, string serviceId)
         => $"{pluginId}|{serviceId}";
+
+    private static string? ResolveLanguageForExport(string? effectiveLanguage, string? fallbackLanguage)
+        => string.IsNullOrWhiteSpace(effectiveLanguage) ? fallbackLanguage : effectiveLanguage;
 
     private static void AppendCsvRow(StringBuilder csvBuilder, IReadOnlyList<string> fields)
     {
