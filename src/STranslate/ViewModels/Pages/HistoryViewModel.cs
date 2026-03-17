@@ -7,8 +7,6 @@ using STranslate.Core;
 using STranslate.Helpers;
 using STranslate.Plugin;
 using System.IO;
-using System.Text;
-using System.Text.Json;
 
 namespace STranslate.ViewModels.Pages;
 
@@ -18,6 +16,7 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
     private const int searchDelayMilliseconds = 500;
 
     private readonly SqlService _sqlService;
+    private readonly ServiceManager _serviceManager;
     private readonly ISnackbar _snackbar;
     private readonly Internationalization _i18n;
     private readonly DebounceExecutor _searchDebouncer;
@@ -52,10 +51,12 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
 
     public HistoryViewModel(
         SqlService sqlService,
+        ServiceManager serviceManager,
         ISnackbar snackbar,
         Internationalization i18n)
     {
         _sqlService = sqlService;
+        _serviceManager = serviceManager;
         _snackbar = snackbar;
         _i18n = i18n;
         _searchDebouncer = new();
@@ -259,11 +260,13 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
 
     private async Task ExportItemsAsync(IReadOnlyCollection<HistoryModel> items, bool clearSelection)
     {
+        var exportItems = items.ToList();
         var saveFileDialog = new SaveFileDialog
         {
             Title = _i18n.GetTranslation("SaveAs"),
-            Filter = "JSON Files (*.json)|*.json|All Files (*.*)|*.*",
-            FileName = $"stranslate_history_{DateTime.Now:yyyyMMddHHmmss}.json",
+            Filter = "CSV Files (*.csv)|*.csv",
+            DefaultExt = ".csv",
+            FileName = $"stranslate_history_{DateTime.Now:yyyyMMddHHmmss}.csv",
             DefaultDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
             AddToRecent = true
         };
@@ -273,26 +276,8 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
 
         try
         {
-            var export = new
-            {
-                app = Constant.AppName,
-                exportedAt = DateTimeOffset.Now,
-                count = items.Count,
-                items = items.Select(h => new
-                {
-                    id = h.Id,
-                    time = h.Time,
-                    sourceLang = h.SourceLang,
-                    targetLang = h.TargetLang,
-                    sourceText = h.SourceText,
-                    favorite = h.Favorite,
-                    remark = h.Remark,
-                    data = h.Data
-                })
-            };
-
-            var json = JsonSerializer.Serialize(export, HistoryModel.JsonOption);
-            await File.WriteAllTextAsync(saveFileDialog.FileName, json, Encoding.UTF8);
+            var csv = HistoryCsvHelper.BuildCsv(exportItems, _serviceManager.AllServices, GetLanguageDisplayName);
+            await File.WriteAllTextAsync(saveFileDialog.FileName, csv, HistoryCsvHelper.Utf8BomEncoding);
 
             _snackbar.ShowSuccess(_i18n.GetTranslation("ExportSuccess"));
             if (clearSelection)
@@ -304,6 +289,18 @@ public partial class HistoryViewModel : ObservableObject, IDisposable
         {
             _snackbar.ShowError($"{_i18n.GetTranslation("ExportFailed")}: {ex.Message}");
         }
+    }
+
+    private string GetLanguageDisplayName(string? code)
+    {
+        if (string.IsNullOrWhiteSpace(code))
+            return string.Empty;
+
+        var key = $"LangEnum{code}";
+        var translated = _i18n.GetTranslation(key);
+        return string.IsNullOrWhiteSpace(translated) || string.Equals(translated, key, StringComparison.Ordinal)
+            ? code
+            : translated;
     }
 
     private async Task<bool> ConfirmDeleteAsync(long count, string translationKey)
