@@ -108,7 +108,7 @@ public partial class SettingsViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void EditPrompt()
     {
-        var dialog = _context.GetPromptEditWindow(Main.Prompts, ["user", "assistant"]);
+        var dialog = _context.GetPromptEditWindow(Main.Prompts);
 
         if (dialog.ShowDialog() != true) return;
         // 保存更新后的 Prompts
