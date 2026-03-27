@@ -24,7 +24,15 @@
 
 **English** | [**简体中文**](./README_ZH.md)
 
-<a href="https://trendshift.io/repositories/15843" target="_blank"><img src="https://trendshift.io/api/badge/repositories/15843" alt="STranslate%2FSTranslate | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+<p align="center">
+  <a href="https://trendshift.io/repositories/15843" target="_blank">
+    <img src="https://trendshift.io/api/badge/repositories/15843" alt="STranslate%2FSTranslate | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>
+  </a>
+
+  <a href="https://hellogithub.com/repository/STranslate/STranslate" target="_blank">
+    <img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=2af2034bb1e84122aac1d39046be20ec&claim_uid=WnBC6wua27iPR9t&theme=neutral" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" />
+  </a>
+</p>
 
 <p align="center">A <strong>ready-to-go</strong> translation and OCR tool developed with WPF.</p>
 
