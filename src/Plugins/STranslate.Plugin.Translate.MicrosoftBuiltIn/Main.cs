@@ -1,8 +1,5 @@
 using STranslate.Plugin.Translate.MicrosoftBuiltIn.View;
 using STranslate.Plugin.Translate.MicrosoftBuiltIn.ViewModel;
-using System.Globalization;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json.Nodes;
 using System.Windows.Controls;
 
@@ -127,8 +124,8 @@ public class Main : TranslatePluginBase
 
         var token = await Context.HttpService.GetAsync(AuthUrl, new Options(), cancellationToken);
         token = token.Trim().Trim('"');
-
-        if (!string.IsNullOrEmpty(sourceStr))
+        string url = $"https://{ApiEndpoint}/translate?api-version={ApiVersion}&to={targetStr}";
+        if (!string.IsNullOrEmpty(sourceStr) && sourceStr != "auto")
         {
             url += $"&from={sourceStr}";
         }
@@ -142,7 +139,7 @@ public class Main : TranslatePluginBase
             }
         };
 
-        var response = await Context.HttpService.PostAsync($"https://{url}", content, options, cancellationToken);
+        var response = await Context.HttpService.PostAsync(url, content, options, cancellationToken);
         var rootNode = JsonNode.Parse(response);
         if (rootNode is JsonArray arr && arr.Count > 0)
         {
