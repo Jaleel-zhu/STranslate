@@ -5,5 +5,9 @@
 
     <sys:String x:Key="STranslate_Plugin_Translate_Microsoft">介绍</sys:String>
     <sys:String x:Key="STranslate_Plugin_Translate_Microsoft_Content">本插件可免费使用微软翻译服务</sys:String>
+    <sys:String x:Key="STranslate_Plugin_Translate_Microsoft_RequestMode">请求方案</sys:String>
+    <sys:String x:Key="STranslate_Plugin_Translate_Microsoft_RequestMode_Description">Default 为兼容旧签名方案，EdgeToken 为新授权方案；若当前方案请求失败，可切换到另一方案重试。</sys:String>
+    <sys:String x:Key="STranslate_Plugin_Translate_Microsoft_RequestMode_Legacy">Default</sys:String>
+    <sys:String x:Key="STranslate_Plugin_Translate_Microsoft_RequestMode_Edge">EdgeToken</sys:String>
 
 </ResourceDictionary>

@@ -3,6 +3,7 @@ using STranslate.Plugin.Translate.MicrosoftBuiltIn.ViewModel;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Windows.Controls;
 
@@ -15,14 +16,21 @@ public class Main : TranslatePluginBase
     private Settings Settings { get; set; } = null!;
     private IPluginContext Context { get; set; } = null!;
 
-    private const string Url = "https://st-ms.deno.dev/translate";
-    private const string ApiEndpoint = "api.cognitive.microsofttranslator.com";
+    private readonly SemaphoreSlim _edgeTokenLock = new(1, 1);
+    private string? _edgeToken;
+    private DateTimeOffset _edgeTokenExpiresAt = DateTimeOffset.MinValue;
+
+    private const string LegacyApiEndpoint = "api.cognitive.microsofttranslator.com";
+    private const string EdgeAuthUrl = "https://edge.microsoft.com/translate/auth";
+    private const string EdgeApiEndpoint = "api-edge.cognitive.microsofttranslator.com";
     private const string ApiVersion = "3.0";
     private const int MaxTextLength = 1000;
+    private static readonly TimeSpan EdgeTokenRefreshSkew = TimeSpan.FromMinutes(1);
+    private static readonly TimeSpan EdgeTokenFallbackTtl = TimeSpan.FromMinutes(5);
 
     public override Control GetSettingUI()
     {
-        _viewModel ??= new SettingsViewModel();
+        _viewModel ??= new SettingsViewModel(Context, Settings);
         _settingUi ??= new SettingsView { DataContext = _viewModel };
         return _settingUi;
     }
@@ -110,7 +118,11 @@ public class Main : TranslatePluginBase
         Settings = context.LoadSettingStorage<Settings>();
     }
 
-    public override void Dispose() { }
+    public override void Dispose()
+    {
+        _viewModel?.Dispose();
+        _edgeTokenLock.Dispose();
+    }
 
     public override async Task TranslateAsync(TranslateRequest request, TranslateResult result, CancellationToken cancellationToken = default)
     {
@@ -125,42 +137,159 @@ public class Main : TranslatePluginBase
             return;
         }
 
-
-        string url = $"{ApiEndpoint}/translate?api-version={ApiVersion}&to={targetStr}";
-        if (!string.IsNullOrEmpty(sourceStr))
+        var response = Settings.RequestMode switch
         {
-            url += $"&from={sourceStr}";
-        }
-
-        var content = new[] { new { request.Text } };
-        var options = new Options
-        {
-            Headers = new Dictionary<string, string>
-            {
-                { "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36" },
-                { "X-MT-Signature", GetSignature(url) }
-            }
+            RequestMode.EdgeToken => await TranslateWithEdgeTokenAsync(request.Text, sourceStr, targetStr, cancellationToken),
+            _ => await TranslateWithLegacySignatureAsync(request.Text, sourceStr, targetStr, cancellationToken)
         };
 
-        var response = await Context.HttpService.PostAsync($"https://{url}", content, options, cancellationToken);
         var rootNode = JsonNode.Parse(response);
         if (rootNode is JsonArray arr && arr.Count > 0)
         {
             var translations = arr[0]?["translations"] as JsonArray;
             var data = translations?[0]?["text"]?.ToString() ?? throw new Exception($"No result.\nRaw: {response}");
             result.Success(data);
+            return;
         }
-        else
+
+        throw new Exception($"No result.\nRaw: {response}");
+    }
+
+    private async Task<string> TranslateWithLegacySignatureAsync(
+        string text,
+        string sourceStr,
+        string targetStr,
+        CancellationToken cancellationToken)
+    {
+        var requestPath = BuildTranslatePath(LegacyApiEndpoint, sourceStr, targetStr, omitAutoSource: true);
+        var options = CreateLegacyOptions(requestPath);
+        return await PostTranslateAsync($"https://{requestPath}", text, options, cancellationToken);
+    }
+
+    private async Task<string> TranslateWithEdgeTokenAsync(
+        string text,
+        string sourceStr,
+        string targetStr,
+        CancellationToken cancellationToken)
+    {
+        var token = await GetEdgeTokenAsync(cancellationToken);
+        var requestPath = BuildTranslatePath(EdgeApiEndpoint, sourceStr, targetStr, omitAutoSource: true);
+        var options = CreateEdgeTokenOptions(token);
+        return await PostTranslateAsync($"https://{requestPath}", text, options, cancellationToken);
+    }
+
+    private async Task<string> PostTranslateAsync(string url, string text, Options options, CancellationToken cancellationToken)
+    {
+        var content = new[] { new { Text = text } };
+        return await Context.HttpService.PostAsync(url, content, options, cancellationToken);
+    }
+
+    private static string BuildTranslatePath(string endpoint, string sourceStr, string targetStr, bool omitAutoSource)
+    {
+        var requestPath = $"{endpoint}/translate?api-version={ApiVersion}&to={targetStr}";
+        if (!string.IsNullOrEmpty(sourceStr) && (!omitAutoSource || sourceStr != "auto"))
+            requestPath += $"&from={sourceStr}";
+        return requestPath;
+    }
+
+    private static Options CreateLegacyOptions(string requestPath)
+    {
+        return new Options
         {
-            throw new Exception($"No result.\nRaw: {response}");
+            Headers = new Dictionary<string, string>
+            {
+                { "User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36" },
+                { "X-MT-Signature", GetSignature(requestPath) }
+            }
+        };
+    }
+
+    private static Options CreateEdgeTokenOptions(string token)
+    {
+        return new Options
+        {
+            Headers = new Dictionary<string, string>
+            {
+                { "Authorization", $"Bearer {token}" }
+            }
+        };
+    }
+
+    private async Task<string> GetEdgeTokenAsync(CancellationToken cancellationToken)
+    {
+        if (TryGetCachedEdgeToken(out var cachedToken))
+            return cachedToken;
+
+        await _edgeTokenLock.WaitAsync(cancellationToken);
+        try
+        {
+            if (TryGetCachedEdgeToken(out cachedToken))
+                return cachedToken;
+
+            var tokenResponse = await Context.HttpService.GetAsync(EdgeAuthUrl, new Options(), cancellationToken);
+            var token = tokenResponse.Trim().Trim('"');
+            if (string.IsNullOrWhiteSpace(token))
+                throw new Exception("Get edge token failed.");
+
+            _edgeToken = token;
+            _edgeTokenExpiresAt = ParseJwtExpireAt(token) ?? DateTimeOffset.UtcNow.Add(EdgeTokenFallbackTtl);
+
+            return token;
+        }
+        finally
+        {
+            _edgeTokenLock.Release();
+        }
+    }
+
+    private bool TryGetCachedEdgeToken(out string token)
+    {
+        token = string.Empty;
+        if (string.IsNullOrWhiteSpace(_edgeToken))
+            return false;
+
+        // 提前刷新，避免请求发出后 token 在链路中途过期。
+        if (DateTimeOffset.UtcNow >= _edgeTokenExpiresAt - EdgeTokenRefreshSkew)
+            return false;
+
+        token = _edgeToken;
+        return true;
+    }
+
+    private static DateTimeOffset? ParseJwtExpireAt(string token)
+    {
+        try
+        {
+            var segments = token.Split('.');
+            if (segments.Length < 2)
+                return null;
+
+            var payload = segments[1]
+                .Replace('-', '+')
+                .Replace('_', '/');
+
+            payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
+            var payloadBytes = Convert.FromBase64String(payload);
+            using var document = JsonDocument.Parse(payloadBytes);
+
+            if (!document.RootElement.TryGetProperty("exp", out var expElement))
+                return null;
+            if (!expElement.TryGetInt64(out var expUnixSeconds))
+                return null;
+
+            return DateTimeOffset.FromUnixTimeSeconds(expUnixSeconds);
+        }
+        catch
+        {
+            return null;
         }
     }
 
     /// <summary>
-    ///     https://github.com/d4n3436/GTranslate/blob/master/src/GTranslate/Translators/MicrosoftTranslator.cs
+    /// https://github.com/d4n3436/GTranslate/blob/master/src/GTranslate/Translators/MicrosoftTranslator.cs
     /// </summary>
-    /// <param name="url"></param>
-    /// <returns></returns>
+    /// <param name="url">不含协议头的请求 URL。</param>
+    /// <returns>X-MT-Signature 头值。</returns>
     private static string GetSignature(string url)
     {
         string guid = Guid.NewGuid().ToString("N");

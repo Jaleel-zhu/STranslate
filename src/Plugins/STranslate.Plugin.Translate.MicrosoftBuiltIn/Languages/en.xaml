@@ -5,5 +5,9 @@
 
     <sys:String x:Key="STranslate_Plugin_Translate_Microsoft">Introduction</sys:String>
     <sys:String x:Key="STranslate_Plugin_Translate_Microsoft_Content">This plugin provides free access to Microsoft Translator service.</sys:String>
+    <sys:String x:Key="STranslate_Plugin_Translate_Microsoft_RequestMode">Request Mode</sys:String>
+    <sys:String x:Key="STranslate_Plugin_Translate_Microsoft_RequestMode_Description">Default keeps the legacy signature flow, EdgeToken uses the new authorization flow; if one mode fails, try switching to the other mode.</sys:String>
+    <sys:String x:Key="STranslate_Plugin_Translate_Microsoft_RequestMode_Legacy">Default</sys:String>
+    <sys:String x:Key="STranslate_Plugin_Translate_Microsoft_RequestMode_Edge">EdgeToken</sys:String>
 
 </ResourceDictionary>
