@@ -427,6 +427,8 @@
     <sys:String x:Key="RemoveLineBreak">Remove Line Break</sys:String>
     <sys:String x:Key="RemoveSpace">Remove Space</sys:String>
     <sys:String x:Key="IdentifiedCache">Cache</sys:String>
+    <sys:String x:Key="IdentifiedUnknown">Unknown</sys:String>
+    <sys:String x:Key="IdentifiedCacheTooltip">Recognition result from history cache</sys:String>
     <sys:String x:Key="CopyServiceNotFound">Service {0} not found</sys:String>
     <sys:String x:Key="CopiedToClipboard">Copied '{0}' result</sys:String>
     <sys:String x:Key="SaveToVocabulary">Save to Vocabulary</sys:String>

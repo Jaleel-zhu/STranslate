@@ -417,6 +417,8 @@
     <sys:String x:Key="RemoveLineBreak">改行を削除</sys:String>
     <sys:String x:Key="RemoveSpace">スペースを削除</sys:String>
     <sys:String x:Key="IdentifiedCache">キャッシュ</sys:String>
+    <sys:String x:Key="IdentifiedUnknown">不明</sys:String>
+    <sys:String x:Key="IdentifiedCacheTooltip">識別結果は履歴キャッシュから取得されました</sys:String>
     <sys:String x:Key="CopyServiceNotFound">第 {0} 項目のサービスが見つかりません</sys:String>
     <sys:String x:Key="CopiedToClipboard">「{0}」の結果をコピーしました</sys:String>
     <sys:String x:Key="SaveToVocabulary">単語帳に追加</sys:String>

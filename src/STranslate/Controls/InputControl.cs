@@ -56,6 +56,19 @@ public class InputControl : Control
                 string.Empty,
                 FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
+    public IdentifiedLanguageStateKind IdentifiedLanguageState
+    {
+        get => (IdentifiedLanguageStateKind)GetValue(IdentifiedLanguageStateProperty);
+        set => SetValue(IdentifiedLanguageStateProperty, value);
+    }
+
+    public static readonly DependencyProperty IdentifiedLanguageStateProperty =
+        DependencyProperty.Register(
+            nameof(IdentifiedLanguageState),
+            typeof(IdentifiedLanguageStateKind),
+            typeof(InputControl),
+            new PropertyMetadata(IdentifiedLanguageStateKind.None));
+
     public IEnumerable<DropdownDataGeneric<LangEnum>>? IdentifiedLanguageItemsSource
     {
         get => (IEnumerable<DropdownDataGeneric<LangEnum>>?)GetValue(IdentifiedLanguageItemsSourceProperty);

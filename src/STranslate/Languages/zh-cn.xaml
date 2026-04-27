@@ -427,6 +427,8 @@
     <sys:String x:Key="RemoveLineBreak">移除换行</sys:String>
     <sys:String x:Key="RemoveSpace">移除空格</sys:String>
     <sys:String x:Key="IdentifiedCache">缓存</sys:String>
+    <sys:String x:Key="IdentifiedUnknown">未知</sys:String>
+    <sys:String x:Key="IdentifiedCacheTooltip">识别结果来自历史缓存</sys:String>
     <sys:String x:Key="CopyServiceNotFound">未找到第 {0} 项服务</sys:String>
     <sys:String x:Key="CopiedToClipboard">已复制「{0}」结果</sys:String>
     <sys:String x:Key="SaveToVocabulary">添加到生词本</sys:String>

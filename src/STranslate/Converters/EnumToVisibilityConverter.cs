@@ -12,6 +12,11 @@ public class BackupTypeVisibilityConverter : EnumToVisibilityConverter<BackupTyp
 public class ExecutionModeVisibilityConverter : EnumToVisibilityConverter<ExecutionMode> { }
 public class OcrResultShowingTypeVisibilityConverter : EnumToVisibilityConverter<OcrResultShowingType> { }
 
+/// <summary>
+/// 将识别语言状态转换为可见性，供控件模板根据来源状态展示提示元素。
+/// </summary>
+public class IdentifiedLanguageStateKindVisibilityConverter : EnumToVisibilityConverter<IdentifiedLanguageStateKind> { }
+
 public class EnumToVisibilityConverter<T> : MarkupExtension, IValueConverter where T : struct, Enum
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

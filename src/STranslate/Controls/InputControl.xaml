@@ -230,6 +230,14 @@
                                             VerticalAlignment="Center"
                                             FontSize="{DynamicResource STControlFontSize12}"
                                             Text=": " />
+                                        <ui:FontIcon
+                                            Margin="0,0,2,0"
+                                            VerticalAlignment="Center"
+                                            FontSize="{DynamicResource STControlFontSize12}"
+                                            Foreground="{DynamicResource {x:Static ui:ThemeKeys.AccentTextFillColorPrimaryBrushKey}}"
+                                            Icon="{x:Static ui:FluentSystemIcons.Database_16_Regular}"
+                                            ToolTip="{DynamicResource IdentifiedCacheTooltip}"
+                                            Visibility="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=IdentifiedLanguageState, Converter={cnvt:IdentifiedLanguageStateKindVisibilityConverter}, ConverterParameter=Cache}" />
                                         <ComboBox
                                             x:Name="PART_IdentifiedLanguageComboBox"
                                             DisplayMemberPath="Display"

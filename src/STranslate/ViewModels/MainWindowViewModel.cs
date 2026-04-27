@@ -113,13 +113,6 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
     /// </summary>
     private const int ContextMenuCloseAnimationDelay = 150;
 
-    private enum IdentifiedLanguageStateKind
-    {
-        None,
-        Cache,
-        Detected
-    }
-
     private sealed record IdentifiedLanguageState(IdentifiedLanguageStateKind Kind, LangEnum? Language = null)
     {
         public static IdentifiedLanguageState Empty { get; } = new(IdentifiedLanguageStateKind.None);
@@ -169,6 +162,8 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
     public IReadOnlyList<DropdownDataGeneric<LangEnum>> IdentifiedLanguageOptions { get; }
 
     private IdentifiedLanguageState _identifiedLanguageState = IdentifiedLanguageState.Empty;
+
+    public IdentifiedLanguageStateKind CurrentIdentifiedLanguageState => _identifiedLanguageState.Kind;
 
     public bool IsTopmost
     {
@@ -2129,6 +2124,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         SelectedIdentifiedLanguage = state.Language ?? LangEnum.Auto;
         CanSelectIdentifiedLanguage = state.Kind != IdentifiedLanguageStateKind.None;
         IdentifiedLanguage = BuildIdentifiedLanguageText(state);
+        OnPropertyChanged(nameof(CurrentIdentifiedLanguageState));
     }
 
     private string BuildIdentifiedLanguageText(IdentifiedLanguageState state)
@@ -2136,7 +2132,8 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         return state.Kind switch
         {
             IdentifiedLanguageStateKind.None => string.Empty,
-            IdentifiedLanguageStateKind.Cache => _i18n.GetTranslation("IdentifiedCache"),
+            IdentifiedLanguageStateKind.Cache when state.Language.HasValue => GetLanguageDisplayText(state.Language.Value),
+            IdentifiedLanguageStateKind.Cache => _i18n.GetTranslation("IdentifiedUnknown"),
             IdentifiedLanguageStateKind.Detected when state.Language.HasValue => GetLanguageDisplayText(state.Language.Value),
             _ => string.Empty
         };
@@ -2181,7 +2178,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
 
     private static LangEnum? ParseHistoryLanguage(string? language)
     {
-        if (Enum.TryParse<LangEnum>(language, true, out var parsed))
+        if (Enum.TryParse<LangEnum>(language, true, out var parsed) && parsed != LangEnum.Auto)
             return parsed;
 
         return null;

@@ -135,6 +135,7 @@
                     CanSelectIdentifiedLanguage="{Binding CanSelectIdentifiedLanguage}"
                     IdentifiedLanguage="{Binding IdentifiedLanguage}"
                     IdentifiedLanguageItemsSource="{Binding IdentifiedLanguageOptions}"
+                    IdentifiedLanguageState="{Binding CurrentIdentifiedLanguageState}"
                     IsIdentify="{Binding IsIdentifyProcessing}"
                     LanguageDetectorItemsSource="{Binding DataProvider.LanguageDetectors}"
                     PlayAudioCancelCommand="{Binding PlayAudioCancelCommand}"
