@@ -1,20 +1,13 @@
 using STranslate.Plugin.Translate.ICibaBuiltIn.View;
 using STranslate.Plugin.Translate.ICibaBuiltIn.ViewModel;
 using System.Collections.ObjectModel;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 using System.Windows.Controls;
 
 namespace STranslate.Plugin.Translate.ICibaBuiltIn;
 
-public class Main : TranslatePluginBase
+public class Main : DictionaryPluginBase
 {
-    private const string TranslateUrl = "https://dictionary.iciba.com/dictionary/fy/batch";
-    private const string TranslatePath = "/dictionary/fy/batch";
-    private const string TranslateClient = "6";
-    private const string TranslateKey = "1000006";
-    private const string TranslateSignatureSalt = "7ece94d9f9c202b0d2ec557dg4r9bc";
     private const string WordPageUrl = "https://www.iciba.com/word";
     private const string NextDataStartTag = "<script id=\"__NEXT_DATA__\" type=\"application/json\">";
     private const string ScriptEndTag = "</script>";
@@ -39,150 +32,15 @@ public class Main : TranslatePluginBase
 
     public override void Dispose() { }
 
-    public override string? GetSourceLanguage(LangEnum langEnum) => langEnum switch
+    public override async Task TranslateAsync(string content, DictionaryResult result, CancellationToken cancellationToken = default)
     {
-        LangEnum.Auto => "auto",
-        LangEnum.ChineseSimplified => "zh",
-        LangEnum.ChineseTraditional => "zh",
-        LangEnum.Cantonese => "zh",
-        LangEnum.English => "en",
-        LangEnum.Japanese => "ja",
-        LangEnum.Korean => "ko",
-        LangEnum.French => "fr",
-        LangEnum.Spanish => "es",
-        LangEnum.Russian => "ru",
-        LangEnum.German => "de",
-        LangEnum.Italian => "it",
-        LangEnum.Turkish => "tr",
-        LangEnum.PortuguesePortugal => "pt",
-        LangEnum.PortugueseBrazil => "pt",
-        LangEnum.Vietnamese => "vi",
-        LangEnum.Indonesian => "id",
-        LangEnum.Thai => "th",
-        LangEnum.Malay => "ms",
-        LangEnum.Arabic => "ar",
-        LangEnum.Hindi => "hi",
-        LangEnum.MongolianCyrillic => "mn",
-        LangEnum.MongolianTraditional => "mn",
-        LangEnum.Khmer => "km",
-        LangEnum.NorwegianBokmal => "no",
-        LangEnum.NorwegianNynorsk => "no",
-        LangEnum.Persian => "fa",
-        LangEnum.Swedish => "sv",
-        LangEnum.Polish => "pl",
-        LangEnum.Dutch => "nl",
-        LangEnum.Ukrainian => "uk",
-        LangEnum.Uzbek => "auto",
-        _ => "auto"
-    };
-
-    public override string? GetTargetLanguage(LangEnum langEnum) => langEnum switch
-    {
-        LangEnum.Uzbek => "uz",
-        _ => GetSourceLanguage(langEnum)
-    };
-
-    public override async Task TranslateAsync(TranslateRequest request, TranslateResult result, CancellationToken cancellationToken = default)
-    {
-        if (GetSourceLanguage(request.SourceLang) is not string sourceStr)
-        {
-            result.Fail(Context.GetTranslation("UnsupportedSourceLang"));
-            return;
-        }
-        if (GetTargetLanguage(request.TargetLang) is not string targetStr)
-        {
-            result.Fail(Context.GetTranslation("UnsupportedTargetLang"));
-            return;
-        }
-
-        var content = request.Text.Trim();
+        content = content.Trim();
         if (string.IsNullOrWhiteSpace(content))
         {
-            result.Fail("No result.");
+            result.ResultType = DictionaryResultType.NoResult;
             return;
         }
 
-        var translatedText = await TranslateWithBatchApiAsync(content, sourceStr, targetStr, cancellationToken);
-        if (string.IsNullOrWhiteSpace(translatedText))
-            translatedText = await TranslateWithWordPageAsync(content, cancellationToken);
-
-        if (string.IsNullOrWhiteSpace(translatedText))
-        {
-            result.Fail("No result.");
-            return;
-        }
-
-        result.Success(translatedText);
-    }
-
-    private async Task<string> TranslateWithBatchApiAsync(
-        string content,
-        string sourceStr,
-        string targetStr,
-        CancellationToken cancellationToken)
-    {
-        var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString();
-        var queryParams = new Dictionary<string, string>
-        {
-            { "client", TranslateClient },
-            { "key", TranslateKey },
-            { "timestamp", timestamp }
-        };
-        queryParams["signature"] = CreateSignature(TranslatePath, queryParams);
-
-        var option = new Options
-        {
-            QueryParams = queryParams,
-            Headers = new Dictionary<string, string>
-            {
-                { "Origin", "https://www.iciba.com" },
-                { "Referer", "https://www.iciba.com/" }
-            }
-        };
-
-        var payload = new
-        {
-            from = NormalizeTranslateLanguage(sourceStr),
-            to = NormalizeTranslateLanguage(targetStr),
-            textList = new[] { content }
-        };
-
-        var response = await Context.HttpService.PostAsync(TranslateUrl, payload, option, cancellationToken);
-        using var jsonDoc = JsonDocument.Parse(response);
-        var root = jsonDoc.RootElement;
-
-        if (!root.TryGetProperty("code", out var code) ||
-            code.GetInt32() != 1 ||
-            !root.TryGetProperty("data", out var data) ||
-            data.ValueKind != JsonValueKind.Array)
-        {
-            return string.Empty;
-        }
-
-        var translatedLines = new List<string>();
-        foreach (var item in data.EnumerateArray())
-        {
-            if (item.ValueKind == JsonValueKind.String)
-            {
-                var line = item.GetString();
-                if (!string.IsNullOrWhiteSpace(line))
-                    translatedLines.Add(line.Trim());
-                continue;
-            }
-
-            if (item.TryGetProperty("out", out var outText))
-            {
-                var line = outText.GetString();
-                if (!string.IsNullOrWhiteSpace(line))
-                    translatedLines.Add(line.Trim());
-            }
-        }
-
-        return string.Join(Environment.NewLine, translatedLines);
-    }
-
-    private async Task<string> TranslateWithWordPageAsync(string content, CancellationToken cancellationToken)
-    {
         var option = new Options
         {
             QueryParams = new Dictionary<string, string>
@@ -194,33 +52,46 @@ public class Main : TranslatePluginBase
         var response = await Context.HttpService.GetAsync(WordPageUrl, option, cancellationToken);
         var nextDataJson = ExtractNextDataJson(response);
         if (string.IsNullOrWhiteSpace(nextDataJson))
-            return string.Empty;
+        {
+            result.ResultType = DictionaryResultType.NoResult;
+            return;
+        }
 
         using var jsonDoc = JsonDocument.Parse(nextDataJson);
         if (!TryGetWordInfo(jsonDoc.RootElement, out var wordInfo) ||
             !wordInfo.TryGetProperty("baesInfo", out var root))
         {
-            return string.Empty;
+            result.ResultType = DictionaryResultType.NoResult;
+            return;
         }
 
-        return ExtractPlainTranslation(root);
-    }
+        if (!root.TryGetProperty("word_name", out var wordName) ||
+            wordName.GetString() is not string word ||
+            string.IsNullOrWhiteSpace(word))
+        {
+            result.ResultType = DictionaryResultType.NoResult;
+            return;
+        }
 
-    private static string NormalizeTranslateLanguage(string language) => language switch
-    {
-        "zh-tw" => "cht",
-        _ => language
-    };
+        result.Text = word;
+        result.ResultType = DictionaryResultType.Success;
 
-    private static string CreateSignature(string path, Dictionary<string, string> parameters)
-    {
-        var values = parameters
-            .Where(item => item.Key != "signature")
-            .OrderBy(item => item.Key, StringComparer.Ordinal)
-            .Select(item => item.Value);
-        var raw = $"{path}{string.Concat(values)}{TranslateSignatureSalt}";
-        var hash = MD5.HashData(Encoding.UTF8.GetBytes(raw));
-        return Convert.ToHexString(hash).ToLowerInvariant();
+        if (!root.TryGetProperty("symbols", out var symbols) ||
+            symbols.ValueKind != JsonValueKind.Array ||
+            symbols.GetArrayLength() == 0)
+        {
+            return;
+        }
+
+        var firstSymbol = symbols[0];
+        if (Util.IsChinese(content))
+        {
+            ProcessChineseContent(firstSymbol, result);
+            return;
+        }
+
+        ProcessEnglishContent(firstSymbol, result);
+        ProcessWordExchange(root, result);
     }
 
     private static string? ExtractNextDataJson(string response)
@@ -266,89 +137,6 @@ public class Main : TranslatePluginBase
         return pageProps.TryGetProperty("initialReduxState", out var initialReduxState) &&
                initialReduxState.TryGetProperty("word", out var wordState) &&
                wordState.TryGetProperty("wordInfo", out wordInfo);
-    }
-
-    private static string ExtractPlainTranslation(JsonElement baseInfo)
-    {
-        if (!baseInfo.TryGetProperty("symbols", out var symbols) ||
-            symbols.ValueKind != JsonValueKind.Array)
-        {
-            return string.Empty;
-        }
-
-        var candidates = new List<string>();
-        foreach (var symbol in symbols.EnumerateArray())
-        {
-            if (!symbol.TryGetProperty("parts", out var parts) ||
-                parts.ValueKind != JsonValueKind.Array)
-            {
-                continue;
-            }
-
-            foreach (var part in parts.EnumerateArray())
-            {
-                if (!part.TryGetProperty("means", out var means))
-                    continue;
-
-                candidates.AddRange(ExtractMeanStrings(means));
-            }
-        }
-
-        return PickBestPlainTranslation(candidates);
-    }
-
-    private static string PickBestPlainTranslation(IEnumerable<string> candidates)
-    {
-        return candidates
-            .SelectMany(SplitMeanCandidate)
-            .Select(NormalizePlainTranslation)
-            .Where(item => !string.IsNullOrWhiteSpace(item))
-            .Distinct()
-            .OrderBy(GetPlainTranslationScore)
-            .ThenBy(item => item.Length)
-            .FirstOrDefault() ?? string.Empty;
-    }
-
-    private static IEnumerable<string> SplitMeanCandidate(string candidate)
-    {
-        return candidate.Split([';', '；', ',', '，', '\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-    }
-
-    private static string NormalizePlainTranslation(string text)
-    {
-        var value = text.Trim();
-        if (value == "他/她/它们")
-            return "他们";
-        if (value.Contains("雷电交加", StringComparison.Ordinal) && value.Contains("暴风雨", StringComparison.Ordinal))
-            return "雷暴";
-        if (value == "大雷雨")
-            return "雷暴";
-
-        return value;
-    }
-
-    private static int GetPlainTranslationScore(string text)
-    {
-        var score = text.Length;
-
-        if (text.Contains('的'))
-            score += 30;
-        if (text.Any(char.IsWhiteSpace) || text.Any(IsDictionaryPunctuation))
-            score += 10;
-        if (IsShortChinesePhrase(text))
-            score -= 5;
-
-        return score;
-    }
-
-    private static bool IsDictionaryPunctuation(char ch)
-    {
-        return ch is '；' or ';' or ',' or '，' or '（' or '）' or '(' or ')' or '[' or ']';
-    }
-
-    private static bool IsShortChinesePhrase(string text)
-    {
-        return text.Length is >= 2 and <= 4 && text.All(ch => ch >= '\u4e00' && ch <= '\u9fff');
     }
 
     /// <summary>
