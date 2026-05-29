@@ -45,6 +45,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
     private readonly SqlService _sqlService;
     private readonly DebounceExecutor _debounceExecutor;
     private ClipboardMonitor? _clipboardMonitor;
+    private bool _forceShowInputForInputTranslate;
 
     public Settings Settings { get; }
     public HotkeySettings HotkeySettings { get; }
@@ -142,6 +143,24 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     public partial double MainWindowEffectiveMaxHeight { get; set; } = 800;
 
+    public bool IsInputActuallyHidden
+    {
+        get => Settings.HideInput && !_forceShowInputForInputTranslate;
+        set
+        {
+            if (value == IsInputActuallyHidden)
+                return;
+
+            ExitInputTranslateMode();
+            Settings.HideInput = value;
+        }
+    }
+
+    public bool IsInputBoxVisible => !IsInputActuallyHidden;
+
+    public bool IsLanguageSelectControlVisible =>
+        !IsInputActuallyHidden || !Settings.HideInputWithLangSelectControl;
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SingleTranslateCommand))]
     [NotifyCanExecuteChangedFor(nameof(TranslateCommand))]
@@ -193,6 +212,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         string? force = null,
         WindowActivationMode activationMode = WindowActivationMode.Normal)
     {
+        ExitInputTranslateMode();
         CancelAllOperations();
         ResetTranslationLanguageState();
         InputText = text;
@@ -1467,11 +1487,18 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
 
         MainWindow.Activate();
 
-        MainWindow.PART_Input.Focus();
-        Keyboard.Focus(MainWindow.PART_Input);
+        if (IsInputBoxVisible)
+        {
+            MainWindow.PART_Input.Focus();
+            Keyboard.Focus(MainWindow.PART_Input);
+        }
     }
 
-    public void Hide() => MainWindow.Visibility = Visibility.Collapsed;
+    public void Hide()
+    {
+        ExitInputTranslateMode();
+        MainWindow.Visibility = Visibility.Collapsed;
+    }
 
     [RelayCommand]
     private void DoubleClick()
@@ -1529,6 +1556,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         if (!IsMouseHook)
         {
             if (IsTopmost) IsTopmost = false;
+            ExitInputTranslateMode();
             window.Visibility = Visibility.Collapsed;
         }
         CancelAllOperations();
@@ -1600,7 +1628,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
     private void ToggleTopmost() => IsTopmost = !IsTopmost;
 
     [RelayCommand]
-    private void ToggleHideInput() => Settings.HideInput = !Settings.HideInput;
+    private void ToggleHideInput() => IsInputActuallyHidden = !IsInputActuallyHidden;
 
     [RelayCommand]
     private void ChangeColorScheme()
@@ -1626,6 +1654,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
         InputText = string.Empty;
 
         ResetAllServices();
+        EnterInputTranslateMode();
         Show(activationMode);
     }
 
@@ -1674,7 +1703,7 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
             text = text.ToLower();
 
         if (IsTopmost) IsTopmost = false;
-        MainWindow.Visibility = Visibility.Collapsed;
+        Hide();
         await Task.Delay(150);
         InputHelper.PrintText(text);
     }
@@ -1706,6 +1735,12 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
             e.PropertyName == nameof(Settings.TargetLang))
         {
             ResetTranslationLanguageState();
+        }
+
+        if (e.PropertyName == nameof(Settings.HideInput) ||
+            e.PropertyName == nameof(Settings.HideInputWithLangSelectControl))
+        {
+            NotifyInputVisibilityProperties();
         }
 
         if (e.PropertyName != nameof(Settings.MainWindowMaxHeightRatio) &&
@@ -2098,6 +2133,31 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
     #endregion
 
     #region Helpers & Event Handlers
+
+    private void EnterInputTranslateMode()
+    {
+        if (_forceShowInputForInputTranslate)
+            return;
+
+        _forceShowInputForInputTranslate = true;
+        NotifyInputVisibilityProperties();
+    }
+
+    private void ExitInputTranslateMode()
+    {
+        if (!_forceShowInputForInputTranslate)
+            return;
+
+        _forceShowInputForInputTranslate = false;
+        NotifyInputVisibilityProperties();
+    }
+
+    private void NotifyInputVisibilityProperties()
+    {
+        OnPropertyChanged(nameof(IsInputActuallyHidden));
+        OnPropertyChanged(nameof(IsInputBoxVisible));
+        OnPropertyChanged(nameof(IsLanguageSelectControlVisible));
+    }
 
     partial void OnInputTextChanged(string value)
     {

@@ -110,7 +110,7 @@
             IsClipboardMonitorVisible="{Binding Settings.IsClipboardMonitorVisible}"
             IsClipboardMonitoring="{Binding IsClipboardMonitoring}"
             IsColorSchemeVisible="{Binding Settings.IsColorSchemeVisible}"
-            IsHideInput="{Binding Settings.HideInput}"
+            IsHideInput="{Binding IsInputActuallyHidden, Mode=TwoWay}"
             IsHideInputVisible="{Binding Settings.IsHideInputVisible}"
             IsHistoryNavigationVisible="{Binding Settings.IsHistoryNavigationVisible}"
             IsImageTranslateVisible="{Binding Settings.IsImageTranslateVisible}"
@@ -152,25 +152,12 @@
                     SelectedLanguageDetector="{Binding Settings.LanguageDetector, Mode=TwoWay}"
                     Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
                     TranslateOnPaste="{Binding Settings.TranslateOnPaste}"
-                    Visibility="{Binding Settings.HideInput, Converter={cnvt:BoolToVisibilityInverseConverter}}" />
+                    Visibility="{Binding IsInputBoxVisible, Converter={cnvt:BoolToVisibilityConverter}}" />
 
                 <!--  // LangSelectControl //  -->
-                <Grid Margin="0,0,10,10">
-                    <Grid.Style>
-                        <Style TargetType="Grid">
-                            <Style.Triggers>
-                                <MultiDataTrigger>
-                                    <MultiDataTrigger.Conditions>
-                                        <Condition Binding="{Binding Settings.HideInput}" Value="True" />
-                                        <Condition Binding="{Binding Settings.HideInputWithLangSelectControl}" Value="True" />
-                                    </MultiDataTrigger.Conditions>
-                                    <MultiDataTrigger.Setters>
-                                        <Setter Property="Visibility" Value="Collapsed" />
-                                    </MultiDataTrigger.Setters>
-                                </MultiDataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Grid.Style>
+                <Grid
+                    Margin="0,0,10,10"
+                    Visibility="{Binding IsLanguageSelectControlVisible, Converter={cnvt:BoolToVisibilityConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
