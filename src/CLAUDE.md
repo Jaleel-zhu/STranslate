@@ -33,6 +33,7 @@
 | 配置、存储与历史 | [docs/config-storage-history.md](docs/config-storage-history.md) | Settings/ServiceSettings、存储抽象、便携/漫游路径、历史记录 |
 | 网络集成与运维 | [docs/integration-network-ops.md](docs/integration-network-ops.md) | HTTP层、代理测试、外部调用、更新、备份恢复 |
 | 插件SDK开发 | [docs/plugin-sdk-development.md](docs/plugin-sdk-development.md) | SDK接口、插件生命周期、`plugin.json` 规范、官方实现范式 |
+| 社区插件开发 | [docs/community-plugin-development.md](docs/community-plugin-development.md) | 社区插件本地开发、断点调试、`.spkg` 打包导入、日志与排障 |
 
 ## 模块检索入口
 
@@ -47,3 +48,4 @@
 | 配置丢失/路径不一致/历史问题 | [docs/config-storage-history.md](docs/config-storage-history.md) |
 | 代理、更新、备份与外部调用 | [docs/integration-network-ops.md](docs/integration-network-ops.md) |
 | 新增或改造插件 | [docs/plugin-sdk-development.md](docs/plugin-sdk-development.md) |
+| 社区插件本地开发/调试/打包导入 | [docs/community-plugin-development.md](docs/community-plugin-development.md) |
