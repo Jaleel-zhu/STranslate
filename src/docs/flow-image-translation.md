@@ -1,0 +1,123 @@
+# 图片翻译链路
+
+## 模块职责
+- 管理图片翻译窗口的导入、截图、重试、标注图和结果图显示。
+- 维护图片翻译专用 OCR 服务与翻译服务绑定，避免普通 OCR 服务误入需要坐标的流程。
+- 对 OCR 结果执行坐标归一化、版面分析、翻译分发、文字覆盖回写和图片级文本选中。
+- 约束 OCR 插件能力声明、结构化布局返回方式和本地 `Smart` 分段回退策略。
+
+## 关键入口
+- `STranslate/ViewModels/ImageTranslateWindowViewModel.cs`
+  - `ExecuteAsync(Bitmap)`：图片翻译窗口主执行命令。
+  - `ApplyLayoutAnalysis(OcrResult)`：按 `LayoutAnalysisMode` 生成 `OcrLayoutBlock`。
+  - `GenerateTranslatedImage(IReadOnlyList<OcrLayoutBlock>, BitmapSource?)`：擦除原文并覆盖译文。
+  - `RefreshSelectableOcrWords()`：在原文标注图和译文结果图之间切换图片文本选中数据源。
+- `STranslate/Core/OcrLayoutAnalyzer.cs`
+  - `AnalyzeBlocks(OcrResult, LayoutAnalysisMode)`：版面分析入口。
+  - `Auto` / `Provider` / `Smart` / `NoMerge`：图片翻译分段策略。
+- `STranslate/Core/OcrLayoutBlock.cs`
+  - 图片翻译内部布局块，记录段落框、行框、布局来源和置信度。
+- `STranslate/Core/ImageTranslateTextOverlayLayout.cs`
+  - 计算覆盖层矩形、擦除矩形、字体大小、多行回退、裁剪策略和主题色。
+- `STranslate/Services/OcrService.cs`
+  - `GetImageTranslateOcrServices()` / `GetImageTranslateOcrServiceOrDefault()`：图片翻译 OCR 服务筛选和兜底。
+- `STranslate/Services/TranslateService.cs`
+  - `ImageTranslateService`：图片翻译专用翻译服务。
+- `STranslate.Plugin/IOcrPlugin.cs`
+  - `IOcrCapabilityProvider`、`OcrCapabilities`、`OcrRequest`、`OcrResult`、`OcrContent.CoordinateUnit`。
+
+## 从入口到结果
+1. 入口来自主窗口图片翻译命令、图片翻译窗口导入文件、剪贴板图片、重新执行或窗口内截图。
+2. `ImageTranslateWindowViewModel.ExecuteAsync(bitmap)` 清空旧状态，缓存 `_sourceImage` 并显示原图。
+3. 获取图片翻译专用 OCR：`OcrService.GetImageTranslateOcrSvcOrDefault()`。候选服务必须实现 `IOcrPlugin`，并声明 `OcrCapabilities.ImageTranslation | OcrCapabilities.BoundingBox`。
+4. 宿主用真实图片尺寸构造 `OcrRequest(data, Settings.OcrLanguage, bitmap.Width, bitmap.Height)`，让插件能返回像素坐标或归一化坐标。
+5. OCR 返回后调用 `Utilities.NormalizeOcrCoordinates()`，把 `Normalized` 坐标换算为图片像素坐标；缺少图片尺寸时 normalized 坐标会被清空，避免后续用错误坐标绘制。
+6. 原始 OCR 结果用于图片文本选中：`OcrWordBuilder.CreateFromOcrContents(_lastOcrResult.OcrContents)` 生成原文选中块。
+7. `ApplyLayoutAnalysis()` 生成 `OcrLayoutBlock`，并把分析后的块投影回 `OcrResult.OcrContents`，供标注图、复制和结果文本复用。
+8. 获取 `TranslateService.ImageTranslateService`，该服务必须是 `ITranslatePlugin`，词典类服务不会进入图片翻译翻译列表。
+9. 对每个 `OcrLayoutBlock.Text` 并发执行语言检测和翻译；翻译成功后用 `ImageTranslateTextOverlayLayout.NormalizeOverlayText()` 收敛空白，再回写到对应 block。
+10. 使用翻译后的 layout blocks 生成结果图：优先按每个 block 的 `LineBoxPoints` 擦除原文，再按覆盖布局绘制译文。
+11. `Settings.IsImTranShowingAnnotated` 控制显示标注图还是结果图；图片文本选中同步切换为原文块或译文块。
+
+## 版面分析模式
+- `Auto`：默认模式。OCR 返回结构化 `Regions` 时使用 Provider 段落；没有结构化布局时回退 `Smart`。
+- `Provider`：只使用服务商结构化 `Regions -> Paragraphs -> Lines`；缺失结构化布局时退化为 `NoMerge`，不自行猜段落。
+- `Smart`：本地智能分段。适用于只返回扁平 `OcrContents` 但有坐标框的 OCR。
+- `NoMerge`：保留 OCR 原始块，适合用户希望逐块翻译或服务商块已经足够稳定的场景。
+- 无有效坐标：跳过智能版面分析，保留 OCR 返回文本；图片翻译无法可靠生成覆盖框和图片文本选中框。
+
+## Smart 分段策略
+`Smart` 只在宿主内部生效，不改变插件接口和外部枚举。
+
+1. `BuildLineSegments()` 先按 Y 位置恢复视觉行，并按横向间距拆成行内 segment。
+2. 表格/网格上下文会提前参与视觉行拆分：多行重复列起点、表格式行距和足够列跨度同时满足时，列边界优先于普通行内碎片合并，避免 `File Explorer Add-ons File Locksmith` 这类同一行跨单元格误合并。
+3. 小图标、符号、图标色块等前置装饰不会单独拆开，仍和后续文本组成同一个功能项。
+4. `BuildLayoutRegions()` 按列/区域相似度聚合，避免不同栏之间链式吞并。
+5. `AnalyzeRegion()` 在 region 内合并 paragraph；普通段落、PDF 连续行、多列正文和英文断词续行继续使用原段落合并规则。
+6. 表格/网格 region 会被识别为 `TableLike`：至少多行、多列、多个视觉行有横向 peers，并且列左边缘或中心点在多行重复对齐。
+7. `TableLike` region 内禁止跨视觉行继续追加为同一 paragraph，所以功能列表、表格单元格默认按每个视觉行/单元项独立翻译。
+
+## 结构化 OCR 与插件契约
+图片翻译对 OCR 插件的要求比普通 OCR 更高：
+
+- 必须返回文本坐标框：`OcrCapabilities.BoundingBox`。
+- 必须声明可用于图片翻译：`OcrCapabilities.ImageTranslation`。
+- 可以只返回扁平 `OcrResult.OcrContents`，宿主会用 `Smart` 分段。
+- 如果服务商能返回区域/段落/行，插件应声明 `OcrCapabilities.StructuredLayout` 并填充 `OcrResult.Regions`。
+- `OcrResult.OcrContents` 仍是兼容旧插件和旧调用链的扁平结果；结构化插件可以同时填充它，也可以只填充 `Regions`。
+- `OcrContent.CoordinateUnit`、`OcrRegion.CoordinateUnit`、`OcrParagraph.CoordinateUnit` 支持 `Pixel` 与 `Normalized`，宿主会统一换算。
+- 插件不要自行按屏幕缩放或窗口缩放改写坐标；图片翻译使用图片像素坐标。
+
+`Auto` 模式下，结构化 OCR 的 Provider 段落优先级高于本地 `Smart`，所以插件返回的 `Regions` 会直接影响翻译粒度。插件侧应尽量让 `Paragraphs` 表示真实语义段落或表格单元项，而不是把整列/整表合成一个 paragraph。
+
+## 译文覆盖策略
+- 覆盖层不直接使用截图背景采样颜色，而是跟随软件主题：
+  - 浅色主题：浅色覆盖层 + 黑字。
+  - 深色主题：深色覆盖层 + 白字。
+- 擦除区域优先来自 `OcrLayoutBlock.LineBoxPoints`，尽量只擦除原文行；缺少行框时退回 block 外接框。
+- 字体大小按可用区域动态计算，先尝试单行填充；单行译文放不下时切换为扩展多行区域。
+- 如果最小字号仍放不下，保留裁剪/截断保护，避免文本绘制溢出到相邻区域。
+- 覆盖文本会先归一化空白，减少翻译服务返回的多余换行和空格破坏布局。
+
+## 图片文本选中
+- `ImageZoom` 使用 `OcrWords` 模拟图片上的文本选中。
+- 标注图显示时，`OcrWords` 来自原始 OCR 坐标和原文文本。
+- 结果图显示时，`OcrWords` 来自翻译后的 `OcrLayoutBlock`，复制时拿到的是译文。
+- 缺少坐标框时显示无位置信息提示，图片上无法可靠模拟选区。
+
+## 服务绑定与配置
+- OCR 专用绑定：`ServiceSettings.ImageTranslateOcrSvcID`，由图片翻译窗口的 OCR 选择写入。
+- 翻译专用绑定：`ServiceSettings.ImageTranslateSvcID`，由图片翻译窗口的翻译服务选择写入。
+- 服务缺失或插件被删除时，启动加载会重置失效的图片翻译服务 ID。
+- `Settings.LayoutAnalysisMode` 默认 `Auto`，序列化支持 `auto`、`provider`、`smart`、`noMerge`；旧未知值归一为 `Auto`。
+- `Settings.IsImTranShowingAnnotated` 控制标注图/结果图显示。
+- `Settings.IsImTranShowingTextControl` 控制图片翻译窗口文本区域显示。
+- `Settings.ImageTranslateSourceLang` / `ImageTranslateTargetLang` 控制图片翻译语言。
+- `Settings.ShowImageTranslateItemInNotifyIconMenu` 控制托盘菜单是否显示图片翻译入口。
+
+## 错误处理
+- 图片翻译 OCR 服务未配置：`Helper.PromptConfigureService()` 弹出配置提示并定位到 `OcrPage`。
+- 图片翻译翻译服务未配置：窗口内 `_snackbar.ShowWarning("NoTranslateService")`。
+- OCR 失败、翻译异常或运行时异常：窗口内 Snackbar 提示，日志写入 `ImageTranslateWindowViewModel` logger。
+- 语言检测失败：当前 block 跳过翻译并提示 `LanguageDetectionFailed`。
+- 用户取消执行：捕获 `TaskCanceledException`，当前实现不额外弹提示。
+
+## 关键文件
+- `STranslate/ViewModels/ImageTranslateWindowViewModel.cs`
+- `STranslate/Core/OcrLayoutAnalyzer.cs`
+- `STranslate/Core/OcrLayoutBlock.cs`
+- `STranslate/Core/ImageTranslateTextOverlayLayout.cs`
+- `STranslate/Core/LayoutAnalysisModeJsonConverter.cs`
+- `STranslate/Services/OcrService.cs`
+- `STranslate/Services/TranslateService.cs`
+- `STranslate.Plugin/IOcrPlugin.cs`
+- `Tests/STranslate.Tests/OcrLayoutAnalyzerTests.cs`
+- `Tests/STranslate.Tests/ImageTranslateTextOverlayLayoutTests.cs`
+
+## 常见改动任务
+- 调整 OCR 分段或表格/网格误合并：优先改 `OcrLayoutAnalyzer`，并补 `OcrLayoutAnalyzerTests`。
+- 调整译文覆盖大小、裁剪、擦除范围或主题颜色：改 `ImageTranslateTextOverlayLayout`，并补 `ImageTranslateTextOverlayLayoutTests`。
+- 接入服务商结构化 OCR：插件声明 `StructuredLayout`，填充 `OcrResult.Regions`，并确保每个 `OcrContent` 有坐标和正确 `CoordinateUnit`。
+- 调整图片翻译 OCR 候选服务：改 `OcrService.IsImageTranslateOcrService()` / `GetImageTranslateOcrServices()`。
+- 调整图片翻译翻译服务候选：改 `ImageTranslateWindowViewModel.OnTransFilter()` 或 `TranslateService.ImageTranslateService` 相关逻辑。
+- 调整图片上选中文本行为：改 `RefreshSelectableOcrWords()`、`OcrWordBuilder` 或 `ImageZoom` 的选区逻辑。

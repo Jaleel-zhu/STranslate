@@ -27,7 +27,8 @@
 | 运行时启动 | [docs/runtime-bootstrap.md](docs/runtime-bootstrap.md) | 单实例、DI、窗口生命周期、异常与退出链路 |
 | 插件与服务运行时 | [docs/runtime-plugin-service.md](docs/runtime-plugin-service.md) | 插件发现/加载、服务实例化、PluginContext 与配置持久化 |
 | 主翻译链路 | [docs/flow-main-translation.md](docs/flow-main-translation.md) | 自动翻译、防抖、缓存命中、回译、复制与词典路径 |
-| OCR 与图片翻译 | [docs/flow-ocr-image.md](docs/flow-ocr-image.md) | 截图入口、OCR窗口、版面分析、图片翻译专用服务 |
+| OCR 链路 | [docs/flow-ocr-image.md](docs/flow-ocr-image.md) | 截图翻译、静默 OCR、OCR窗口、坐标归一化 |
+| 图片翻译链路 | [docs/flow-image-translation.md](docs/flow-image-translation.md) | 专用 OCR/翻译服务、版面分析、译文覆盖、插件能力 |
 | 输入与触发系统 | [docs/flow-input-trigger.md](docs/flow-input-trigger.md) | 全局/软件内热键、低级键盘钩子、Ctrl+CC、鼠标划词、剪贴板监听 |
 | 插件市场与管理 | [docs/plugin-market-management.md](docs/plugin-market-management.md) | 已安装插件管理、市场加载、下载/取消/升级/重启策略 |
 | 配置、存储与历史 | [docs/config-storage-history.md](docs/config-storage-history.md) | Settings/ServiceSettings、存储抽象、便携/漫游路径、历史记录 |
@@ -42,7 +43,8 @@
 | 启动崩溃/窗口行为异常 | [docs/runtime-bootstrap.md](docs/runtime-bootstrap.md) |
 | 插件加载失败/服务实例异常 | [docs/runtime-plugin-service.md](docs/runtime-plugin-service.md) |
 | 翻译结果异常/缓存不命中 | [docs/flow-main-translation.md](docs/flow-main-translation.md) |
-| OCR 或图片翻译结果异常 | [docs/flow-ocr-image.md](docs/flow-ocr-image.md) |
+| OCR 结果异常 | [docs/flow-ocr-image.md](docs/flow-ocr-image.md) |
+| 图片翻译结果、分段或覆盖异常 | [docs/flow-image-translation.md](docs/flow-image-translation.md) |
 | 热键冲突/触发不生效 | [docs/flow-input-trigger.md](docs/flow-input-trigger.md) |
 | 插件市场下载或升级问题 | [docs/plugin-market-management.md](docs/plugin-market-management.md) |
 | 配置丢失/路径不一致/历史问题 | [docs/config-storage-history.md](docs/config-storage-history.md) |

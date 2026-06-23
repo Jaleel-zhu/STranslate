@@ -60,7 +60,24 @@
   - `IOcrCapabilityProvider` 是可选接口，旧插件不实现时默认无额外能力声明。
   - 图片翻译 OCR 服务必须声明 `OcrCapabilities.ImageTranslation | OcrCapabilities.BoundingBox`，否则不会出现在图片翻译 OCR 选择列表。
   - 服务商能返回段落/区域结构时应声明 `OcrCapabilities.StructuredLayout` 并填充 `OcrResult.Regions`。
+  - 图片翻译专用链路、`Auto` / `Provider` / `Smart` 分段策略和结构化布局影响见 [flow-image-translation.md](flow-image-translation.md)。
 - `LangEnum`：语言枚举，当前包含 `Uzbek`；新增语言时需要同步主程序语言检测、内置插件语言映射和本地化文本。
+
+### 图片翻译 OCR 插件要求
+- 普通 OCR 插件仍只需要实现 `IOcrPlugin`；想进入图片翻译 OCR 下拉列表时，必须额外实现 `IOcrCapabilityProvider`。
+- `Capabilities` 至少包含：
+  - `OcrCapabilities.ImageTranslation`
+  - `OcrCapabilities.BoundingBox`
+- 如果返回 `OcrCapabilities.StructuredLayout`：
+  - `OcrResult.Regions` 应按服务商真实区域、段落、行填充。
+  - `OcrParagraph.Lines` 内的每个 `OcrContent` 应带文本和坐标。
+  - `OcrParagraph.BoxPoints` 可直接返回服务商段落框；不返回时宿主会用行框求外接框。
+  - `OcrRegion.BoxPoints` 可返回区域框；不返回不影响图片翻译。
+- 如果只返回扁平 `OcrContents`：
+  - 每个 `OcrContent` 仍必须有坐标框，否则图片翻译无法稳定覆盖和选中。
+  - 宿主会使用本地 `Smart` 分段推断段落、表格和网格项。
+- 坐标必须对应传入图片的像素空间；使用归一化坐标时设置 `CoordinateUnit = OcrCoordinateUnit.Normalized`，不要自行乘以屏幕缩放比例。
+- 插件侧不要把整张表格、整列列表或整页正文合成单个 `OcrContent`；这会让宿主无法恢复准确翻译粒度。
 
 ### HTTP 与流式接口
 - 普通请求：使用 `GetAsync()`、`PostAsync()`、`PostFormAsync()`，通过 `Options` 传入请求头、查询参数、超时与内容类型。
