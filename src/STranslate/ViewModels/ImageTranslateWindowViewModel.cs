@@ -855,7 +855,7 @@ public partial class ImageTranslateWindowViewModel : ObservableObject, IDisposab
     /// <summary>
     /// 测量换行文本的实际占用尺寸。
     /// </summary>
-    private Size MeasureFormattedText(
+    internal static Size MeasureFormattedText(
         string text,
         double fontSize,
         double maxWidth,
@@ -864,24 +864,27 @@ public partial class ImageTranslateWindowViewModel : ObservableObject, IDisposab
         double lineHeight = 0,
         int maxLineCount = 0)
     {
+        var measureWidth = ShouldMeasureNaturalSingleLine(lineHeight, maxLineCount)
+            ? CreateSingleLineMeasureWidth(text, fontSize, maxWidth)
+            : maxWidth;
         var formattedText = CreateFormattedText(
             text,
             fontSize,
             textBrush,
-            maxWidth,
+            measureWidth,
             double.PositiveInfinity,
             lineHeight,
             false,
             pixelsPerDip,
             maxLineCount);
 
-        return new Size(formattedText.Width, formattedText.Height);
+        return new Size(GetMeasuredTextWidth(formattedText), formattedText.Height);
     }
 
     /// <summary>
     /// 创建格式化文本对象。
     /// </summary>
-    private FormattedText CreateFormattedText(
+    internal static FormattedText CreateFormattedText(
         string text,
         double fontSize,
         Brush textBrush,
@@ -912,6 +915,18 @@ public partial class ImageTranslateWindowViewModel : ObservableObject, IDisposab
         formattedText.Trimming = shouldTrim ? TextTrimming.CharacterEllipsis : TextTrimming.None;
         return formattedText;
     }
+
+    private static bool ShouldMeasureNaturalSingleLine(double lineHeight, int maxLineCount) =>
+        maxLineCount == 1 && lineHeight <= 0;
+
+    private static double CreateSingleLineMeasureWidth(string text, double fontSize, double maxWidth)
+    {
+        var estimatedWidth = Math.Max(text.Length, 1) * Math.Max(fontSize, 1) * 2;
+        return Math.Clamp(Math.Max(maxWidth, estimatedWidth), 1, 100_000);
+    }
+
+    private static double GetMeasuredTextWidth(FormattedText formattedText) =>
+        Math.Max(formattedText.Width, formattedText.WidthIncludingTrailingWhitespace);
 
     private sealed record TranslatedTextOverlay(
         string Text,

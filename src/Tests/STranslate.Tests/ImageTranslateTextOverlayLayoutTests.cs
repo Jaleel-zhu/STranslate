@@ -1,5 +1,6 @@
 using STranslate.Core;
 using STranslate.Plugin;
+using STranslate.ViewModels;
 using System.Windows;
 using System.Windows.Media;
 
@@ -121,6 +122,79 @@ public class ImageTranslateTextOverlayLayoutTests
         Assert.Equal(1, plan.MaxLineCount);
         Assert.True(double.IsPositiveInfinity(plan.MaxTextHeight));
         Assert.All(measuredRects, rect => Assert.Equal(plan.TextClipRect.Height, rect.Height, precision: 3));
+    }
+
+    [Fact]
+    public void SingleLineLongTranslationExpandsToWrappedTextBeforeTrimming()
+    {
+        var measuredModes = new List<bool>();
+        var block = Block(
+            Box(10, 100, 200, 24),
+            Box(10, 100, 200, 24));
+
+        var plan = ImageTranslateTextOverlayLayout.Create(
+            block,
+            new Rect(10, 100, 200, 24),
+            (fontSize, textRect, isMultiLine) =>
+            {
+                measuredModes.Add(isMultiLine);
+                return isMultiLine
+                    ? MeasureWrappedText(fontSize, textRect, textUnits: 35)
+                    : new Size(textRect.Width + 1, textRect.Height + 1);
+            });
+
+        Assert.Contains(false, measuredModes);
+        Assert.Contains(true, measuredModes);
+        Assert.True(plan.IsMultiLine);
+        Assert.False(plan.ShouldTrim);
+        Assert.Equal(0, plan.MaxLineCount);
+        Assert.Equal(plan.TextRect.Height, plan.MaxTextHeight);
+        Assert.True(plan.TextClipRect.Height > plan.BoundingRect.Height * 2);
+        AssertCovers(plan.OverlayRect, plan.EraseRects[0]);
+    }
+
+    [Fact]
+    public void ViewModelSingleLineMeasurementUsesNaturalWidth()
+    {
+        const string text = "My self media video lighting shooting tips are now publicly available";
+        const double maxWidth = 260;
+
+        var measured = ImageTranslateWindowViewModel.MeasureFormattedText(
+            text,
+            fontSize: 36,
+            maxWidth,
+            Brushes.Black,
+            pixelsPerDip: 1,
+            lineHeight: 0,
+            maxLineCount: 1);
+
+        Assert.True(measured.Width > maxWidth);
+    }
+
+    [Fact]
+    public void RealSingleLineLongTranslationShrinksInsteadOfTrimming()
+    {
+        var block = new OcrLayoutBlock
+        {
+            Text = "My self media video lighting shooting tips are now publicly available in less than 4 square meters of shooting space",
+            BoxPoints = Box(10, 100, 960, 42),
+            LineBoxPoints = [Box(10, 100, 960, 42)]
+        };
+
+        var plan = ImageTranslateTextOverlayLayout.Create(
+            block,
+            new Rect(10, 100, 960, 42),
+            (fontSize, textRect, isMultiLine) => ImageTranslateWindowViewModel.MeasureFormattedText(
+                block.Text,
+                fontSize,
+                textRect.Width,
+                Brushes.Black,
+                pixelsPerDip: 1,
+                lineHeight: isMultiLine ? fontSize * 1.28 : 0,
+                maxLineCount: isMultiLine ? 0 : 1));
+
+        Assert.False(plan.ShouldTrim);
+        Assert.True(plan.FontSize < plan.TextClipRect.Height * 1.2);
     }
 
     [Fact]

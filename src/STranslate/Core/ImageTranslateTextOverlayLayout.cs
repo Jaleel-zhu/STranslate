@@ -35,6 +35,8 @@ internal static class ImageTranslateTextOverlayLayout
     private const double MultilineFontScale = 0.90;
     private const double SingleLineFontScale = 1.08;
     private const double HorizontalTextPadding = 1;
+    private const double ExpandedSingleLineMaxLines = 3.2;
+    private const double ExpandedSingleLineVerticalPaddingScale = 0.12;
     private static readonly Color DarkOverlayBackground = Color.FromArgb(230, 0, 0, 0);
     private static readonly Color LightOverlayBackground = Color.FromArgb(235, 255, 255, 255);
 
@@ -63,12 +65,30 @@ internal static class ImageTranslateTextOverlayLayout
         var eraseRects = CreateEraseRects(lineRects, boundingRect, lineHeight);
         var textClipRect = CreateTextClipRect(boundingRect, eraseRects);
 
+        var renderAsMultiLine = isMultiLine;
         var fitRect = isMultiLine
             ? textRect
             : new Rect(textRect.Left, textClipRect.Top, textRect.Width, textClipRect.Height);
         var originalLineLimit = lineHeight * (isMultiLine ? MultilineFontScale : SingleLineFontScale);
         var fontSizeLimit = CreateRegionFillFontSizeLimit(originalLineLimit, fitRect);
         var (fontSize, shouldTrim) = FitFontSize(fontSizeLimit, fitRect, isMultiLine, measureText);
+
+        if (!isMultiLine && shouldTrim)
+        {
+            renderAsMultiLine = true;
+            textClipRect = CreateExpandedSingleLineTextClipRect(textClipRect, lineHeight);
+            textRect = CreatePaddedRect(
+                textClipRect,
+                HorizontalTextPadding,
+                Math.Max(1, lineHeight * ExpandedSingleLineVerticalPaddingScale));
+            fitRect = textRect;
+            fontSizeLimit = Math.Clamp(
+                originalLineLimit,
+                ImageTranslateTextOverlayPlan.MinFontSize,
+                ImageTranslateTextOverlayPlan.MaxFontSize);
+            (fontSize, shouldTrim) = FitFontSize(fontSizeLimit, fitRect, true, measureText);
+        }
+
         var overlayRect = textClipRect;
         var (overlayBackgroundColor, foregroundColor) = SelectOverlayColors(overlayTheme);
         var cornerRadius = Math.Clamp(lineHeight * 0.18, 3, 8);
@@ -80,10 +100,10 @@ internal static class ImageTranslateTextOverlayLayout
             overlayRect,
             eraseRects,
             fontSize,
-            isMultiLine ? fontSize * 1.28 : 0,
-            isMultiLine ? textRect.Height : double.PositiveInfinity,
-            isMultiLine ? 0 : 1,
-            isMultiLine,
+            renderAsMultiLine ? fontSize * 1.28 : 0,
+            renderAsMultiLine ? textRect.Height : double.PositiveInfinity,
+            renderAsMultiLine ? 0 : 1,
+            renderAsMultiLine,
             shouldTrim,
             foregroundColor,
             overlayBackgroundColor,
@@ -204,6 +224,13 @@ internal static class ImageTranslateTextOverlayLayout
             textClipRect.Union(eraseRect);
 
         return textClipRect;
+    }
+
+    private static Rect CreateExpandedSingleLineTextClipRect(Rect textClipRect, double lineHeight)
+    {
+        var targetHeight = Math.Max(textClipRect.Height, lineHeight * ExpandedSingleLineMaxLines);
+        var top = textClipRect.Top - (targetHeight - textClipRect.Height) / 2;
+        return new Rect(textClipRect.Left, top, textClipRect.Width, targetHeight);
     }
 
     private static Rect ExpandRect(Rect rect, double horizontalPadding, double verticalPadding) =>
