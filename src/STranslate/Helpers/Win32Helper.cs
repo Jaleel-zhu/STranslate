@@ -7,6 +7,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using Windows.Win32;
 using Windows.Win32.Foundation;
+using Windows.Win32.Graphics.Gdi;
 using Windows.Win32.UI.WindowsAndMessaging;
 
 namespace STranslate.Helpers;
@@ -165,6 +166,72 @@ public static class Win32Helper
         var hwnd = GetWindowHandle(Application.Current.MainWindow, true);
         return hwnd;
     }
+
+    #endregion
+
+    #region Window Position
+
+    private const uint SWP_NOZORDER = 0x0004;
+    private const uint SWP_NOACTIVATE = 0x0010;
+    private const uint SWP_SHOWWINDOW = 0x0040;
+    private const uint MONITOR_DEFAULTTONEAREST = 2;
+
+    private enum MonitorDpiType
+    {
+        Effective = 0
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private readonly struct NativePoint(int x, int y)
+    {
+        public readonly int X = x;
+        public readonly int Y = y;
+    }
+
+    public static void SetWindowPhysicalBounds(Window window, int left, int top, int width, int height)
+    {
+        var hwnd = new WindowInteropHelper(window).EnsureHandle();
+        if (!SetWindowPos(
+                hwnd,
+                0,
+                left,
+                top,
+                Math.Max(1, width),
+                Math.Max(1, height),
+                SWP_NOZORDER | SWP_NOACTIVATE | SWP_SHOWWINDOW))
+        {
+            throw new Win32Exception(Marshal.GetLastPInvokeError());
+        }
+    }
+
+    public static DpiScale GetDpiScaleForPhysicalPoint(int x, int y)
+    {
+        var monitor = MonitorFromPoint(new NativePoint(x, y), MONITOR_DEFAULTTONEAREST);
+        var hr = GetDpiForMonitor(monitor, MonitorDpiType.Effective, out var dpiX, out var dpiY);
+        return hr == 0 && dpiX > 0 && dpiY > 0
+            ? new DpiScale(dpiX / 96d, dpiY / 96d)
+            : new DpiScale(1, 1);
+    }
+
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool SetWindowPos(
+        nint hWnd,
+        nint hWndInsertAfter,
+        int x,
+        int y,
+        int cx,
+        int cy,
+        uint flags);
+
+    [DllImport("user32.dll")]
+    private static extern HMONITOR MonitorFromPoint(NativePoint pt, uint flags);
+
+    [DllImport("shcore.dll")]
+    private static extern int GetDpiForMonitor(
+        HMONITOR hmonitor,
+        MonitorDpiType dpiType,
+        out uint dpiX,
+        out uint dpiY);
 
     #endregion
 

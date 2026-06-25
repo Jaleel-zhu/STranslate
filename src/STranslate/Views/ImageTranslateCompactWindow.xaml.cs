@@ -78,13 +78,16 @@ public partial class ImageTranslateCompactWindow
 
     private void PlaceOnPhysicalBounds(DrawingRectangle bounds)
     {
-        var topLeft = Win32Helper.TransformPixelsToDIP(this, bounds.Left, bounds.Top);
-        var bottomRight = Win32Helper.TransformPixelsToDIP(this, bounds.Right, bounds.Bottom);
+        var dpiScale = GetDpiScale(bounds);
+        var windowBounds = ImageTranslateCompactWindowPlacement.CreateForImageBounds(
+            bounds,
+            dpiScale.DpiScaleX,
+            dpiScale.DpiScaleY,
+            MinWidth,
+            MinHeight,
+            ToolbarReservedHeight);
 
-        Left = topLeft.X;
-        Top = topLeft.Y;
-        Width = Math.Max(MinWidth, bottomRight.X - topLeft.X);
-        Height = Math.Max(MinHeight, bottomRight.Y - topLeft.Y) + ToolbarReservedHeight;
+        PlaceOnPhysicalWindowBounds(windowBounds);
     }
 
     private void PlaceNearCursorScreen(DrawingSize bitmapSize)
@@ -123,18 +126,33 @@ public partial class ImageTranslateCompactWindow
     private void PlaceCenteredOnPrimaryScreen(DrawingSize bitmapSize)
     {
         var screen = MonitorInfo.GetPrimaryDisplayMonitor();
-        var workAreaTopLeft = Win32Helper.TransformPixelsToDIP(this, screen.WorkingArea.Left, screen.WorkingArea.Top);
-        var workAreaBottomRight = Win32Helper.TransformPixelsToDIP(this, screen.WorkingArea.Right, screen.WorkingArea.Bottom);
-        var workAreaWidth = Math.Max(1, workAreaBottomRight.X - workAreaTopLeft.X);
-        var workAreaHeight = Math.Max(1, workAreaBottomRight.Y - workAreaTopLeft.Y);
-        var bitmapSizeDip = Win32Helper.TransformPixelsToDIP(this, bitmapSize.Width, bitmapSize.Height);
-        var maxImageHeight = Math.Max(1, workAreaHeight * FallbackScreenHeightRatio - ToolbarReservedHeight);
+        var workArea = new DrawingRectangle(
+            (int)Math.Round(screen.WorkingArea.Left),
+            (int)Math.Round(screen.WorkingArea.Top),
+            (int)Math.Round(screen.WorkingArea.Width),
+            (int)Math.Round(screen.WorkingArea.Height));
+        var dpiScale = GetDpiScale(workArea);
+        var windowBounds = ImageTranslateCompactWindowPlacement.CreateCenteredOnWorkArea(
+            workArea,
+            bitmapSize,
+            dpiScale.DpiScaleX,
+            dpiScale.DpiScaleY,
+            FallbackMinWidth,
+            FallbackMinHeight,
+            ToolbarReservedHeight,
+            FallbackScreenWidthRatio,
+            FallbackScreenHeightRatio);
 
-        Width = Math.Clamp(bitmapSizeDip.X, FallbackMinWidth, workAreaWidth * FallbackScreenWidthRatio);
-        Height = Math.Clamp(bitmapSizeDip.Y, FallbackMinHeight, maxImageHeight) + ToolbarReservedHeight;
-        Left = workAreaTopLeft.X + (workAreaWidth - Width) / 2;
-        Top = workAreaTopLeft.Y + (workAreaHeight - Height) / 2;
+        PlaceOnPhysicalWindowBounds(windowBounds);
     }
+
+    private void PlaceOnPhysicalWindowBounds(DrawingRectangle bounds) =>
+        Win32Helper.SetWindowPhysicalBounds(this, bounds.Left, bounds.Top, bounds.Width, bounds.Height);
+
+    private static System.Windows.DpiScale GetDpiScale(DrawingRectangle bounds) =>
+        Win32Helper.GetDpiScaleForPhysicalPoint(
+            bounds.Left + bounds.Width / 2,
+            bounds.Top + bounds.Height / 2);
 
     private void OnImageContextMenuOpened(object sender, RoutedEventArgs e) => _isContextMenuOpen = true;
 
