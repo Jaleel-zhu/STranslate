@@ -1145,9 +1145,15 @@ public partial class MainWindowViewModel : ObservableObject, IDisposable
 
         if (Settings.ImageTranslateWindowMode == ImageTranslateWindowMode.Compact)
         {
-            var window = await SingletonWindowOpener.OpenAsync<ImageTranslateCompactWindow>(WindowActivationMode.ForceForeground);
-            window.PlaceForCapture(physicalBounds, bitmap.Size);
-            await ((ImageTranslateWindowViewModel)window.DataContext).ExecuteCommand.ExecuteAsync(bitmap);
+            Task? executeTask = null;
+            await SingletonWindowOpener.OpenPreparedAsync<ImageTranslateCompactWindow>(window =>
+            {
+                window.PlaceForCapture(physicalBounds, bitmap.Size);
+                executeTask = ((ImageTranslateWindowViewModel)window.DataContext).ExecuteCommand.ExecuteAsync(bitmap);
+            }, WindowActivationMode.ForceForeground);
+
+            if (executeTask != null)
+                await executeTask;
             return;
         }
 

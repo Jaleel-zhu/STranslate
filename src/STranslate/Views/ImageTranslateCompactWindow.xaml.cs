@@ -29,6 +29,7 @@ public partial class ImageTranslateCompactWindow
     private bool _isContextMenuOpen;
     private bool _isClosing;
     private CompactWindowLayout? _layout;
+    private DrawingRectangle? _pendingPhysicalBounds;
 
     public ImageTranslateCompactWindow()
     {
@@ -53,6 +54,12 @@ public partial class ImageTranslateCompactWindow
     {
         base.OnSourceInitialized(e);
         Win32Helper.HideFromAltTab(this);
+
+        if (_pendingPhysicalBounds is { } bounds)
+        {
+            _pendingPhysicalBounds = null;
+            Win32Helper.SetWindowPhysicalBounds(this, bounds.Left, bounds.Top, bounds.Width, bounds.Height);
+        }
     }
 
     protected override void OnDeactivated(EventArgs e)
@@ -195,7 +202,10 @@ public partial class ImageTranslateCompactWindow
         Width = dipBounds.Width;
         Height = dipBounds.Height;
 
-        Win32Helper.SetWindowPhysicalBounds(this, bounds.Left, bounds.Top, bounds.Width, bounds.Height);
+        if (IsVisible)
+            Win32Helper.SetWindowPhysicalBounds(this, bounds.Left, bounds.Top, bounds.Width, bounds.Height);
+        else
+            _pendingPhysicalBounds = bounds;
     }
 
     /// <summary>

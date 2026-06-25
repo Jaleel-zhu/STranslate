@@ -16,10 +16,10 @@
     Height="400"
     MinWidth="1"
     MinHeight="1"
-    AllowsTransparency="True"
     control:SnackbarBehavior.EnableSnackbar="True"
     d:DataContext="{d:DesignInstance Type=vm:ImageTranslateWindowViewModel,
                                      IsDesignTimeCreatable=False}"
+    AllowsTransparency="True"
     Background="Transparent"
     ResizeMode="NoResize"
     ShowInTaskbar="False"
@@ -141,7 +141,10 @@
             Panel.ZIndex="20"
             Background="#CC1F1F1F"
             CornerRadius="22">
-            <ikw:SimpleStackPanel Orientation="Horizontal" Spacing="5">
+            <ikw:SimpleStackPanel
+                HorizontalAlignment="Center"
+                Orientation="Horizontal"
+                Spacing="5">
                 <control:IconButton
                     Command="{Binding CancelCommand}"
                     CommandParameter="{Binding ElementName=STImageTranslateCompactWindow}"
@@ -186,10 +189,10 @@
 
         <Border
             x:Name="PART_ExecutingOverlay"
+            Panel.ZIndex="30"
             d:Visibility="Collapsed"
             Background="#B0000000"
             IsHitTestVisible="{Binding IsExecuting}"
-            Panel.ZIndex="30"
             Visibility="{Binding IsExecuting, Converter={cnvt:BoolToVisibilityConverter}}">
             <StackPanel
                 HorizontalAlignment="Center"

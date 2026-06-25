@@ -46,6 +46,21 @@ public static class SingletonWindowOpener
         return window;
     }
 
+    public static async Task<T> OpenPreparedAsync<T>(
+        Action<T> prepareBeforeShow,
+        WindowActivationMode activationMode = WindowActivationMode.Normal,
+        params object[] args) where T : Window
+    {
+        return await Application.Current.Dispatcher.InvokeAsync(() =>
+        {
+            var window = Application.Current.Windows.OfType<T>().FirstOrDefault()
+                         ?? (T)Activator.CreateInstance(typeof(T), args)!;
+            prepareBeforeShow(window);
+            Activate(window, activationMode);
+            return window;
+        }, DispatcherPriority.Background);
+    }
+
     /// <summary>
     /// 激活窗口
     /// </summary>
