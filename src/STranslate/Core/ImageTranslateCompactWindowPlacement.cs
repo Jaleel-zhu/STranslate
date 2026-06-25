@@ -69,15 +69,37 @@ internal static class ImageTranslateCompactWindowPlacement
             }
         }
 
-        // —— 纵向 ——（Task 1 只实现 Below 分支，其余 Task 3/4 实现）
+        // —— 纵向 ——
         var imageBottom = imageBounds.Top + imageHeight;
         var spaceBelow = workArea.Bottom - imageBottom;
-        if (spaceBelow < toolbarHeight + gapV)
-            throw new NotImplementedException("vertical flip handled in Task 3/4");
 
-        var toolbarY = imageBottom + gapV;
-        var windowTop = imageBounds.Top;
-        var windowBottom = imageBottom + gapV + toolbarHeight + margin;
+        int toolbarY, windowTop, windowBottom;
+        ToolbarSide side;
+
+        if (spaceBelow >= toolbarHeight + gapV)
+        {
+            // 下方放得下
+            toolbarY = imageBottom + gapV;
+            windowTop = imageBounds.Top;
+            windowBottom = imageBottom + gapV + toolbarHeight + margin;
+            side = ToolbarSide.Below;
+        }
+        else
+        {
+            var spaceAbove = imageBounds.Top - workArea.Top;
+            if (spaceAbove >= toolbarHeight + gapV)
+            {
+                // 翻上方
+                toolbarY = imageBounds.Top - gapV - toolbarHeight;
+                windowTop = toolbarY;
+                windowBottom = imageBottom + margin;
+                side = ToolbarSide.Above;
+            }
+            else
+            {
+                throw new NotImplementedException("overlay handled in Task 4");
+            }
+        }
 
         var windowWidth = windowRight - windowLeft;
         var windowHeight = windowBottom - windowTop;
@@ -92,7 +114,7 @@ internal static class ImageTranslateCompactWindowPlacement
             toolbarY - windowTop,
             toolbarWidth,
             toolbarHeight,
-            ToolbarSide.Below);
+            side);
     }
 
     internal static Rectangle CreateForImageBounds(
