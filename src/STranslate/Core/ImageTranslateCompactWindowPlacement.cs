@@ -48,8 +48,25 @@ internal static class ImageTranslateCompactWindowPlacement
         }
         else
         {
-            // 贴左缘向右延展；超出屏幕右缘则镜像向左延展（Task 2 实现）
-            throw new NotImplementedException("narrow image handled in Task 2");
+            // 贴左缘向右延展
+            var toolbarLeft = imageBounds.Left + gapH;
+            var toolbarRight = toolbarLeft + toolbarWidth;
+            var imageRight = imageBounds.Left + imageWidth;
+
+            if (toolbarRight + gapH <= workArea.Right)
+            {
+                // 右边放得下：向右延展
+                toolbarX = toolbarLeft;
+                windowLeft = imageBounds.Left;
+                windowRight = Math.Max(imageRight, toolbarRight + gapH);
+            }
+            else
+            {
+                // 右边放不下：镜像向左延展，按钮条右缘 = 图片右缘 - gap
+                toolbarX = imageRight - gapH - toolbarWidth;
+                windowLeft = toolbarX - gapH;
+                windowRight = imageRight;
+            }
         }
 
         // —— 纵向 ——（Task 1 只实现 Below 分支，其余 Task 3/4 实现）
