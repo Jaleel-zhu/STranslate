@@ -219,12 +219,20 @@ public partial class ImageTranslateWindowViewModel : ObservableObject, IDisposab
 
             await Parallel.ForEachAsync(layoutBlocks, cancellationToken, async (block, cancellationToken) =>
             {
+                var detectOptions = new LangDetectOptions(
+                    Settings.ImageTranslateLanguageDetector,
+                    Settings.ImageTranslateLocalDetectorRate,
+                    Settings.ImageTranslateSourceLangIfAuto,
+                    Settings.ImageTranslateFirstLanguage,
+                    Settings.ImageTranslateSecondLanguage);
+
                 var (isSuccess, source, target) = await LanguageDetector
                     .GetLanguageAsync(
                         block.Text,
                         Settings.ImageTranslateSourceLang,
                         Settings.ImageTranslateTargetLang,
-                        cancellationToken)
+                        cancellationToken,
+                        options: detectOptions)
                     .ConfigureAwait(false);
                 if (!isSuccess)
                 {
