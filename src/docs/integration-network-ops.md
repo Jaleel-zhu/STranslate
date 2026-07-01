@@ -36,7 +36,8 @@
 1. `Settings.EnableExternalCall=true` 时，`Settings.ApplyExternalCall()` 调用 `ExternalCallService.StartService("http://127.0.0.1:{port}/")`。
 2. `ExternalCallService` 用 `HttpListener` 接收请求，解析路径为 `ExternalCallAction`。
 3. 按 GET/POST 请求内容路由到 `MainWindowViewModel` 对应命令（翻译、OCR、图片翻译、静默 OCR/TTS、窗口操作、热键开关等）。
-4. 统一返回 JSON：`code + data`。
+4. 需要显示主窗口、设置、历史、OCR 或图片翻译窗口的动作复用应用内显示入口；外部调用不传递专用激活模式，和热键、托盘及软件内命令一样统一强制置前。
+5. 统一返回 JSON：`code + data`。
 
 ### 从入口到结果：流式 HTTP 请求
 1. 插件或主程序通过 `IHttpService.StreamPostAsync()` 使用回调消费逐行响应。
@@ -106,6 +107,7 @@
 
 ## 常见改动任务
 - 新增外部调用路径：在 `ExternalCallAction` 增加枚举，并在 `ExecuteExternalCall()` 添加分支。
+- 新增会显示窗口的外部调用：复用 `MainWindowViewModel` 或 `SingletonWindowOpener` 的现有入口，不在 `ExternalCallService` 中增加独立的窗口激活分支。
 - 更换更新源或策略：修改 `UpdaterService` 的 `UpdateManager` 源与版本判定逻辑。
 - 调整自动检查频率：修改 `AutoUpdateCheckerService` 的轮询间隔常量。
 - 下载链路优化：优先扩展 `HttpService.DownloadFileAsync()`，保证进度、取消、异常统一。

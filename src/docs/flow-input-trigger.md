@@ -21,6 +21,8 @@
   - 鼠标拖拽结束后读取选中文本并触发事件。
 - `STranslate/Helpers/ClipboardMonitor.cs`
   - `AddClipboardFormatListener` 监听剪贴板变更。
+- `STranslate/ViewModels/MainWindowViewModel.cs`
+  - `ExecuteTranslate()` / `InputClear()` / `Show()`：完成文本入口收敛、窗口显示与统一强制置前。
 - `STranslate/Core/Settings.cs`
   - `SelectedTextFetchTimeoutMs`、`TextSeparatorHandleType`、`TextSeparatorHandleScopes`、`CrosswordFetchFailedFallbackTarget`。
 - `STranslate/Views/MainWindow.xaml`
@@ -35,6 +37,7 @@
    - `DisableGlobalHotkeys == true` 时禁用。
    - `IgnoreHotkeysOnFullscreen == true` 且前台全屏时跳过。
 4. 命令进入 `MainWindowViewModel`（例如截图翻译、图片翻译、静默 OCR、替换翻译、剪贴板监听切换）。
+5. 需要显示窗口的命令统一走 `MainWindowViewModel.Show()` 或 `SingletonWindowOpener`；触发来源不改变窗口激活策略。
 
 ### 从入口到结果：输入翻译
 1. 输入翻译全局热键、外部调用 `translate_input`、托盘双击输入翻译、划词失败回退到输入翻译都会进入 `MainWindowViewModel.InputClear()`。
@@ -53,6 +56,12 @@
 - Ctrl+CC：`CtrlSameCHelper` 监听全局按键，500ms 内双击 `Ctrl+C` 触发 `CrosswordTranslateByCtrlSameCHandler()`。
 - 鼠标划词：`MouseKeyHelper` 在拖拽完成后读选中文本，触发 `ExecuteTranslate()`。
 - 剪贴板监听：`ClipboardMonitor` 收到 `WM_CLIPBOARDUPDATE` 后读取文本，触发 `OnClipboardTextChanged -> ExecuteTranslate()`。
+
+### 触发后的窗口置前
+- 全局热键由 STranslate 接收并不代表 STranslate 已是前台应用；触发时浏览器、编辑器或 Explorer 通常仍持有前台窗口。
+- `ExecuteTranslate()`、`InputClear()` 及其他显示入口最终统一调用包含 `AttachThreadInput` 的 `Win32Helper.SetForegroundWindow()`，再执行 WPF `Activate()` / `Focus()`。
+- 不区分“用户手动触发”和“后台或外部调用”，也不在 ViewModel、热键回调和窗口打开器之间传递激活模式。这样可避免 Windows 前台锁导致 `Ctrl+C+C` 或自定义划词热键已执行但主窗口未置前。
+- Explorer 文件重命名时，来源窗口可能在主窗口显示后瞬时抢回前台。主窗口的激活恢复事务会暂缓 `OnDeactivated()` 自动隐藏并只重试一次；连续回弹时停止争抢但保持可见，用户切到其他窗口时仍遵守 `HideWhenDeactivated`。
 
 ### 从入口到结果：取词超时、后处理与失败回退
 1. 需要模拟复制读取选中文本的入口会调用 `ClipboardHelper.GetSelectedTextAsync(Settings.SelectedTextFetchTimeoutMs)`。
@@ -126,3 +135,4 @@
 - 调整全屏忽略策略：统一改 `HotkeyMapper.ShouldSkipHotkey()` 与 `HotkeySettings.WithFullscreenCheck()`。
 - 新增模拟复制类取词入口：必须接入 `SelectedTextFetchTimeoutMs` 并明确 `TextSeparatorHandleScope`，避免新增入口与现有入口处理不一致。
 - 新增输入翻译入口：优先复用 `InputClear()`，确保隐藏输入框时仍会临时显示输入区并正确聚焦。
+- 调整触发后的窗口激活：保持所有显示入口统一强制置前；主窗口回弹策略统一修改 `ForegroundActivationRecovery` 并更新其测试，不在热键回调中增加激活分支。
